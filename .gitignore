@@ -1,0 +1,6 @@
+homeworks/
+.ruff_cache
+.pytest_cache
+
+.venv
+.env

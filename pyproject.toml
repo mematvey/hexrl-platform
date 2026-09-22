@@ -27,6 +27,7 @@ dev = [
     "httpx>=0.28.0",
     "asgi-lifespan>=2.1.0",
     "ty>=0.0.83",
+    "pre-commit>=4.6.2",
 ]
 
 
@@ -37,7 +38,7 @@ pythonpath=["."]
 
 [tool.ruff]
 target-version="py312"
-line-width=100
+line-length=100
 
 [tool.ruff.lint]
 select=[
@@ -57,11 +58,11 @@ ignore=[
     "RUF003",
 ]
 
-[tool.ruff.lint.pre-file-ignores]
-"/tests/**"="ANN"
+[tool.ruff.lint.per-file-ignores]
+"tests/**"=["ANN"]
 
-[tool.ruff.isort]
-known-first-party=["src"]
+[tool.ruff.lint.isort]
+known-first-party=["hexrl_platform"]
 
 [tool.ruff.format]
-quota-style="double"
+quote-style="double"

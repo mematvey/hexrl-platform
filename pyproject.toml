@@ -1,6 +1,6 @@
 [project]
 name = "hexrl-platform"
-version = "0.1.0"
+version = "0.1.1"
 description = "A platform for learning RL in interactive way with clean visualization"
 readme = "README.md"
 requires-python = ">=3.12"

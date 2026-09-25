@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     engine = create_engine(settings.db_dsn)
     app.state.engine = engine
     app.state.session_factory = create_session_factory(engine)
-    logger.info("application started, version=%s", APP_VERSION)
+    logger.info("Приложение запустилось, version=%s", APP_VERSION)
     yield
     await engine.dispose()
     logger.info("application stopped")

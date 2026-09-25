@@ -24,9 +24,9 @@ class Settings(BaseSettings):
 
     postgres_host: str = "localhost"
     postgres_port: int = 5432
-    postgres_user: str = "hexrl"
-    postgres_password: str = "hexrl"
-    postgres_db: str = "hexrl"
+    postgres_user: str
+    postgres_password: str
+    postgres_db: str
 
     health_timeout_seconds: float = 2.0
 

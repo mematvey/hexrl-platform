@@ -29,6 +29,7 @@ dev = [
     "asgi-lifespan>=2.1.0",
     "ty>=0.0.83",
     "pre-commit>=4.6.2",
+    "pytest-cov>=7.1.0",
 ]
 
 

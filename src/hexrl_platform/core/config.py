@@ -1,16 +1,26 @@
 from functools import lru_cache
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, distribution, version
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-APP_VERSION: str = version("hexrl-platform")
+DIST_NAME: str = "hexrl-platform"
+
+try:
+    APP_VERSION: str = version(DIST_NAME)
+    APP_NAME: str = distribution(DIST_NAME).name
+except PackageNotFoundError:
+    APP_VERSION = "0.0.0"
+    APP_NAME = DIST_NAME
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "hexrl-platform"
+    app_name: str = APP_NAME
     log_level: str = "INFO"
+
+    app_host: str = "0.0.0.0"
+    app_port: int = 8000
 
     postgres_host: str = "localhost"
     postgres_port: int = 5432

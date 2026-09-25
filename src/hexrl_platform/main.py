@@ -2,6 +2,7 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 
 from hexrl_platform.api import healthz
@@ -33,3 +34,13 @@ def create_app() -> FastAPI:
     app.include_router(version.router)
     app.include_router(health.router)
     return app
+
+
+def main() -> None:
+    settings = get_settings()
+    uvicorn.run(
+        "hexrl_platform.main:create_app",
+        factory=True,
+        host=settings.app_host,
+        port=settings.app_port,
+    )

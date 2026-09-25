@@ -8,12 +8,13 @@ dependencies = [
     "asyncpg>=0.31.0",
     "fastapi>=0.141.1",
     "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0.54",
     "uvicorn>=0.53.0",
 ]
 
 [project.scripts]
-hexrl-platform = "hexrl_platform:main"
+hexrl-platform = "hexrl_platform.main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]
@@ -28,6 +29,7 @@ dev = [
     "asgi-lifespan>=2.1.0",
     "ty>=0.0.83",
     "pre-commit>=4.6.2",
+    "pytest-cov>=7.1.0",
 ]
 
 

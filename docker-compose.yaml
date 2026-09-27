@@ -45,8 +45,111 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
+  mlflow-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${MLFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${MLFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${MLFLOW_POSTGRES_DB}
+    volumes:
+      - mlflow-pgdata:/var/lib/postgresql/data
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  artifact-store:
+    image: rustfs/rustfs:1.0.0-alpha.83
+    environment:
+      RUSTFS_ADDRESS: :9000
+      RUSTFS_SERVER_DOMAINS: artifact-store:9000
+      RUSTFS_REGION: ${MLFLOW_AWS_REGION:-us-east-1}
+      RUSTFS_ACCESS_KEY: ${MLFLOW_ARTIFACT_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${MLFLOW_ARTIFACT_SECRET_KEY}
+    volumes:
+      - mlflow-artifacts:/data
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health | grep -q '\"status\":\"ok\"'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  artifact-bucket:
+    image: amazon/aws-cli:2.33.25
+    entrypoint: [ "/bin/sh", "-ec" ]
+    command:
+      - >
+        aws --endpoint-url http://artifact-store:9000 s3api head-bucket
+        --bucket ${MLFLOW_ARTIFACT_BUCKET:-hexrl-mlflow} 2>/dev/null ||
+        aws --endpoint-url http://artifact-store:9000 s3api create-bucket
+        --bucket ${MLFLOW_ARTIFACT_BUCKET:-hexrl-mlflow}
+        --region ${MLFLOW_AWS_REGION:-us-east-1}
+    environment:
+      AWS_ACCESS_KEY_ID: ${MLFLOW_ARTIFACT_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${MLFLOW_ARTIFACT_SECRET_KEY}
+      AWS_DEFAULT_REGION: ${MLFLOW_AWS_REGION:-us-east-1}
+      AWS_S3_ADDRESSING_STYLE: path
+    depends_on:
+      artifact-store:
+        condition: service_healthy
+    networks: [ backend ]
+    restart: "no"
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://artifact-store:9000
+      AWS_ACCESS_KEY_ID: ${MLFLOW_ARTIFACT_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${MLFLOW_ARTIFACT_SECRET_KEY}
+      AWS_DEFAULT_REGION: ${MLFLOW_AWS_REGION:-us-east-1}
+      AWS_S3_ADDRESSING_STYLE: path
+    command:
+      - mlflow
+      - server
+      - --backend-store-uri
+      - postgresql+psycopg2://${MLFLOW_POSTGRES_USER}:${MLFLOW_POSTGRES_PASSWORD}@mlflow-db:5432/${MLFLOW_POSTGRES_DB}
+      - --artifacts-destination
+      - s3://${MLFLOW_ARTIFACT_BUCKET:-hexrl-mlflow}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --allowed-hosts
+      - "localhost:*,127.0.0.1:*,mlflow:*"
+    ports:
+      - "127.0.0.1:${MLFLOW_PORT:-5000}:5000"
+    depends_on:
+      mlflow-db:
+        condition: service_healthy
+      artifact-bucket:
+        condition: service_completed_successfully
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:5000/health', timeout=2)" ]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
 volumes:
   pgdata:
+  mlflow-pgdata:
+  mlflow-artifacts:
 
 networks:
   backend:

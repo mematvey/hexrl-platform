@@ -100,7 +100,7 @@ Swagger доступен на `/docs` после запуска приложен
 Пример ответа (`200 OK`):
 
 ```json
-{"name": "hexrl-platform", "version": "0.1.2"}
+{"name": "hexrl-platform", "version": "0.2.0"}
 ```
 
 ### `GET /api/v1/health`
@@ -170,5 +170,5 @@ Swagger доступен на `/docs` после запуска приложен
 Пример записи:
 
 ```json
-{"timestamp":"2026-09-27T12:00:00.000Z","level":"INFO","logger":"hexrl_platform.main","event":"http_request_completed","service":"hexrl-platform","service_version":"0.1.2","request_id":"e4c9","method":"GET","path":"/healthz","status_code":200,"duration_ms":1.5}
+{"timestamp":"2026-09-27T12:00:00.000Z","level":"INFO","logger":"hexrl_platform.main","event":"http_request_completed","service":"hexrl-platform","service_version":"0.2.0","request_id":"e4c9","method":"GET","path":"/healthz","status_code":200,"duration_ms":1.5}
 ```

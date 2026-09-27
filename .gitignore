@@ -1,4 +1,5 @@
 homeworks/
+data/replays/
 .ruff_cache/
 .pytest_cache/
 __pycache__/

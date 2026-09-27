@@ -1192,6 +1192,11 @@ dev = [
     { name = "ruff" },
     { name = "ty" },
 ]
+experiments = [
+    { name = "matplotlib" },
+    { name = "mlflow" },
+    { name = "pandas" },
+]
 mlflow-server = [
     { name = "boto3" },
     { name = "mlflow" },
@@ -1218,6 +1223,11 @@ dev = [
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "ruff", specifier = ">=0.16.8" },
     { name = "ty", specifier = ">=0.0.83" },
+]
+experiments = [
+    { name = "matplotlib", specifier = ">=3.10" },
+    { name = "mlflow", specifier = ">=3.5,<4" },
+    { name = "pandas", specifier = ">=2.2" },
 ]
 mlflow-server = [
     { name = "boto3", specifier = ">=1.43.103" },

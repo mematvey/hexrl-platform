@@ -31,6 +31,11 @@ dev = [
     "pre-commit>=4.6.2",
     "pytest-cov>=7.1.0",
 ]
+mlflow-server = [
+    "boto3>=1.43.103",
+    "mlflow>=3.5,<4",
+    "psycopg2-binary>=2.9.13",
+]
 
 
 [tool.pytest.ini_options]

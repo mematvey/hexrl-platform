@@ -26,7 +26,14 @@ async def _check(
         component_version = await asyncio.wait_for(probe(), timeout=timeout)
     except Exception as exc:  # noqa: BLE001 - health-check обязан пережить любую ошибку
         elapsed_ms = (time.perf_counter() - started) * 1000
-        logger.warning("component check failed: %s (%s)", name, type(exc).__name__)
+        logger.warning(
+            "component_check_failed",
+            extra={
+                "component": name,
+                "duration_ms": round(elapsed_ms, 2),
+                "error_type": type(exc).__name__,
+            },
+        )
         return ComponentHealth(
             name=name,
             status="down",
@@ -34,6 +41,14 @@ async def _check(
             error=type(exc).__name__,
         )
     elapsed_ms = (time.perf_counter() - started) * 1000
+    logger.info(
+        "component_check_completed",
+        extra={
+            "component": name,
+            "component_version": component_version,
+            "duration_ms": round(elapsed_ms, 2),
+        },
+    )
     return ComponentHealth(
         name=name,
         status="up",

@@ -94,6 +94,7 @@ def log_eda(path: Path, tracking_uri: str, experiment_name: str) -> str:
     import matplotlib.pyplot as plt
     import mlflow
     import pandas as pd
+    from mlflow.data.code_dataset_source import CodeDatasetSource
     from mlflow.data.pandas_dataset import from_pandas
 
     plt.switch_backend("Agg")
@@ -109,7 +110,15 @@ def log_eda(path: Path, tracking_uri: str, experiment_name: str) -> str:
     with mlflow.start_run(run_name=f"eda-seed-{manifest['seed']}") as run:
         dataset = from_pandas(
             frame,
-            source=str(path.resolve()),
+            # The dataset is synthetic, so its origin is the generator rather than a file path
+            source=CodeDatasetSource(
+                tags={
+                    "uri": manifest["source"],
+                    "generator": manifest["generator"],
+                    "simulator_version": manifest["simulator_version"],
+                    "seed": str(manifest["seed"]),
+                }
+            ),
             name="hex-navigation-replays",
             digest=manifest["sha256"][:32],
         )

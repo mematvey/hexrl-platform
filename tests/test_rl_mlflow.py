@@ -45,6 +45,11 @@ def test_eda_run_keeps_dataset_metrics_and_visualizations_together(tmp_path, mon
         assert dataset_input.tags[0].value == "analysis"
         assert dataset_input.dataset.name == "hex-navigation-replays"
         assert dataset_input.dataset.digest == manifest["sha256"][:32]
+        assert dataset_input.dataset.source_type == "code"
+        source = json.loads(dataset_input.dataset.source)
+        assert source["tags"]["uri"] == manifest["source"]
+        assert source["tags"]["generator"] == manifest["generator"]
+        assert source["tags"]["seed"] == str(manifest["seed"])
 
         dataset_artifacts = {item.path for item in client.list_artifacts(run_id, "dataset")}
         assert dataset_artifacts >= {"dataset/replays.jsonl", "dataset/replays.manifest.json"}

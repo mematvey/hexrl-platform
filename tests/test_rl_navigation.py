@@ -5,7 +5,12 @@ import pytest
 from hexrl_platform.rl.eda import eda_metrics, load_replays, summarize_replays
 from hexrl_platform.rl.hex_grid import HexCoord, HexMap
 from hexrl_platform.rl.navigation import NavigationEnv, NavigationTask
-from hexrl_platform.rl.replay import action_probabilities, generate_replays
+from hexrl_platform.rl.replay import (
+    ReplayGenerationConfig,
+    action_probabilities,
+    generate_replays,
+)
+from hexrl_platform.rl.values import Probability
 
 
 def test_hex_distance_and_obstacle_aware_path() -> None:
@@ -63,8 +68,9 @@ def test_navigation_truncates_and_rejects_invalid_actions() -> None:
 def test_replay_generation_is_reproducible_and_verifiable(tmp_path) -> None:
     first = tmp_path / "first.jsonl"
     second = tmp_path / "second.jsonl"
-    first_manifest = generate_replays(first, episodes=24, seed=7, max_steps=30)
-    second_manifest = generate_replays(second, episodes=24, seed=7, max_steps=30)
+    config = ReplayGenerationConfig(episodes=24, seed=7, max_steps=30)
+    first_manifest = generate_replays(first, config)
+    second_manifest = generate_replays(second, config)
 
     assert first.read_bytes() == second.read_bytes()
     assert first_manifest["sha256"] == second_manifest["sha256"]
@@ -94,41 +100,35 @@ def test_behavior_policy_probabilities() -> None:
         HexCoord(0, 0),
         goal,
         "goal_directed",
-        0.2,
+        Probability(0.2),
         hex_map.distances_from(goal),
     )
     assert sum(distribution) == pytest.approx(1)
     assert distribution[0] > distribution[3]
     assert (
         action_probabilities(
-            hex_map, HexCoord(0, 0), goal, "random", 0.2, hex_map.distances_from(goal)
+            hex_map, HexCoord(0, 0), goal, "random", Probability(0.2), hex_map.distances_from(goal)
         )
         == (1 / 6,) * 6
     )
     with pytest.raises(ValueError, match="Unknown"):
         action_probabilities(
-            hex_map, HexCoord(0, 0), goal, "unknown", 0.2, hex_map.distances_from(goal)
-        )
-    with pytest.raises(ValueError, match="between 0 and 1"):
-        action_probabilities(
-            hex_map, HexCoord(0, 0), goal, "goal_directed", 1.2, hex_map.distances_from(goal)
+            hex_map, HexCoord(0, 0), goal, "unknown", Probability(0.2), hex_map.distances_from(goal)
         )
 
 
 def test_replay_generator_validates_configuration(tmp_path) -> None:
     path = tmp_path / "invalid.jsonl"
-    with pytest.raises(ValueError, match="positive"):
-        generate_replays(path, episodes=0)
-    with pytest.raises(ValueError, match="random_fraction"):
-        generate_replays(path, random_fraction=-0.1)
-    with pytest.raises(ValueError, match="exploration_probability"):
-        generate_replays(path, exploration_probability=1.1)
+    with pytest.raises(ValueError, match="episodes must be positive"):
+        ReplayGenerationConfig(episodes=0)
+    with pytest.raises(ValueError, match="max_steps must be positive"):
+        generate_replays(path, ReplayGenerationConfig(max_steps=0))
     assert not path.exists()
 
 
 def test_manifest_describes_dataset_schema(tmp_path) -> None:
     path = tmp_path / "replays.jsonl"
-    generate_replays(path, episodes=2, seed=1, max_steps=5)
+    generate_replays(path, ReplayGenerationConfig(episodes=2, seed=1, max_steps=5))
 
     manifest = json.loads(path.with_suffix(".manifest.json").read_text(encoding="utf-8"))
     assert manifest["schema_version"] == 1

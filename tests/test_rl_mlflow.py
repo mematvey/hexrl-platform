@@ -6,19 +6,20 @@ import pytest
 from mlflow.tracking import MlflowClient
 
 from hexrl_platform.rl.eda import log_eda
-from hexrl_platform.rl.replay import generate_replays
+from hexrl_platform.rl.replay import ReplayGenerationConfig, generate_replays
+from hexrl_platform.rl.values import Probability
 
 
 def test_eda_run_keeps_dataset_metrics_and_visualizations_together(tmp_path, monkeypatch):
     path = tmp_path / "replays.jsonl"
-    manifest = generate_replays(
-        path,
+    config = ReplayGenerationConfig(
         episodes=8,
         seed=31,
         max_steps=15,
-        random_fraction=0.25,
-        exploration_probability=0.4,
+        random_fraction=Probability(0.25),
+        exploration_probability=Probability(0.4),
     )
+    manifest = generate_replays(path, config)
     monkeypatch.chdir(tmp_path)
     tracking_uri = "sqlite:///tracking.db"
     previous_uri = mlflow.get_tracking_uri()
@@ -44,6 +45,11 @@ def test_eda_run_keeps_dataset_metrics_and_visualizations_together(tmp_path, mon
         assert dataset_input.tags[0].value == "analysis"
         assert dataset_input.dataset.name == "hex-navigation-replays"
         assert dataset_input.dataset.digest == manifest["sha256"][:32]
+        assert dataset_input.dataset.source_type == "code"
+        source = json.loads(dataset_input.dataset.source)
+        assert source["tags"]["uri"] == manifest["source"]
+        assert source["tags"]["generator"] == manifest["generator"]
+        assert source["tags"]["seed"] == str(manifest["seed"])
 
         dataset_artifacts = {item.path for item in client.list_artifacts(run_id, "dataset")}
         assert dataset_artifacts >= {"dataset/replays.jsonl", "dataset/replays.manifest.json"}
@@ -65,7 +71,7 @@ def test_eda_run_keeps_dataset_metrics_and_visualizations_together(tmp_path, mon
 
 def test_eda_does_not_log_a_run_for_a_corrupt_replay(tmp_path):
     path = tmp_path / "replays.jsonl"
-    generate_replays(path, episodes=2, seed=31)
+    generate_replays(path, ReplayGenerationConfig(episodes=2, seed=31))
     path.write_bytes(path.read_bytes() + b"\n")
     tracking_uri = f"sqlite:///{(tmp_path / 'tracking.db').as_posix()}"
 

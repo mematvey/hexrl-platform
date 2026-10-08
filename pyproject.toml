@@ -75,6 +75,9 @@ ignore=[
 [tool.ruff.lint.per-file-ignores]
 "tests/**"=["ANN"]
 
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls=["hexrl_platform.rl.values.Probability"]
+
 [tool.ruff.lint.isort]
 known-first-party=["hexrl_platform"]
 

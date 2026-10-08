@@ -91,10 +91,10 @@ def eda_metrics(summaries: list[EpisodeSummary]) -> dict[str, float]:
 
 
 def log_eda(path: Path, tracking_uri: str, experiment_name: str) -> str:
-    import matplotlib.pyplot as plt  # ty: ignore[unresolved-import]
-    import mlflow  # ty: ignore[unresolved-import]
-    import mlflow.data  # ty: ignore[unresolved-import]
-    import pandas as pd  # ty: ignore[unresolved-import]
+    import matplotlib.pyplot as plt
+    import mlflow
+    import pandas as pd
+    from mlflow.data.pandas_dataset import from_pandas
 
     plt.switch_backend("Agg")
     records, manifest = load_replays(path)
@@ -107,7 +107,7 @@ def log_eda(path: Path, tracking_uri: str, experiment_name: str) -> str:
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run(run_name=f"eda-seed-{manifest['seed']}") as run:
-        dataset = mlflow.data.from_pandas(
+        dataset = from_pandas(
             frame,
             source=str(path.resolve()),
             name="hex-navigation-replays",

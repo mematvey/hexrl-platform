@@ -5,13 +5,21 @@ import pytest
 from hexrl_platform.rl.eda import EpisodeSummary, eda_metrics, load_replays, summarize_replays
 from hexrl_platform.rl.hex_grid import DIRECTIONS, HexCoord, HexMap
 from hexrl_platform.rl.navigation import NavigationEnv, NavigationTask
-from hexrl_platform.rl.replay import action_probabilities, generate_replays
+from hexrl_platform.rl.replay import (
+    ReplayGenerationConfig,
+    action_probabilities,
+    generate_replays,
+)
+from hexrl_platform.rl.values import Probability
 
 
 @pytest.mark.parametrize("random_fraction", [0.0, 0.5, 1.0])
 def test_generated_replays_can_be_played_back(tmp_path, random_fraction):
     path = tmp_path / "replays.jsonl"
-    generate_replays(path, episodes=12, seed=19, max_steps=18, random_fraction=random_fraction)
+    config = ReplayGenerationConfig(
+        episodes=12, seed=19, max_steps=18, random_fraction=Probability(random_fraction)
+    )
+    generate_replays(path, config)
     records, manifest = load_replays(path)
     hex_map = HexMap(
         manifest["map"]["radius"],
@@ -62,7 +70,7 @@ def test_generated_replays_can_be_played_back(tmp_path, random_fraction):
                 observation.position,
                 observation.goal,
                 record["behavior_policy"],
-                manifest["behavior_policy"]["exploration_probability"],
+                Probability(manifest["behavior_policy"]["exploration_probability"]),
                 hex_map.distances_from(observation.goal),
             )
             assert record["action_probability"] == pytest.approx(probabilities[record["action"]])

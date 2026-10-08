@@ -4,13 +4,29 @@ import json
 import os
 import random
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from hexrl_platform.core.config import APP_VERSION
 from hexrl_platform.rl.hex_grid import DIRECTIONS, HexCoord, HexMap
 from hexrl_platform.rl.navigation import NavigationEnv, NavigationObservation, NavigationTask
+from hexrl_platform.rl.values import Probability
 
 SCHEMA_VERSION = 1
+
+
+@dataclass(frozen=True, slots=True)
+class ReplayGenerationConfig:
+    episodes: int = 1000
+    seed: int = 42
+    max_steps: int = 60
+    random_fraction: Probability = Probability(0.5)
+    exploration_probability: Probability = Probability(0.25)
+
+    def __post_init__(self) -> None:
+        if self.episodes < 1:
+            raise ValueError("episodes must be positive")
 
 
 def default_map(radius: int = 4) -> HexMap:
@@ -41,15 +57,13 @@ def action_probabilities(
     position: HexCoord,
     goal: HexCoord,
     policy: str,
-    exploration_probability: float,
+    exploration_probability: Probability,
     distances_to_goal: dict[HexCoord, int],
 ) -> tuple[float, ...]:
     if policy == "random":
         return (1 / len(DIRECTIONS),) * len(DIRECTIONS)
     if policy != "goal_directed":
         raise ValueError(f"Unknown behavior policy: {policy}")
-    if not 0 <= exploration_probability <= 1:
-        raise ValueError("exploration_probability must be between 0 and 1")
 
     candidate_distances = [
         distances_to_goal.get(HexCoord(position.q + direction.q, position.r + direction.r))
@@ -64,31 +78,18 @@ def action_probabilities(
     best_actions = [
         index for index, distance in enumerate(candidate_distances) if distance == best_distance
     ]
-    probabilities = [exploration_probability / len(DIRECTIONS)] * len(DIRECTIONS)
+    exploration = exploration_probability.value
+    probabilities = [exploration / len(DIRECTIONS)] * len(DIRECTIONS)
     for action in best_actions:
-        probabilities[action] += (1 - exploration_probability) / len(best_actions)
+        probabilities[action] += (1 - exploration) / len(best_actions)
     return tuple(probabilities)
 
 
 def generate_replays(
     output: Path,
-    *,
-    episodes: int = 1000,
-    seed: int = 42,
+    config: ReplayGenerationConfig,
     hex_map: HexMap | None = None,
-    max_steps: int = 60,
-    random_fraction: float = 0.5,
-    exploration_probability: float = 0.25,
 ) -> dict[str, Any]:
-    from hexrl_platform.core.config import APP_VERSION
-
-    if episodes < 1 or max_steps < 1:
-        raise ValueError("episodes and max_steps must be positive")
-    if not 0 <= random_fraction <= 1:
-        raise ValueError("random_fraction must be between 0 and 1")
-    if not 0 <= exploration_probability <= 1:
-        raise ValueError("exploration_probability must be between 0 and 1")
-
     hex_map = hex_map or default_map()
     candidate_tasks = [
         (start, goal, distance)
@@ -100,7 +101,7 @@ def generate_replays(
         raise ValueError("Map must contain a reachable start-goal pair at least two moves apart")
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    rng = random.Random(seed)
+    rng = random.Random(config.seed)
     digest = hashlib.sha256()
     transition_count = 0
     success_count = 0
@@ -110,24 +111,26 @@ def generate_replays(
     with tempfile.NamedTemporaryFile(mode="wb", dir=output.parent, delete=False) as temporary:
         temporary_path = Path(temporary.name)
         try:
-            for episode_id in range(episodes):
+            for episode_id in range(config.episodes):
                 start, goal, optimal_steps = rng.choice(candidate_tasks)
-                policy = "random" if rng.random() < random_fraction else "goal_directed"
+                policy = (
+                    "random" if rng.random() < config.random_fraction.value else "goal_directed"
+                )
                 policy_counts[policy] += 1
-                task = NavigationTask(hex_map, start, goal, max_steps)
+                task = NavigationTask(hex_map, start, goal, config.max_steps)
                 environment = NavigationEnv(task)
                 if goal not in goal_distances:
                     goal_distances[goal] = hex_map.distances_from(goal)
                 distances = goal_distances[goal]
 
-                for step_id in range(max_steps):
+                for step_id in range(config.max_steps):
                     observation = environment.observe()
                     probabilities = action_probabilities(
                         hex_map,
                         observation.position,
                         goal,
                         policy,
-                        exploration_probability,
+                        config.exploration_probability,
                         distances,
                     )
                     action = rng.choices(range(len(DIRECTIONS)), weights=probabilities, k=1)[0]
@@ -170,11 +173,11 @@ def generate_replays(
         "simulator_version": APP_VERSION,
         "dataset_file": output.name,
         "sha256": digest.hexdigest(),
-        "episodes": episodes,
+        "episodes": config.episodes,
         "transitions": transition_count,
         "successful_episodes": success_count,
-        "seed": seed,
-        "max_steps": max_steps,
+        "seed": config.seed,
+        "max_steps": config.max_steps,
         "map": {
             "radius": hex_map.radius,
             "blocked": [{"q": cell.q, "r": cell.r} for cell in sorted(hex_map.blocked)],
@@ -186,8 +189,8 @@ def generate_replays(
         },
         "behavior_policy": {
             "episode_counts": policy_counts,
-            "random_fraction": random_fraction,
-            "exploration_probability": exploration_probability,
+            "random_fraction": config.random_fraction.value,
+            "exploration_probability": config.exploration_probability.value,
         },
     }
     output.with_suffix(".manifest.json").write_text(
@@ -206,15 +209,14 @@ def main() -> None:
     parser.add_argument("--random-fraction", type=float, default=0.5)
     parser.add_argument("--exploration-probability", type=float, default=0.25)
     args = parser.parse_args()
-    manifest = generate_replays(
-        args.output,
+    config = ReplayGenerationConfig(
         episodes=args.episodes,
         seed=args.seed,
-        hex_map=default_map(args.radius),
         max_steps=args.max_steps,
-        random_fraction=args.random_fraction,
-        exploration_probability=args.exploration_probability,
+        random_fraction=Probability(args.random_fraction),
+        exploration_probability=Probability(args.exploration_probability),
     )
+    manifest = generate_replays(args.output, config, default_map(args.radius))
     print(
         f"Generated {manifest['episodes']} episodes, {manifest['transitions']} transitions, "
         f"SHA-256 {manifest['sha256']}"

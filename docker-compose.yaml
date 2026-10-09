@@ -66,16 +66,20 @@ services:
   artifact-store:
     image: rustfs/rustfs:1.0.0-alpha.83
     environment:
-      RUSTFS_ADDRESS: :9000
-      RUSTFS_SERVER_DOMAINS: artifact-store:9000
+      RUSTFS_ADDRESS: :${MLFLOW_ARTIFACT_PORT:-9000}
+      RUSTFS_SERVER_DOMAINS: artifact-store:${MLFLOW_ARTIFACT_PORT:-9000}
       RUSTFS_REGION: ${MLFLOW_AWS_REGION:-us-east-1}
       RUSTFS_ACCESS_KEY: ${MLFLOW_ARTIFACT_ACCESS_KEY}
       RUSTFS_SECRET_KEY: ${MLFLOW_ARTIFACT_SECRET_KEY}
     volumes:
       - mlflow-artifacts:/data
+    # MLflow 3 clients download artifacts via presigned URLs pointing at artifact-store,
+    # so hosts outside Docker reach the same name and port (see README). Loopback only.
+    ports:
+      - "127.0.0.1:${MLFLOW_ARTIFACT_PORT:-9000}:${MLFLOW_ARTIFACT_PORT:-9000}"
     networks: [ backend ]
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health | grep -q '\"status\":\"ok\"'" ]
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:${MLFLOW_ARTIFACT_PORT:-9000}/health | grep -q '\"status\":\"ok\"'" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -89,9 +93,9 @@ services:
     entrypoint: [ "/bin/sh", "-ec" ]
     command:
       - >
-        aws --endpoint-url http://artifact-store:9000 s3api head-bucket
+        aws --endpoint-url http://artifact-store:${MLFLOW_ARTIFACT_PORT:-9000} s3api head-bucket
         --bucket ${MLFLOW_ARTIFACT_BUCKET:-hexrl-mlflow} 2>/dev/null ||
-        aws --endpoint-url http://artifact-store:9000 s3api create-bucket
+        aws --endpoint-url http://artifact-store:${MLFLOW_ARTIFACT_PORT:-9000} s3api create-bucket
         --bucket ${MLFLOW_ARTIFACT_BUCKET:-hexrl-mlflow}
         --region ${MLFLOW_AWS_REGION:-us-east-1}
     environment:
@@ -110,7 +114,7 @@ services:
       context: .
       dockerfile: Dockerfile.mlflow
     environment:
-      MLFLOW_S3_ENDPOINT_URL: http://artifact-store:9000
+      MLFLOW_S3_ENDPOINT_URL: http://artifact-store:${MLFLOW_ARTIFACT_PORT:-9000}
       AWS_ACCESS_KEY_ID: ${MLFLOW_ARTIFACT_ACCESS_KEY}
       AWS_SECRET_ACCESS_KEY: ${MLFLOW_ARTIFACT_SECRET_KEY}
       AWS_DEFAULT_REGION: ${MLFLOW_AWS_REGION:-us-east-1}

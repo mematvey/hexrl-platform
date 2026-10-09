@@ -42,6 +42,13 @@ def default_map(radius: int = 4) -> HexMap:
     )
 
 
+def map_from_manifest(manifest: dict[str, Any]) -> HexMap:
+    return HexMap(
+        manifest["map"]["radius"],
+        frozenset(HexCoord(cell["q"], cell["r"]) for cell in manifest["map"]["blocked"]),
+    )
+
+
 def observation_dict(observation: NavigationObservation) -> dict[str, int]:
     return {
         "q": observation.position.q,

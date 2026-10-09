@@ -166,6 +166,8 @@ services:
       artifact-store:
         condition: service_healthy
     networks: [ backend ]
+    # The app exits when the champion cannot be loaded; retry until it is registered
+    restart: on-failure
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8001/healthz', timeout=2)" ]
       interval: 10s
@@ -178,7 +180,6 @@ services:
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
-
 
 volumes:
   pgdata:

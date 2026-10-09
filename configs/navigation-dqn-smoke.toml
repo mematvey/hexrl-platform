@@ -1,0 +1,20 @@
+# Fast end-to-end check of the pipeline against a real MLflow server, not a result
+
+[study]
+name = "navigation-dqn-smoke"
+experiment = "hex-navigation-dqn-smoke"
+seeds = [1]
+
+[dqn]
+total_timesteps = 3_000
+learning_starts = 500
+buffer_size = 3_000
+target_update_interval = 500
+eval_freq = 1_000
+device = "cpu"
+
+[variants."dqn-explore-0.1"]
+exploration_fraction = 0.1
+
+[variants."dqn-explore-0.5"]
+exploration_fraction = 0.5

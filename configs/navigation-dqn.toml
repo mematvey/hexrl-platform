@@ -3,6 +3,7 @@
 
 [study]
 name = "navigation-dqn-v1"
+replays = "data/replays/navigation.jsonl"
 experiment = "hex-navigation-dqn"
 seeds = [1, 2, 3, 4, 5]
 

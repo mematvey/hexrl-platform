@@ -175,10 +175,8 @@ def _log_comparison(context: StudyContext, outcomes: Sequence[RunOutcome]) -> st
         return run.info.run_id
 
 
-def run_study(
-    replay_path: Path, study: StudyConfig, *, tracking_uri: str, output_dir: Path
-) -> list[str]:
-    records, replay_manifest = load_replays(replay_path)
+def run_study(study: StudyConfig, *, tracking_uri: str, output_dir: Path) -> list[str]:
+    records, replay_manifest = load_replays(study.replays)
     split = split_tasks(records, replay_manifest["sha256"])
     split_path = output_dir / "task_split.json"
     split_manifest = save_task_split(split, split_path)
@@ -222,7 +220,6 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Train DQN variants and compare them to baselines")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    parser.add_argument("--replays", type=Path, default=Path("data/replays/navigation.jsonl"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/experiments"))
     parser.add_argument(
         "--tracking-uri", default=os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
@@ -231,7 +228,6 @@ def main() -> None:
 
     study = load_study_config(args.config)
     run_ids = run_study(
-        args.replays,
         study,
         tracking_uri=args.tracking_uri,
         output_dir=args.output_dir / study.name,

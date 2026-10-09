@@ -19,6 +19,7 @@ RESERVED_LABELS = {RANDOM_LABEL, SHORTEST_PATH_LABEL, COMPARISON_LABEL}
 class StudyConfig:
     name: str
     experiment: str
+    replays: Path
     seeds: tuple[int, ...]
     variants: tuple[tuple[str, DQNConfig], ...]
 
@@ -37,6 +38,7 @@ class StudyConfig:
         return {
             "name": self.name,
             "experiment": self.experiment,
+            "replays": self.replays.as_posix(),
             "seeds": list(self.seeds),
             "variants": {label: config.to_params() for label, config in self.variants},
         }
@@ -64,6 +66,7 @@ def load_study_config(path: Path) -> StudyConfig:
         return StudyConfig(
             name=study["name"],
             experiment=study["experiment"],
+            replays=Path(study["replays"]),
             seeds=tuple(study["seeds"]),
             variants=tuple(
                 (label, dqn_config({**data.get("dqn", {}), **overrides}))

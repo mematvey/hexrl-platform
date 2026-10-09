@@ -13,6 +13,7 @@ def test_full_study_config_differs_only_in_exploration_fraction():
     study = load_study_config(CONFIGS / "navigation-dqn.toml")
     assert study.seeds == (1, 2, 3, 4, 5)
     assert study.experiment == "hex-navigation-dqn"
+    assert study.replays == Path("data/replays/navigation.jsonl")
     (label_a, config_a), (label_b, config_b) = study.variants
     assert (label_a, label_b) == ("dqn-explore-0.1", "dqn-explore-0.5")
     params_a, params_b = config_a.to_params(), config_b.to_params()
@@ -34,6 +35,7 @@ def test_variant_overrides_shared_parameters(tmp_path):
 [study]
 name = "s"
 experiment = "e"
+replays = "r.jsonl"
 seeds = [7]
 
 [dqn]
@@ -66,10 +68,16 @@ def test_config_errors_are_reported(tmp_path):
 def test_study_config_validation():
     variant = (("a", DQNConfig()),)
     with pytest.raises(ValueError, match="seeds"):
-        StudyConfig(name="s", experiment="e", seeds=(), variants=variant)
+        StudyConfig(name="s", experiment="e", replays=Path("r"), seeds=(), variants=variant)
     with pytest.raises(ValueError, match="unique labels"):
-        StudyConfig(name="s", experiment="e", seeds=(1,), variants=variant * 2)
+        StudyConfig(name="s", experiment="e", replays=Path("r"), seeds=(1,), variants=variant * 2)
     with pytest.raises(ValueError, match="must not use"):
-        StudyConfig(name="s", experiment="e", seeds=(1,), variants=(("random", DQNConfig()),))
+        StudyConfig(
+            name="s",
+            experiment="e",
+            replays=Path("r"),
+            seeds=(1,),
+            variants=(("random", DQNConfig()),),
+        )
     with pytest.raises(ValueError, match="must not be empty"):
-        StudyConfig(name="", experiment="e", seeds=(1,), variants=variant)
+        StudyConfig(name="", experiment="e", replays=Path("r"), seeds=(1,), variants=variant)

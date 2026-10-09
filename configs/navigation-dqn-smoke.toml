@@ -2,6 +2,7 @@
 
 [study]
 name = "navigation-dqn-smoke"
+replays = "data/replays/navigation.jsonl"
 experiment = "hex-navigation-dqn-smoke"
 seeds = [1]
 

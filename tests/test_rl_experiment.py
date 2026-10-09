@@ -34,12 +34,12 @@ def study_runs(tmp_path, monkeypatch):
     study = StudyConfig(
         name="test-study",
         experiment="dqn-test",
+        replays=replay_path,
         seeds=(1,),
         variants=(("dqn-a", TINY_DQN), ("dqn-b", TINY_DQN)),
     )
     try:
         run_ids = run_study(
-            replay_path,
             study,
             tracking_uri=tracking_uri,
             output_dir=tmp_path / "out",

@@ -17,6 +17,7 @@ dependencies = [
 hexrl-platform = "hexrl_platform.main:main"
 hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"
+hexrl-experiment = "hexrl_platform.rl.experiment:main"
 
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]
@@ -81,6 +82,10 @@ explicit = true
 testpaths=["tests"]
 asyncio_mode="auto"
 pythonpath=["."]
+filterwarnings=[
+    # MLflow hint for int columns in logged datasets; our task and replay data have no gaps
+    "ignore:Hint. Inferred schema contains integer column:UserWarning",
+]
 
 [tool.ruff]
 target-version="py312"

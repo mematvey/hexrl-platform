@@ -29,7 +29,7 @@
 Установить зависимости и pre-commit-хуки:
 
 ```bash
-uv sync --group experiments
+uv sync --group experiments --group rl-cpu
 uv run pre-commit install
 ```
 

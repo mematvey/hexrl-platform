@@ -4,12 +4,13 @@ import json
 import os
 import random
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from hexrl_platform.core.config import APP_VERSION
-from hexrl_platform.rl.hex_grid import DIRECTIONS, HexCoord, HexMap
+from hexrl_platform.rl.hex_grid import DIRECTIONS, HexCoord, HexMap, hex_ring
 from hexrl_platform.rl.navigation import NavigationEnv, NavigationObservation, NavigationTask
 from hexrl_platform.rl.values import Probability
 
@@ -39,6 +40,27 @@ def default_map(radius: int = 4) -> HexMap:
     )
     return HexMap(
         radius, frozenset(cell for cell in obstacles if cell.distance_to(HexCoord(0, 0)) <= radius)
+    )
+
+
+def maze_map(radius: int = 6) -> HexMap:
+    """Two wall rings with one-cell gaps on opposite sides."""
+    if radius < 5:
+        raise ValueError("Maze map needs radius of at least 5")
+    center = HexCoord(0, 0)
+    inner_gap, outer_gap = HexCoord(2, 0), HexCoord(-4, 0)
+    blocked = {cell for cell in hex_ring(center, 2) if cell != inner_gap}
+    blocked |= {cell for cell in hex_ring(center, 4) if cell != outer_gap}
+    return HexMap(radius, frozenset(blocked))
+
+
+MAPS: dict[str, Callable[[], HexMap]] = {"default": default_map, "maze": maze_map}
+
+
+def map_from_manifest(manifest: dict[str, Any]) -> HexMap:
+    return HexMap(
+        manifest["map"]["radius"],
+        frozenset(HexCoord(cell["q"], cell["r"]) for cell in manifest["map"]["blocked"]),
     )
 
 
@@ -204,7 +226,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("data/replays/navigation.jsonl"))
     parser.add_argument("--episodes", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--radius", type=int, default=4)
+    parser.add_argument("--map", choices=sorted(MAPS), default="default")
     parser.add_argument("--max-steps", type=int, default=60)
     parser.add_argument("--random-fraction", type=float, default=0.5)
     parser.add_argument("--exploration-probability", type=float, default=0.25)
@@ -216,7 +238,7 @@ def main() -> None:
         random_fraction=Probability(args.random_fraction),
         exploration_probability=Probability(args.exploration_probability),
     )
-    manifest = generate_replays(args.output, config, default_map(args.radius))
+    manifest = generate_replays(args.output, config, MAPS[args.map]())
     print(
         f"Generated {manifest['episodes']} episodes, {manifest['transitions']} transitions, "
         f"SHA-256 {manifest['sha256']}"

@@ -23,6 +23,20 @@ DIRECTIONS: tuple[HexCoord, ...] = (
 )
 
 
+def hex_ring(center: HexCoord, distance: int) -> tuple[HexCoord, ...]:
+    """Cells exactly `distance` steps from `center`, walked around the ring in order."""
+    if distance < 1:
+        raise ValueError("Ring distance must be positive")
+    corner = DIRECTIONS[4]
+    cell = HexCoord(center.q + corner.q * distance, center.r + corner.r * distance)
+    cells = []
+    for direction in DIRECTIONS:
+        for _ in range(distance):
+            cells.append(cell)
+            cell = HexCoord(cell.q + direction.q, cell.r + direction.r)
+    return tuple(cells)
+
+
 @dataclass(frozen=True, slots=True)
 class HexMap:
     radius: int

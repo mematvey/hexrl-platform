@@ -19,7 +19,12 @@ repos:
 
       - id: ruff-format
 
-  - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.83
+
+  - repo: local
     hooks:
       - id: ty
+        name: ty
+        entry: uv run --no-sync ty check
+        language: system
+        types: [python]
+        pass_filenames: false

@@ -19,11 +19,12 @@ async def _postgres_version(session: AsyncSession) -> str:
 async def _check(
     name: str,
     probe: Callable[[], Awaitable[str]],
-    timeout: float,
+    timeout_seconds: float,
 ) -> ComponentHealth:
     started = time.perf_counter()
     try:
-        component_version = await asyncio.wait_for(probe(), timeout=timeout)
+        async with asyncio.timeout(timeout_seconds):
+            component_version = await probe()
     except Exception as exc:  # noqa: BLE001 - health-check обязан пережить любую ошибку
         elapsed_ms = (time.perf_counter() - started) * 1000
         logger.warning(
@@ -57,12 +58,12 @@ async def _check(
     )
 
 
-async def collect_health(session: AsyncSession, timeout: float) -> HealthResponse:
+async def collect_health(session: AsyncSession, timeout_seconds: float) -> HealthResponse:
     probes: dict[str, Callable[[], Awaitable[str]]] = {
         "postgres": lambda: _postgres_version(session),
     }
     components = await asyncio.gather(
-        *(_check(name, probe, timeout) for name, probe in probes.items())
+        *(_check(name, probe, timeout_seconds) for name, probe in probes.items())
     )
     overall = "ok" if all(c.status == "up" for c in components) else "degraded"
     return HealthResponse(status=overall, components=list(components))

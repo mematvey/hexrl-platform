@@ -1,0 +1,39 @@
+# Full comparison: two DQN variants that differ only in exploration_fraction.
+# Versions of the observation encoder and task split are part of the code, not of this file.
+
+[study]
+name = "navigation-dqn-v1"
+replays = "data/replays/navigation.jsonl"
+experiment = "hex-navigation-dqn"
+seeds = [1, 2, 3, 4, 5]
+
+# Shared by every variant
+[dqn]
+total_timesteps = 100_000
+learning_rate = 5e-4
+buffer_size = 50_000
+learning_starts = 1_000
+batch_size = 64
+gamma = 0.99
+train_freq = 4
+gradient_steps = 1
+target_update_interval = 1_000
+exploration_initial_eps = 1.0
+exploration_final_eps = 0.05
+net_arch = [64, 64]
+eval_freq = 5_000
+# A 64x64 MLP trains as fast on CPU as on GPU; use "auto" or "cuda" with the rl-cuda group
+device = "cpu"
+
+[variants."dqn-explore-0.1"]
+exploration_fraction = 0.1
+
+[variants."dqn-explore-0.5"]
+exploration_fraction = 0.5
+
+# One registered model per map: the model has the map built into its encoder,
+# so versions of different maps must never compete for the same alias
+[registry]
+model_name = "hex-navigation-default"
+alias = "champion"
+tie_tolerance = 0.01

@@ -65,6 +65,7 @@ select=[
     "RUF",
     "BLE",
     "ANN",
+    "ASYNC",
 ]
 ignore=[
     "RUF001",

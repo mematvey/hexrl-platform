@@ -28,3 +28,10 @@ exploration_fraction = 0.1
 
 [variants."dqn-explore-0.5"]
 exploration_fraction = 0.5
+
+# One registered model per map: the model has the map built into its encoder,
+# so versions of different maps must never compete for the same alias
+[registry]
+model_name = "hex-navigation-maze"
+alias = "champion"
+tie_tolerance = 0.01

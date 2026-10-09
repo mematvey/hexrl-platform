@@ -5,13 +5,13 @@ WORKDIR /app
 
 # слой только с зависимостями (он кэшируется, пока не менялись pyproject/uv.lock)
 COPY pyproject.toml uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,id=uv-app,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
 
 # слой с кодом проекта
 COPY README.md ./
 COPY src ./src
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,id=uv-app,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-editable
 
 FROM python:3.12-slim

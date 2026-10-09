@@ -23,6 +23,13 @@ def test_full_study_config_differs_only_in_exploration_fraction():
     assert config_a.net_arch == (64, 64)
 
 
+def test_maze_study_config_uses_its_own_replays_and_experiment():
+    study = load_study_config(CONFIGS / "navigation-dqn-maze.toml")
+    assert study.replays == Path("data/replays/navigation-maze.jsonl")
+    assert study.experiment == "hex-navigation-maze-dqn"
+    assert {label for label, _ in study.variants} == {"dqn-explore-0.1", "dqn-explore-0.5"}
+
+
 def test_smoke_study_config_loads():
     study = load_study_config(CONFIGS / "navigation-dqn-smoke.toml")
     assert all(config.total_timesteps <= 5_000 for _, config in study.variants)

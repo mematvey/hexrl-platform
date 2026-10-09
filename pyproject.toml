@@ -82,10 +82,6 @@ explicit = true
 testpaths=["tests"]
 asyncio_mode="auto"
 pythonpath=["."]
-filterwarnings=[
-    # MLflow hint for int columns in logged datasets; our task and replay data have no gaps
-    "ignore:Hint. Inferred schema contains integer column:UserWarning",
-]
 
 [tool.ruff]
 target-version="py312"

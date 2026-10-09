@@ -8,6 +8,7 @@ from mlflow.data.code_dataset_source import CodeDatasetSource
 from mlflow.data.pandas_dataset import from_pandas
 
 from hexrl_platform.rl import plots
+from hexrl_platform.rl.eda import ignore_integer_schema_hint
 from hexrl_platform.rl.evaluation import EpisodeResult, evaluate_policy, summarize_results
 from hexrl_platform.rl.hex_grid import DIRECTIONS
 from hexrl_platform.rl.navigation import NavigationTask
@@ -43,21 +44,22 @@ def prefixed(prefix: str, metrics: dict[str, float]) -> dict[str, float]:
 
 def log_task_inputs(context: StudyContext, partitions: Sequence[Partition]) -> None:
     for name in partitions:
-        dataset = from_pandas(
-            pd.DataFrame(pairs_to_records(context.split.partition(name))),
-            source=CodeDatasetSource(
-                tags={
-                    "uri": SPLIT_SOURCE_URI,
-                    "parent_sha256": context.split.parent_sha256,
-                    "split_version": str(SPLIT_VERSION),
-                    "rule": SPLIT_RULE,
-                    "partition": name,
-                }
-            ),
-            name=f"navigation-tasks-{name}",
-            digest=context.split_manifest["partition_sha256"][name][:32],
-        )
-        mlflow.log_input(dataset, context=DATASET_CONTEXTS[name])
+        with ignore_integer_schema_hint():
+            dataset = from_pandas(
+                pd.DataFrame(pairs_to_records(context.split.partition(name))),
+                source=CodeDatasetSource(
+                    tags={
+                        "uri": SPLIT_SOURCE_URI,
+                        "parent_sha256": context.split.parent_sha256,
+                        "split_version": str(SPLIT_VERSION),
+                        "rule": SPLIT_RULE,
+                        "partition": name,
+                    }
+                ),
+                name=f"navigation-tasks-{name}",
+                digest=context.split_manifest["partition_sha256"][name][:32],
+            )
+            mlflow.log_input(dataset, context=DATASET_CONTEXTS[name])
     mlflow.log_artifact(str(context.split_path), artifact_path="dataset")
     mlflow.log_artifact(str(context.split_path.with_suffix(".manifest.json")), "dataset")
 

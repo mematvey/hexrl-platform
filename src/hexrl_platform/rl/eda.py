@@ -3,13 +3,26 @@ import hashlib
 import json
 import os
 import sys
+import warnings
 from collections import defaultdict
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from hexrl_platform.rl.hex_grid import HexCoord
 from hexrl_platform.rl.replay import SCHEMA_VERSION
+
+
+@contextmanager
+def ignore_integer_schema_hint() -> Iterator[None]:
+    """MLflow warns that int columns cannot hold NaN; our coordinates are never missing."""
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", message="Hint: Inferred schema contains integer", category=UserWarning
+        )
+        yield
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,21 +121,22 @@ def log_eda(path: Path, tracking_uri: str, experiment_name: str) -> str:
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run(run_name=f"eda-seed-{manifest['seed']}") as run:
-        dataset = from_pandas(
-            frame,
-            # The dataset is synthetic, so its origin is the generator rather than a file path
-            source=CodeDatasetSource(
-                tags={
-                    "uri": manifest["source"],
-                    "generator": manifest["generator"],
-                    "simulator_version": manifest["simulator_version"],
-                    "seed": str(manifest["seed"]),
-                }
-            ),
-            name="hex-navigation-replays",
-            digest=manifest["sha256"][:32],
-        )
-        mlflow.log_input(dataset, context="analysis")
+        with ignore_integer_schema_hint():
+            dataset = from_pandas(
+                frame,
+                # The dataset is synthetic, so its origin is the generator rather than a file path
+                source=CodeDatasetSource(
+                    tags={
+                        "uri": manifest["source"],
+                        "generator": manifest["generator"],
+                        "simulator_version": manifest["simulator_version"],
+                        "seed": str(manifest["seed"]),
+                    }
+                ),
+                name="hex-navigation-replays",
+                digest=manifest["sha256"][:32],
+            )
+            mlflow.log_input(dataset, context="analysis")
         mlflow.log_artifact(str(path), artifact_path="dataset")
         mlflow.log_artifact(str(path.with_suffix(".manifest.json")), artifact_path="dataset")
         mlflow.set_tags(

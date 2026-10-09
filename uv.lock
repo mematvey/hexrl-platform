@@ -1426,6 +1426,9 @@ experiments = [
     { name = "mlflow" },
     { name = "pandas" },
 ]
+inference = [
+    { name = "mlflow" },
+]
 mlflow-server = [
     { name = "boto3" },
     { name = "mlflow" },
@@ -1473,6 +1476,7 @@ experiments = [
     { name = "mlflow", specifier = ">=3.5,<4" },
     { name = "pandas", specifier = ">=2.2" },
 ]
+inference = [{ name = "mlflow", specifier = ">=3.5,<4" }]
 mlflow-server = [
     { name = "boto3", specifier = ">=1.43.103" },
     { name = "mlflow", specifier = ">=3.5,<4" },

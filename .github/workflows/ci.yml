@@ -21,7 +21,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --frozen --group experiments --group rl-cpu
+        run: uv sync --frozen --group experiments --group rl-cpu --group inference
 
       - name: Lint
         run: uv run --no-sync ruff check .
@@ -35,7 +35,14 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     needs: checks
+    strategy:
+      matrix:
+        include:
+          - image: hexrl-platform
+            dockerfile: Dockerfile
+          - image: hexrl-inference
+            dockerfile: Dockerfile.inference
     steps:
       - uses: actions/checkout@v4
-      - name: Build image
-        run: docker build -t hexrl-platform:ci .
+      - name: Build ${{ matrix.image }} image
+        run: docker build -f ${{ matrix.dockerfile }} -t ${{ matrix.image }}:ci .

@@ -193,8 +193,10 @@ def register_study(
         model_version = ensure_registered(
             client, registry.model_name, candidate, model_uri, study.name
         )
-        verify_version(registry.model_name, model_version.version)
-        versions[candidate.run_id] = model_version.version
+        # MLflow returns version numbers as int or str depending on the call
+        version = str(model_version.version)
+        verify_version(registry.model_name, version)
+        versions[candidate.run_id] = version
 
     champion = choose_champion(selected, registry.tie_tolerance)
     champion_version = versions[champion.run_id]

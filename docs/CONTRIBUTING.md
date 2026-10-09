@@ -53,5 +53,6 @@ uv run pytest
 
 1. Поднять версию в `pyproject.toml` отдельным коммитом: `chore: bump version to X.Y.Z`.
 2. После слияния в `main` поставить тег `vX.Y.Z` на `main`.
-3. По тегу CD собирает и публикует Docker-образ. Тег должен совпадать с версией в
-   `pyproject.toml`, иначе сборка остановится.
+3. По тегу CD собирает и публикует два Docker-образа: приложение
+   (`ghcr.io/<repo>`) и inference-сервис (`ghcr.io/<repo>-inference`). Тег должен
+   совпадать с версией в `pyproject.toml`, иначе сборка остановится.

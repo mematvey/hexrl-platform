@@ -21,7 +21,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --frozen --group experiments --group rl-cpu
+        run: uv sync --frozen --group experiments --group rl-cpu --group inference
 
       - name: Lint
         run: uv run --no-sync ruff check .

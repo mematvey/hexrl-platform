@@ -150,6 +150,36 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    env_file: .env
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      INFERENCE_PORT: "8001"
+    ports:
+      - "127.0.0.1:${INFERENCE_PORT:-8001}:8001"
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      artifact-store:
+        condition: service_healthy
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8001/healthz', timeout=2)" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 2G }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+
 volumes:
   pgdata:
   mlflow-pgdata:

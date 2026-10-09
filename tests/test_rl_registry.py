@@ -119,14 +119,14 @@ def test_registration_creates_one_version_per_variant_linked_to_runs(registered)
     assert len(versions) == 2
     assert {version.tags["variant"] for version in versions} == {"dqn-a", "dqn-b"}
     for version in versions:
-        assert result.versions[version.run_id] == version.version
+        assert result.versions[version.run_id] == str(version.version)
         assert PACKAGED_MODEL_TAG in client.get_run(version.run_id).data.tags
 
 
 def test_alias_points_to_champion_and_loads_by_uri(registered):
     client, _, result, _, _ = registered
     by_alias = client.get_model_version_by_alias("nav-test", "champion")
-    assert by_alias.version == result.champion_version
+    assert str(by_alias.version) == result.champion_version
     assert by_alias.run_id == result.champion.run_id
     model = mlflow.pyfunc.load_model("models:/nav-test@champion")
     row = {"q": 2, "r": 0, "goal_q": 0, "goal_r": 0, "steps_remaining": 5}

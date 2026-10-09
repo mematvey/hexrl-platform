@@ -43,6 +43,38 @@ mlflow-server = [
     "mlflow>=3.5,<4",
     "psycopg2-binary>=2.9.13",
 ]
+rl = [
+    "gymnasium>=1.2",
+    "stable-baselines3>=2.7",
+]
+# torch comes from exactly one of these groups: CPU wheels or CUDA 12.8 wheels
+rl-cpu = [
+    { include-group = "rl" },
+    "torch>=2.8",
+]
+rl-cuda = [
+    { include-group = "rl" },
+    "torch>=2.8",
+]
+
+[tool.uv]
+conflicts = [[{ group = "rl-cpu" }, { group = "rl-cuda" }]]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", group = "rl-cpu" },
+    { index = "pytorch-cu128", group = "rl-cuda" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 
 [tool.pytest.ini_options]

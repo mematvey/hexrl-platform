@@ -102,7 +102,11 @@ class TaskRepository:
     async def mark_failed(self, task_id: UUID, error: str, attempts: int) -> None:
         await self._session.execute(
             update(InferenceTask)
-            .where(InferenceTask.task_id == task_id)
+            .where(
+                InferenceTask.task_id == task_id,
+                # успевшая завершиться доставка важнее: её результат уже записан
+                InferenceTask.status != TaskStatus.COMPLETED,
+            )
             .values(
                 status=TaskStatus.FAILED,
                 last_error=error[:ERROR_LIMIT],
@@ -115,7 +119,11 @@ class TaskRepository:
         """Промежуточная неудача: задача вернётся из retry-очереди, статус не финальный."""
         await self._session.execute(
             update(InferenceTask)
-            .where(InferenceTask.task_id == task_id)
+            .where(
+                InferenceTask.task_id == task_id,
+                # успевшая завершиться доставка важнее: её результат уже записан
+                InferenceTask.status != TaskStatus.COMPLETED,
+            )
             .values(
                 status=TaskStatus.ACCEPTED,
                 last_error=error[:ERROR_LIMIT],

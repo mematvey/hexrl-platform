@@ -135,3 +135,25 @@ async def test_api_flow_creates_and_removes_a_pending_task(sessions):
         await repository.delete_pending(message.task_id)
         await session.commit()
         assert await repository.get_status(message.task_id) is None
+
+
+async def test_completed_task_survives_a_failing_duplicate(sessions):
+    """Параллельная доставка упала уже после того, как другая записала результат."""
+    message = make_message()
+    async with sessions() as session:
+        repository = TaskRepository(session)
+        await repository.ensure_task(message)
+        await repository.save_result(message.task_id, PREDICTION, "7")
+        await session.commit()
+
+    async with sessions() as session:
+        repository = TaskRepository(session)
+        await repository.mark_failed(message.task_id, "boom", attempts=3)
+        await repository.record_attempt(message.task_id, attempts=4, error="boom")
+        await session.commit()
+
+    async with sessions() as session:
+        task = await session.get(InferenceTask, message.task_id)
+        # статус и ошибка не должны затереть успешный исход
+        assert task.status is TaskStatus.COMPLETED
+        assert task.last_error is None

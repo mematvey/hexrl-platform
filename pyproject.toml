@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "asyncpg>=0.31.0",
     "fastapi>=0.141.1",
+    "faststream[rabbit]>=0.7.7",
+    "psutil>=7.2.2",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0.54",
@@ -15,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 hexrl-inference = "hexrl_platform.inference.main:main"
+hexrl-batch-source = "hexrl_platform.task_pipeline.batch_source:main"
 hexrl-platform = "hexrl_platform.main:main"
 hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"

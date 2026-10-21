@@ -200,17 +200,21 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
-  inference:
+  worker:
     build:
       context: .
       dockerfile: Dockerfile.inference
     env_file: .env
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5000
+      POSTGRES_HOST: db
+      RABBITMQ_HOST: rabbitmq
       INFERENCE_PORT: "8001"
-    ports:
-      - "127.0.0.1:${INFERENCE_PORT:-8001}:8001"
     depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       mlflow:
         condition: service_healthy
       artifact-store:
@@ -218,6 +222,11 @@ services:
     networks: [ backend ]
     # The app exits when the champion cannot be loaded; retry until it is registered
     restart: on-failure
+    # Longer than the slowest batch in flight (prefetch x delay) plus commits,
+    # otherwise Docker sends SIGKILL before the worker finishes acking
+    stop_grace_period: 40s
+    # No published port on purpose: `docker compose up --scale worker=2` would
+    # collide on it. Probe from inside: docker compose exec worker ...
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8001/healthz', timeout=2)" ]
       interval: 10s

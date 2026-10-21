@@ -1,4 +1,3 @@
-import json
 import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -23,6 +22,7 @@ from hexrl_platform.db.session import create_engine, create_session_factory
 from hexrl_platform.inference.config import InferenceSettings, get_inference_settings
 from hexrl_platform.inference.model_loader import LoadedModel, load_champion
 from hexrl_platform.inference.predict import InvalidStateError, predict_action
+from hexrl_platform.inference.schemas import ModelInfo
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
 from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.retries import decide
@@ -217,16 +217,18 @@ def create_worker_app(
         model = loaded.get("model")
         if model is None:
             return AsgiResponse(b'{"detail": "model is not loaded"}', status_code=503)
-        body = json.dumps(
-            {
-                "name": model.name,
-                "version": model.version,
-                "alias": model.alias,
-                "run_id": model.run_id,
-                "max_steps": model.max_steps,
-            }
-        ).encode()
-        return AsgiResponse(body, status_code=200, headers={"content-type": "application/json"})
+        info = ModelInfo(
+            name=model.name,
+            version=model.version,
+            alias=model.alias,
+            run_id=model.run_id,
+            max_steps=model.max_steps,
+        )
+        return AsgiResponse(
+            info.model_dump_json().encode(),
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
 
     return AsgiFastStream(
         broker,

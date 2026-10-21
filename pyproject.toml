@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 hexrl-inference = "hexrl_platform.inference.main:main"
+hexrl-batch-source = "hexrl_platform.task_pipeline.batch_source:main"
 hexrl-platform = "hexrl_platform.main:main"
 hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"

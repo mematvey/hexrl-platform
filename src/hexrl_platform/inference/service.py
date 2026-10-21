@@ -1,19 +1,15 @@
 import asyncio
 import logging
 
-import pandas as pd
-from mlflow.exceptions import MlflowException
-
 from hexrl_platform.inference.model_loader import LoadedModel
+from hexrl_platform.inference.predict import InvalidStateError, predict_action
 from hexrl_platform.inference.schemas import Direction, ModelInfo, ProcessRequest, ProcessResponse
 from hexrl_platform.rl.hex_grid import DIRECTIONS
-from hexrl_platform.rl.packaging import INPUT_COLUMNS, OUTPUT_COLUMN
+from hexrl_platform.task_pipeline.schemas import HexState
 
 logger = logging.getLogger(__name__)
 
-
-class InvalidStateError(Exception):
-    """Состояние не подходит модели: стена, нецелевая клетка или шаги вне диапазона."""
+__all__ = ["InvalidStateError", "PolicyService"]
 
 
 class PolicyService:
@@ -32,17 +28,16 @@ class PolicyService:
             max_steps=self._loaded.max_steps,
         )
 
-    def _predict(self, request: ProcessRequest) -> int:
-        frame = pd.DataFrame([{column: getattr(request, column) for column in INPUT_COLUMNS}])
-        return int(self._loaded.model.predict(frame)[OUTPUT_COLUMN].iloc[0])
-
     async def process(self, request: ProcessRequest) -> ProcessResponse:
-        try:
-            # torch держит GIL, поэтому уводим инференс из event loop
-            action = await asyncio.to_thread(self._predict, request)
-        except (ValueError, MlflowException) as exc:
-            logger.warning("invalid_state", extra={"error_type": type(exc).__name__})
-            raise InvalidStateError(str(exc)) from exc
+        state = HexState(
+            q=request.q,
+            r=request.r,
+            goal_q=request.goal_q,
+            goal_r=request.goal_r,
+            steps_remaining=request.steps_remaining,
+        )
+        # torch держит GIL, поэтому уводим инференс из event loop
+        action = await asyncio.to_thread(predict_action, self._loaded.model, state)
         step = DIRECTIONS[action]
         return ProcessResponse(
             action=action,

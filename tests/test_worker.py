@@ -1,3 +1,6 @@
+import asyncio
+import threading
+import time
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
@@ -6,6 +9,7 @@ import pandas as pd
 import pytest
 from faststream import TestApp
 from faststream.rabbit import TestRabbitBroker
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -208,6 +212,38 @@ async def test_domain_error_fails_the_task_without_retries(database):
     assert task.status is TaskStatus.FAILED
     assert "walkable" in task.last_error
     assert results == 0
+
+
+async def test_healthz_answers_while_inference_is_running(database):
+    """Пункт 2.3: обработка живёт в потоке, поэтому event loop отвечает на пробу."""
+    inference_started = threading.Event()
+    release = threading.Event()
+
+    class BlockingModel(FakeModel):
+        def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+            inference_started.set()
+            release.wait(timeout=5)
+            return super().predict(data)
+
+    app, _ = build_app(database, BlockingModel())
+    transport = ASGITransport(app=app)
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        task = asyncio.create_task(publish(app, make_message()))
+        await asyncio.to_thread(inference_started.wait, 5)
+
+        async with AsyncClient(transport=transport, base_url="http://worker") as client:
+            started = time.perf_counter()
+            response = await client.get("/healthz")
+            elapsed = time.perf_counter() - started
+
+        release.set()
+        await task
+
+    # make_ping_asgi отвечает 204 на живой брокер; healthcheck в compose смотрит на 2xx
+    assert response.status_code == 204
+    # проба не ждала конца inference
+    assert elapsed < 1.0
 
 
 async def test_last_attempt_goes_to_the_dlq(database):

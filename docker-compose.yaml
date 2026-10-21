@@ -150,6 +150,30 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
+  rabbitmq:
+    image: rabbitmq:4.3.6-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
   inference:
     build:
       context: .
@@ -182,6 +206,7 @@ services:
       options: { max-size: "10m", max-file: "3" }
 
 volumes:
+  rabbitmq-data:
   pgdata:
   mlflow-pgdata:
   mlflow-artifacts:

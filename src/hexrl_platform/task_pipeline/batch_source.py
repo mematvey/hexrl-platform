@@ -132,18 +132,19 @@ class MetricsWriter:
         try:
             while True:
                 await asyncio.sleep(self._interval_s)
-                await asyncio.to_thread(self._write_row)
+                await asyncio.to_thread(self._append, self._snapshot())
         finally:
-            await asyncio.to_thread(self._write_row)
+            await asyncio.to_thread(self._append, self._snapshot())
 
     def _write_header(self) -> None:
         if not self._path.exists() or self._path.stat().st_size == 0:
             with self._path.open("w", newline="", encoding="utf-8") as file:
                 csv.writer(file).writerow(METRICS_COLUMNS)
 
-    def _write_row(self) -> None:
+    def _snapshot(self) -> tuple[str | int, ...]:
+        # снимок берём в event loop: счётчики меняются там же, из потока они читались бы вразнобой
         stats = self._stats
-        row = (
+        return (
             datetime.now(UTC).isoformat(timespec="milliseconds"),
             f"{time.monotonic() - self._started:.3f}",
             stats.lines_read,
@@ -154,6 +155,8 @@ class MetricsWriter:
             f"{stats.wait_s_total:.3f}",
             f"{self._process.memory_info().rss / 1024 / 1024:.1f}",
         )
+
+    def _append(self, row: tuple[str | int, ...]) -> None:
         with self._path.open("a", newline="", encoding="utf-8") as file:
             csv.writer(file).writerow(row)
 

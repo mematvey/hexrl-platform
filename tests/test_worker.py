@@ -179,6 +179,34 @@ async def test_repeated_delivery_keeps_a_single_result(database):
     assert task.status is TaskStatus.COMPLETED
 
 
+async def test_duplicate_delivery_does_not_run_inference_again(database):
+    """Повтор уже посчитанной задачи не доходит до модели: статус проверяется заранее."""
+    model = FakeModel(action=4)
+    app, _ = build_app(database, model)
+    message = make_message()
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, message)
+        await publish(app, message)
+
+    assert model.calls == 1
+
+
+async def test_model_endpoint_reports_the_loaded_version(database):
+    app, _ = build_app(database, FakeModel())
+    transport = ASGITransport(app=app)
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        async with AsyncClient(transport=transport, base_url="http://worker") as client:
+            response = await client.get("/model")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["version"] == MODEL_VERSION
+    assert body["alias"] == "champion"
+    assert body["max_steps"] == 50
+
+
 async def test_invalid_message_goes_to_the_dlq_and_worker_survives(database):
     model = FakeModel()
     app, _ = build_app(database, model)

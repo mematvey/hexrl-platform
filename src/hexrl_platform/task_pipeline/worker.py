@@ -1,6 +1,6 @@
 import logging
 from collections.abc import AsyncIterator, Callable
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
 from functools import partial
 from typing import Annotated
@@ -174,42 +174,45 @@ def create_worker_app(
     async def lifespan(context: ContextRepo) -> AsyncIterator[None]:
         await declare_topology(broker, topology)
 
-        engine = engine_factory() if engine_factory is not None else create_engine(core.db_dsn)
-        await create_schema(engine)
+        # разборка идёт в обратном порядке: контекст -> потоки -> соединения с БД,
+        # и срабатывает даже если модель не загрузилась
+        async with AsyncExitStack() as stack:
+            engine = engine_factory() if engine_factory is not None else create_engine(core.db_dsn)
+            stack.push_async_callback(engine.dispose)
+            await create_schema(engine)
 
-        limit_torch_threads()
-        # один раз на процесс и до приёма сообщений: из обработчика грузить нельзя
-        model = loader(inference)
-        loaded["model"] = model
-        logger.info(
-            "model_loaded",
-            extra={"component": model.name, "component_version": model.version},
-        )
+            limit_torch_threads()
+            # один раз на процесс и до приёма сообщений: из обработчика грузить нельзя
+            model = loader(inference)
+            loaded["model"] = model
+            logger.info(
+                "model_loaded",
+                extra={"component": model.name, "component_version": model.version},
+            )
 
-        runner = InferenceRunner(
-            partial(predict_action, model.model),
-            pipeline.worker_concurrency,
-            pipeline.inference_delay_s,
-        )
-        context.set_global(
-            WORKER_KEY,
-            WorkerState(
-                broker=broker,
-                topology=topology,
-                model=model,
-                runner=runner,
-                sessions=create_session_factory(engine),
-                max_deliveries=pipeline.max_deliveries,
-            ),
-        )
-        try:
+            runner = InferenceRunner(
+                partial(predict_action, model.model),
+                pipeline.worker_concurrency,
+                pipeline.inference_delay_s,
+            )
+            stack.callback(runner.shutdown)
+
+            context.set_global(
+                WORKER_KEY,
+                WorkerState(
+                    broker=broker,
+                    topology=topology,
+                    model=model,
+                    runner=runner,
+                    sessions=create_session_factory(engine),
+                    max_deliveries=pipeline.max_deliveries,
+                ),
+            )
+            stack.callback(context.reset_global, WORKER_KEY)
+
+            # сюда возвращаемся после остановки брокера, то есть когда задачи доработали
             yield
-        finally:
-            # сюда попадаем после остановки брокера, то есть когда задачи доработали
-            runner.shutdown()
-            await engine.dispose()
-            context.reset_global(WORKER_KEY)
-            logger.info("worker_stopped")
+        logger.info("worker_stopped")
 
     @get
     async def model_route(scope: Scope) -> AsgiResponse:

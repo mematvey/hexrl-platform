@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -6,9 +7,11 @@ import pandas as pd
 import pytest
 from faststream import TestApp
 from faststream.rabbit import RabbitBroker
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.rabbitmq import RabbitMqContainer
 
+from hexrl_platform.db.models import InferenceTask
 from hexrl_platform.inference.model_loader import LoadedModel
 from hexrl_platform.inference.predict import PredictModel
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
@@ -129,5 +132,63 @@ async def test_worker_retries_three_times_then_confirms_the_dlq(
                 assert model.calls == 3
                 await dead.ack()
     finally:
+        await engine.dispose()
+        get_pipeline_settings.cache_clear()
+
+
+async def test_real_worker_never_buffers_more_than_its_prefetch(
+    rabbitmq_url, tmp_path, monkeypatch
+):
+    entered = threading.Event()
+    release = threading.Event()
+
+    class BlockingModel(PredictModel):
+        def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+            entered.set()
+            if not release.wait(timeout=15):
+                raise TimeoutError("test did not release inference")
+            return pd.DataFrame({"action": [2] * len(data)})
+
+    address = urlsplit(rabbitmq_url)
+    prefix = f"prefetch-test.{uuid4().hex}"
+    for key, value in {
+        "RABBITMQ_USER": "retry-test",
+        "RABBITMQ_PASSWORD": "retry-test",
+        "RABBITMQ_HOST": address.hostname,
+        "RABBITMQ_PORT": str(address.port),
+        "QUEUE_PREFIX": prefix,
+        "INFERENCE_DELAY_S": "0",
+        "PREFETCH_COUNT": "2",
+        "WORKER_CONCURRENCY": "2",
+    }.items():
+        monkeypatch.setenv(key, value)
+    get_pipeline_settings.cache_clear()
+    engine = create_async_engine(f"sqlite+aiosqlite:///{(tmp_path / 'prefetch.db').as_posix()}")
+    model = LoadedModel(BlockingModel(), "test-policy", "champion", "1", "test-run", 20)
+    app = create_worker_app(loader=lambda _: model, engine_factory=lambda: engine)
+    assert isinstance(app.broker, RabbitBroker)
+    topology = build_topology(prefix, 20, 5000)
+    try:
+        async with TestApp(app):
+            publisher = TaskPublisher(app.broker, topology, 1)
+            for _ in range(10):
+                await publisher.publish(
+                    TaskMessage(
+                        task_id=uuid4(),
+                        payload=HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20),
+                    )
+                )
+            assert await asyncio.to_thread(entered.wait, 5)
+            # Даём брокеру время доставить лишние сообщения, если QoS сломан.
+            await asyncio.sleep(0.3)
+            queue = await app.broker.declare_queue(topology.tasks_queue)
+            await queue.declare()
+            assert queue.declaration_result.message_count == 8
+            sessions = async_sessionmaker(engine)
+            async with sessions() as session:
+                assert await session.scalar(select(func.count()).select_from(InferenceTask)) == 2
+            release.set()
+    finally:
+        release.set()
         await engine.dispose()
         get_pipeline_settings.cache_clear()

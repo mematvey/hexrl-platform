@@ -213,6 +213,29 @@ uv run hexrl-register --config configs/navigation-dqn-maze.toml
 
 ## Inference-воркер
 
+Публичный интерфейс теперь асинхронный: `POST /api/v1/tasks` принимает состояние,
+а `GET /api/v1/tasks/{task_id}` возвращает статус и результат. Старого `POST /process`
+нет. Приложение не загружает модель и не выполняет inference само.
+
+```bash
+docker compose up -d --build app worker
+curl -i -X POST http://localhost:8000/api/v1/tasks -H "Content-Type: application/json" -d '{"q":0,"r":0,"goal_q":2,"goal_r":-1,"steps_remaining":20}'
+```
+
+Успех — `202` с `task_id`, `status: ACCEPTED` и `status_url`. Повторять GET по
+`status_url` до `COMPLETED` или `FAILED`. У завершённой задачи `result` содержит
+`action`, имя и версию модели, время inference и искусственной задержки. `202`
+означает приём, а не завершение. При перегрузке приходит быстрый `503` с
+`Retry-After`: клиент решает, повторять ли запрос, и выдерживает паузу с jitter.
+
+API проверяет форму запроса (`422`). Координаты вне карты, стены или совпадение
+старта с целью проверяет модель в воркере: такой запрос сначала получает `202`,
+затем задача становится `FAILED` с `last_error`, а сообщение попадает в DLQ.
+Неизвестный UUID в GET даёт `404`, некорректная запись UUID — `422`.
+
+Схема потока, восстановление после ошибок, команды опытов A–D и измерения:
+[отчёт по backpressure](docs/backpressure/README.md).
+
 Обученную модель обслуживает не HTTP-ручка, а воркер очереди: задачи приходят из
 RabbitMQ, результат ложится в Postgres. HTTP у воркера остался только служебный —
 проба живости и версия модели.

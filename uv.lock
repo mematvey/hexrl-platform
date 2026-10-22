@@ -1474,6 +1474,7 @@ name = "hexrl-platform"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anyio" },
     { name = "asyncpg" },
     { name = "fastapi" },
     { name = "faststream", extra = ["rabbit"] },
@@ -1528,6 +1529,7 @@ rl-cuda = [
 
 [package.metadata]
 requires-dist = [
+    { name = "anyio", specifier = ">=4.15,<5" },
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "fastapi", specifier = ">=0.141.1" },
     { name = "faststream", extras = ["rabbit"], specifier = ">=0.7.7" },

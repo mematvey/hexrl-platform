@@ -1,9 +1,9 @@
 import asyncio
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from hexrl_platform.db.models import InferenceResult, InferenceTask
@@ -157,3 +157,41 @@ async def test_completed_task_survives_a_failing_duplicate(sessions):
         # статус и ошибка не должны затереть успешный исход
         assert task.status is TaskStatus.COMPLETED
         assert task.last_error is None
+
+
+async def test_stale_cleanup_preserves_new_and_already_accepted_tasks(sessions):
+    stale, fresh, accepted = make_message(), make_message(), make_message()
+    async with sessions() as session:
+        repository = TaskRepository(session)
+        for message in (stale, fresh, accepted):
+            await repository.create_pending(message)
+        await repository.mark_accepted(accepted.task_id)
+        await session.execute(
+            update(InferenceTask)
+            .where(InferenceTask.task_id.in_([stale.task_id, accepted.task_id]))
+            .values(created_at=datetime.now(UTC) - timedelta(minutes=5))
+        )
+        await session.commit()
+        assert await repository.delete_stale_pending(timedelta(minutes=1)) == 1
+        await session.commit()
+        assert await repository.get(stale.task_id) is None
+        fresh_view = await repository.get(fresh.task_id)
+        accepted_view = await repository.get(accepted.task_id)
+        assert fresh_view is not None and fresh_view.status is TaskStatus.PENDING
+        assert accepted_view is not None and accepted_view.status is TaskStatus.ACCEPTED
+
+
+async def test_get_includes_the_original_model_and_result(sessions):
+    message = make_message()
+    async with sessions() as session:
+        repository = TaskRepository(session)
+        await repository.ensure_task(message)
+        await repository.save_result(message.task_id, PREDICTION, "7", model_name="original")
+        await session.commit()
+        await repository.save_result(message.task_id, PREDICTION, "8", model_name="replacement")
+        await session.commit()
+        task = await repository.get(message.task_id)
+        assert task is not None and task.result is not None
+        assert task.result.model_name == "original"
+        assert task.result.model_version == "7"
+        assert task.completed_at == task.result.completed_at

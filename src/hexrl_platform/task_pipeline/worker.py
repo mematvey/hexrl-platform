@@ -164,7 +164,9 @@ async def _process_task(message: RabbitMessage, state: Worker) -> None:
         return
 
     async with state.sessions() as session:
-        await TaskRepository(session).save_result(task.task_id, prediction, state.model.version)
+        await TaskRepository(session).save_result(
+            task.task_id, prediction, state.model.version, model_name=state.model.name
+        )
         await session.commit()
 
     # ack строго после commit: падение между ними даёт повторную доставку,
@@ -182,14 +184,19 @@ def create_worker_app(
     configure_logging(core.log_level)
 
     graceful_timeout = pipeline.prefetch_count * pipeline.inference_delay_s + GRACE_MARGIN_S
-    broker = RabbitBroker(pipeline.rabbitmq_url, graceful_timeout=graceful_timeout)
+    # Топология объявляется до subscriber: FastStream кэширует очередь вместе с
+    # каналом первого объявления. Поэтому QoS нужен уже у default_channel.
+    channel = Channel(prefetch_count=pipeline.prefetch_count)
+    broker = RabbitBroker(
+        pipeline.rabbitmq_url, graceful_timeout=graceful_timeout, default_channel=channel
+    )
     topology = build_topology(
         pipeline.queue_prefix, pipeline.queue_max_length, pipeline.retry_delay_ms
     )
     broker.subscriber(
         topology.tasks_queue,
         topology.tasks_exchange,
-        channel=Channel(prefetch_count=pipeline.prefetch_count),
+        channel=channel,
         # MANUAL: подтверждаем сами и строго после commit
         ack_policy=AckPolicy.MANUAL,
     )(handle_task)

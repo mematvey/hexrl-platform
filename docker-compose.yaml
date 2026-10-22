@@ -22,14 +22,19 @@ services:
 
   app:
     build: .
-    env_file: .env
+    env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+      APP_PORT: "8000"
     ports:
       - "${APP_PORT:-8000}:8000"
     depends_on:
       db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks: [ backend ]
     healthcheck:
@@ -179,9 +184,10 @@ services:
   batch-source:
     build: .
     profiles: [ batch ]
-    env_file: .env
+    env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
       RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
     command:
       - hexrl-batch-source
       - --file
@@ -206,11 +212,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.inference
-    env_file: .env
+    env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5000
       POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
       RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
       INFERENCE_PORT: "8001"
     depends_on:
       db:

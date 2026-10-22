@@ -1,0 +1,7 @@
+{
+  "method": "Host perf_counter around docker compose exec worker python: perf_counter; sleep(10); perf_counter",
+  "host_elapsed_s_including_exec": 9.556025099998806,
+  "worker_elapsed_s": 10.051915349999945,
+  "worker_wall_start_epoch": 1792693965.627859,
+  "interpretation": "Docker VM and Windows timing disagree; benchmark rates are reported in host observer seconds without rescaling. This single probe includes exec overhead and is not a calibrated clock-frequency measurement."
+}

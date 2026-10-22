@@ -7,11 +7,13 @@ os.environ.setdefault("RABBITMQ_USER", "test")
 os.environ.setdefault("RABBITMQ_PASSWORD", "test")
 
 from collections.abc import AsyncIterator
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
+from hexrl_platform import main as main_module
 from hexrl_platform.db.session import get_session
 from hexrl_platform.main import create_app
 
@@ -38,7 +40,12 @@ class FakeSession:
 
 
 @pytest.fixture
-def app() -> FastAPI:
+def app(monkeypatch) -> FastAPI:
+    # Lifespan проверяем без внешних сервисов; реальные подключения покрыты integration.
+    monkeypatch.setattr(main_module, "create_schema", AsyncMock())
+    monkeypatch.setattr(main_module, "cleanup_pending", AsyncMock(return_value=0))
+    monkeypatch.setattr(main_module, "declare_topology", AsyncMock())
+    monkeypatch.setattr(main_module, "RabbitBroker", lambda _: AsyncMock())
     return create_app()
 
 

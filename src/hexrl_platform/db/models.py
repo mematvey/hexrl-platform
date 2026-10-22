@@ -45,6 +45,8 @@ class InferenceResult(Base):
         Uuid, ForeignKey("inference_tasks.task_id", ondelete="CASCADE"), primary_key=True
     )
     action: Mapped[int] = mapped_column(Integer)
+    # У старых записей имя неизвестно: не подставляем текущую модель задним числом.
+    model_name: Mapped[str | None] = mapped_column(String(256))
     # champion мог смениться между перезапусками: результат должен знать, кем он посчитан
     model_version: Mapped[str] = mapped_column(String(64))
     inference_ms: Mapped[float] = mapped_column(Float)

@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
@@ -10,7 +10,14 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hexrl_platform.db.models import InferenceResult, InferenceTask
-from hexrl_platform.task_pipeline.schemas import Prediction, TaskMessage, TaskStatus
+from hexrl_platform.task_pipeline.schemas import (
+    HexState,
+    Prediction,
+    TaskMessage,
+    TaskResultView,
+    TaskStatus,
+    TaskView,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +46,55 @@ class TaskRepository:
             select(InferenceTask.status).where(InferenceTask.task_id == task_id)
         )
 
+    async def get(self, task_id: UUID) -> TaskView | None:
+        row = (
+            await self._session.execute(
+                select(InferenceTask, InferenceResult)
+                .outerjoin(InferenceResult, InferenceResult.task_id == InferenceTask.task_id)
+                .where(InferenceTask.task_id == task_id)
+            )
+        ).one_or_none()
+        if row is None:
+            return None
+        task, result = row
+        completed_at = result.created_at if result is not None else None
+        if task.status is TaskStatus.FAILED:
+            completed_at = task.updated_at
+        return TaskView(
+            task_id=task.task_id,
+            batch_id=task.batch_id,
+            status=task.status,
+            payload=HexState.model_validate(task.payload),
+            attempts=task.attempts,
+            submitted_at=task.submitted_at,
+            created_at=task.created_at,
+            completed_at=completed_at,
+            last_error=task.last_error,
+            result=TaskResultView(
+                action=result.action,
+                model_name=result.model_name,
+                model_version=result.model_version,
+                inference_ms=result.inference_ms,
+                delay_ms=result.delay_ms,
+                completed_at=result.created_at,
+            )
+            if result is not None
+            else None,
+        )
+
+    async def delete_stale_pending(self, older_than: timedelta) -> int:
+        if older_than <= timedelta(0):
+            raise ValueError("older_than must be positive")
+        result = await self._session.execute(
+            delete(InferenceTask)
+            .where(
+                InferenceTask.status == TaskStatus.PENDING,
+                InferenceTask.created_at < datetime.now(UTC) - older_than,
+            )
+            .returning(InferenceTask.task_id)
+        )
+        return len(result.all())
+
     async def ensure_task(self, message: TaskMessage) -> None:
         # API мог ответить 503 с неопределённым исходом, а сообщение всё же доехало
         await self._insert_task(message, TaskStatus.ACCEPTED)
@@ -49,7 +105,14 @@ class TaskRepository:
     async def mark_processing(self, task_id: UUID) -> None:
         await self._update_unless_completed(task_id, {"status": TaskStatus.PROCESSING})
 
-    async def save_result(self, task_id: UUID, prediction: Prediction, model_version: str) -> bool:
+    async def save_result(
+        self,
+        task_id: UUID,
+        prediction: Prediction,
+        model_version: str,
+        *,
+        model_name: str | None = None,
+    ) -> bool:
         """False, если результат уже был: повтор не должен переписывать чужой результат"""
         statement = (
             self._insert(InferenceResult)
@@ -57,6 +120,7 @@ class TaskRepository:
                 task_id=task_id,
                 action=prediction.action,
                 model_version=model_version,
+                model_name=model_name,
                 inference_ms=prediction.inference_ms,
                 delay_ms=prediction.delay_ms,
             )

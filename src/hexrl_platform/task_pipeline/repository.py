@@ -24,7 +24,7 @@ _DIALECT_INSERTS: dict[str, Callable[..., Any]] = {
 
 
 class TaskRepository:
-    """Операции с БД. Транзакцией управляет вызывающий: commit делает воркер перед ack."""
+    """Транзакцией управляет вызывающий: commit делает воркер перед ack"""
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
@@ -40,42 +40,17 @@ class TaskRepository:
         )
 
     async def ensure_task(self, message: TaskMessage) -> None:
-        """Создаёт строку, если её нет.
+        # API мог ответить 503 с неопределённым исходом, а сообщение всё же доехало
+        await self._insert_task(message, TaskStatus.ACCEPTED)
 
-        API мог ответить 503 с неопределённым исходом (publish прошёл, запись - нет),
-        а сообщение всё же доехало. Падать в этом случае нельзя: задача настоящая.
-        """
-        statement = (
-            self._insert(InferenceTask)
-            .values(
-                task_id=message.task_id,
-                batch_id=message.batch_id,
-                status=TaskStatus.ACCEPTED,
-                payload=message.payload.model_dump(),
-                submitted_at=message.submitted_at,
-            )
-            .on_conflict_do_nothing(index_elements=[InferenceTask.task_id])
-        )
-        await self._session.execute(statement)
+    async def create_pending(self, message: TaskMessage) -> None:
+        await self._insert_task(message, TaskStatus.PENDING)
 
     async def mark_processing(self, task_id: UUID) -> None:
-        await self._session.execute(
-            update(InferenceTask)
-            .where(
-                InferenceTask.task_id == task_id,
-                InferenceTask.status != TaskStatus.COMPLETED,
-            )
-            .values(status=TaskStatus.PROCESSING, updated_at=datetime.now(UTC))
-        )
+        await self._update_unless_completed(task_id, {"status": TaskStatus.PROCESSING})
 
     async def save_result(self, task_id: UUID, prediction: Prediction, model_version: str) -> bool:
-        """Атомарно пишет результат и переводит задачу в COMPLETED.
-
-        Возвращает False, если результат уже существовал: повторная доставка не должна
-        переписывать чужой результат, в том числе посчитанный другой версией модели.
-        Защита - уникальный ключ в БД, а не предварительная проверка: две конкурентные
-        доставки обе увидели бы "результата нет".
-        """
+        """False, если результат уже был: повтор не должен переписывать чужой результат"""
         statement = (
             self._insert(InferenceResult)
             .values(
@@ -100,54 +75,21 @@ class TaskRepository:
         return inserted
 
     async def mark_failed(self, task_id: UUID, error: str, attempts: int) -> None:
-        await self._session.execute(
-            update(InferenceTask)
-            .where(
-                InferenceTask.task_id == task_id,
-                # успевшая завершиться доставка важнее: её результат уже записан
-                InferenceTask.status != TaskStatus.COMPLETED,
-            )
-            .values(
-                status=TaskStatus.FAILED,
-                last_error=error[:ERROR_LIMIT],
-                attempts=attempts,
-                updated_at=datetime.now(UTC),
-            )
+        await self._update_unless_completed(
+            task_id,
+            {"status": TaskStatus.FAILED, "last_error": error[:ERROR_LIMIT], "attempts": attempts},
         )
 
     async def record_attempt(self, task_id: UUID, attempts: int, error: str) -> None:
-        """Промежуточная неудача: задача вернётся из retry-очереди, статус не финальный."""
-        await self._session.execute(
-            update(InferenceTask)
-            .where(
-                InferenceTask.task_id == task_id,
-                # успевшая завершиться доставка важнее: её результат уже записан
-                InferenceTask.status != TaskStatus.COMPLETED,
-            )
-            .values(
-                status=TaskStatus.ACCEPTED,
-                last_error=error[:ERROR_LIMIT],
-                attempts=attempts,
-                updated_at=datetime.now(UTC),
-            )
+        # промежуточная неудача: задача вернётся из retry-очереди, статус не финальный
+        await self._update_unless_completed(
+            task_id,
+            {
+                "status": TaskStatus.ACCEPTED,
+                "last_error": error[:ERROR_LIMIT],
+                "attempts": attempts,
+            },
         )
-
-    # --- для Части 3 (API) -------------------------------------------------
-
-    async def create_pending(self, message: TaskMessage) -> None:
-        """PENDING живёт только между INSERT и ответом брокера."""
-        statement = (
-            self._insert(InferenceTask)
-            .values(
-                task_id=message.task_id,
-                batch_id=message.batch_id,
-                status=TaskStatus.PENDING,
-                payload=message.payload.model_dump(),
-                submitted_at=message.submitted_at,
-            )
-            .on_conflict_do_nothing(index_elements=[InferenceTask.task_id])
-        )
-        await self._session.execute(statement)
 
     async def mark_accepted(self, task_id: UUID) -> None:
         await self._session.execute(
@@ -157,10 +99,34 @@ class TaskRepository:
         )
 
     async def delete_pending(self, task_id: UUID) -> None:
-        """Брокер отказал в публикации: строка PENDING не должна остаться висеть."""
         await self._session.execute(
             delete(InferenceTask).where(
                 InferenceTask.task_id == task_id,
                 InferenceTask.status == TaskStatus.PENDING,
             )
+        )
+
+    async def _insert_task(self, message: TaskMessage, status: TaskStatus) -> None:
+        statement = (
+            self._insert(InferenceTask)
+            .values(
+                task_id=message.task_id,
+                batch_id=message.batch_id,
+                status=status,
+                payload=message.payload.model_dump(),
+                submitted_at=message.submitted_at,
+            )
+            .on_conflict_do_nothing(index_elements=[InferenceTask.task_id])
+        )
+        await self._session.execute(statement)
+
+    async def _update_unless_completed(self, task_id: UUID, values: dict[str, Any]) -> None:
+        # успевшая завершиться доставка важнее: её результат уже записан
+        await self._session.execute(
+            update(InferenceTask)
+            .where(
+                InferenceTask.task_id == task_id,
+                InferenceTask.status != TaskStatus.COMPLETED,
+            )
+            .values(updated_at=datetime.now(UTC), **values)
         )

@@ -15,12 +15,7 @@ class RetryDecision:
 
 
 def attempt_number(headers: Mapping[str, Any], queue_name: str) -> int:
-    """Номер текущей попытки по заголовку x-death.
-
-    Счётчик живёт в самом сообщении, а не в памяти воркера: после рестарта
-    (или при нескольких репликах) память обнулилась бы и лимит перестал работать.
-    RabbitMQ ведёт по записи на очередь, нас интересует основная.
-    """
+    # счётчик живёт в самом сообщении (x-death), а не в памяти воркера: она не переживёт рестарт
     deaths = headers.get("x-death")
     if not isinstance(deaths, Sequence) or isinstance(deaths, str | bytes):
         return 1
@@ -33,13 +28,7 @@ def attempt_number(headers: Mapping[str, Any], queue_name: str) -> int:
 def decide(
     *, headers: Mapping[str, Any], queue_name: str, max_deliveries: int, permanent: bool
 ) -> RetryDecision:
-    """Повторять или отправлять в DLQ.
-
-    Постоянные ошибки (невалидное сообщение, состояние вне карты модели) не станут
-    валидными от повтора - они уходят в DLQ сразу. Временные получают
-    max_deliveries попыток, после чего тоже уходят в DLQ: бесконечный requeue
-    на "ядовитом" сообщении крутился бы вечно.
-    """
+    # постоянная ошибка не станет другой от повтора; временной даём max_deliveries попыток
     attempt = attempt_number(headers, queue_name)
     if permanent:
         return RetryDecision(attempt=attempt, retry=False, reason=PERMANENT_REASON)

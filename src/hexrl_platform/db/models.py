@@ -17,8 +17,6 @@ def _utcnow() -> datetime:
 
 
 class InferenceTask(Base):
-    """Жизненный цикл задачи: её создаёт API или, если сообщение обогнало API, воркер."""
-
     __tablename__ = "inference_tasks"
 
     task_id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
@@ -40,8 +38,7 @@ class InferenceTask(Base):
 
 
 class InferenceResult(Base):
-    """Ровно одна строка на задачу: первичный ключ по task_id и есть ключ идемпотентности."""
-
+    # первичный ключ по task_id и есть ключ идемпотентности: на задачу ровно один результат
     __tablename__ = "inference_results"
 
     task_id: Mapped[UUID] = mapped_column(

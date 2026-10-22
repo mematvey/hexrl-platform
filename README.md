@@ -249,9 +249,9 @@ docker compose exec worker python -c "import urllib.request as u; print(u.urlope
 
 Разбор того, чем этот подход плох (рассинхрон Registry и процесса, расхождение реплик,
 простой на перезапуске, отсутствие проверки на трафике) и как делать лучше
-(blue-green, canary, пин версии вместо плавающего alias) — в
-[docs/backpressure/worker.md](docs/backpressure/worker.md) вместе с обоснованиями
-`ack_policy`, идемпотентности и политики повторов.
+(blue-green, canary, пин версии вместо плавающего alias) нужно учитывать при
+развёртывании нескольких реплик. Подробности подтверждений и безопасных повторов:
+[docs/backpressure/README.md](docs/backpressure/README.md).
 
 ## Эндпоинты
 

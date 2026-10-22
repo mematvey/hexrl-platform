@@ -73,6 +73,14 @@ def test_topology_unbounded_queue_has_no_limit():
     assert "x-overflow" not in args
 
 
+def test_retry_uses_confirmed_dead_lettering_to_the_classic_tasks_queue():
+    topology = make_topology()
+    assert topology.tasks_queue.arguments["x-queue-type"] == "classic"
+    assert topology.retry_queue.arguments["x-queue-type"] == "quorum"
+    assert topology.retry_queue.arguments["x-dead-letter-strategy"] == "at-least-once"
+    assert topology.retry_queue.arguments["x-overflow"] == "reject-publish"
+
+
 def test_topology_default_names_match_contract():
     topology = make_topology()
     assert topology.tasks_queue.name == "hexrl.inference.tasks"

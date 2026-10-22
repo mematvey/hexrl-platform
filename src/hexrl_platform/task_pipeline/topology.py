@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
-from faststream.rabbit.schemas.queue import ClassicQueueArgs
+from faststream.rabbit.schemas.queue import ClassicQueueArgs, QueueType
 
 TASKS_EXCHANGE = "hexrl.inference"
 DLX_EXCHANGE = "hexrl.inference.dlx"
@@ -49,10 +49,13 @@ def build_topology(queue_prefix: str, max_length: int | None, retry_delay_ms: in
     tasks_queue = RabbitQueue(tasks_name, durable=True, arguments=tasks_arguments)
     retry_queue = RabbitQueue(
         retry_name,
+        queue_type=QueueType.QUORUM,
         durable=True,
         arguments={
-            # очередь без consumers: сообщение лежит TTL (это и есть задержка между
-            # попытками) и отправляется обратно в основную очередь через dead-letter
+            # При полной основной очереди истёкшее сообщение остаётся в retry до confirm.
+            # Обычный classic DLX удалил бы его до подтверждения пересылки.
+            "x-dead-letter-strategy": "at-least-once",
+            "x-overflow": "reject-publish",
             "x-message-ttl": retry_delay_ms,
             "x-dead-letter-exchange": TASKS_EXCHANGE,
             "x-dead-letter-routing-key": tasks_name,

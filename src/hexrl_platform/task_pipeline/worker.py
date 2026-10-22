@@ -27,7 +27,7 @@ from hexrl_platform.inference.schemas import ModelInfo
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
 from hexrl_platform.task_pipeline.publisher import publish_confirmed
 from hexrl_platform.task_pipeline.repository import TaskRepository
-from hexrl_platform.task_pipeline.retries import decide
+from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER, decide
 from hexrl_platform.task_pipeline.runner import InferenceRunner, limit_torch_threads
 from hexrl_platform.task_pipeline.schemas import TaskMessage, TaskStatus
 from hexrl_platform.task_pipeline.topology import Topology, build_topology, declare_topology
@@ -97,8 +97,18 @@ async def _handle_failure(
         await session.commit()
 
     if decision.retry:
-        # в DLX основной очереди -> retry-очередь -> TTL -> обратно в работу
-        await message.reject()
+        # Classic DLX не подтверждает переход в retry. Сначала гарантируем приём
+        # новой копии брокером, затем закрываем исходную доставку.
+        await publish_confirmed(
+            state.broker,
+            message.body,
+            exchange=state.topology.dlx,
+            routing_key=state.topology.retry_routing_key,
+            timeout_s=state.confirm_timeout_s,
+            headers={**message.headers, ATTEMPT_HEADER: decision.attempt + 1},
+            message_id=str(task.task_id),
+        )
+        await message.ack()
         logger.warning(
             "task_retry_scheduled",
             extra={
@@ -188,11 +198,13 @@ def create_worker_app(
 
     @asynccontextmanager
     async def lifespan(context: ContextRepo) -> AsyncIterator[None]:
-        await declare_topology(broker, topology)
-
         # разборка идёт в обратном порядке: контекст -> потоки -> соединения с БД,
         # и срабатывает даже если модель не загрузилась
         async with AsyncExitStack() as stack:
+            # Lifespan вызывается раньше broker.start: для объявления очередей
+            # соединение уже нужно, а принимать задачи до загрузки модели ещё нельзя.
+            await stack.enter_async_context(broker)
+            await declare_topology(broker, topology)
             engine = engine_factory() if engine_factory is not None else create_engine(core.db_dsn)
             stack.push_async_callback(engine.dispose)
             await create_schema(engine)

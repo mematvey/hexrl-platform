@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 from faststream import TestApp
 from faststream.rabbit import TestRabbitBroker
+from faststream.rabbit.annotations import RabbitMessage as IncomingMessage
 from faststream.rabbit.message import RabbitMessage
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select
@@ -20,6 +21,7 @@ from hexrl_platform.inference.predict import PredictModel
 from hexrl_platform.task_pipeline import worker as worker_module
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
 from hexrl_platform.task_pipeline.repository import TaskRepository
+from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER
 from hexrl_platform.task_pipeline.schemas import HexState, TaskMessage, TaskStatus
 from hexrl_platform.task_pipeline.topology import build_topology
 from hexrl_platform.task_pipeline.worker import create_worker_app
@@ -298,6 +300,12 @@ async def test_last_attempt_goes_to_the_dlq(database):
 async def test_transient_error_is_retried_before_failing(database):
     app, _ = build_app(database, FakeModel(error=RuntimeError("model is busy")))
     message = make_message()
+    topology = topology_for()
+    retried = []
+
+    @app.broker.subscriber(topology.retry_queue, topology.dlx)
+    async def collect_retry(message: IncomingMessage) -> None:
+        retried.append((TaskMessage.model_validate_json(bytes(message.body)), message.headers))
 
     async with TestRabbitBroker(app.broker), TestApp(app):
         await publish(app, message)
@@ -308,6 +316,9 @@ async def test_transient_error_is_retried_before_failing(database):
     assert task.attempts == 1
     assert "busy" in task.last_error
     assert results == 0
+    assert len(retried) == 1
+    assert retried[0][1][ATTEMPT_HEADER] == 2
+    assert retried[0][0].task_id == message.task_id
 
 
 @pytest.fixture
@@ -354,4 +365,13 @@ async def test_message_is_not_acked_when_the_dlq_publish_fails(database, settlem
         await publish(app, {"not": "a task"})
 
     assert "ack" not in settlements
+    assert settlements == ["nack(requeue=True)"]
+
+
+async def test_message_is_not_acked_when_the_retry_publish_fails(database, settlements):
+    app, _ = build_app(database, FakeModel(error=RuntimeError("model is busy")))
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, make_message())
+
     assert settlements == ["nack(requeue=True)"]

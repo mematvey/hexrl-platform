@@ -14,10 +14,18 @@ import httpx
 from faststream.rabbit import RabbitBroker
 
 from hexrl_platform.task_pipeline.batch_source import task_id_for
-from hexrl_platform.task_pipeline.config import PipelineSettings
 from hexrl_platform.task_pipeline.topology import build_topology, declare_topology
 from scripts.backpressure.collect_metrics import append_csv, collect, database, export_tasks
 from scripts.backpressure.runtime import ROOT, Runtime
+
+
+def validate_dataset(path: Path, manifest: dict) -> None:
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    with path.open("rb") as stream:
+        rows = sum(1 for _ in stream)
+    if digest != manifest["sha256"] or rows != manifest["rows"]:
+        raise ValueError("Dataset contents do not match its manifest")
 
 
 def source_manifest() -> dict:
@@ -131,9 +139,8 @@ async def run_scenario(args: argparse.Namespace, label: str) -> dict:
     models = await wait_healthy(runtime, workers)
     if len({(model["name"], model["version"]) for model in models}) != 1:
         raise RuntimeError("Workers loaded different model versions")
-    settings = PipelineSettings(
-        _env_file=args.env_file, queue_prefix=prefix, queue_max_length=None if label == "A" else 20
-    )
+    # Тот же приоритет .env/overrides, что у Compose, а не случайное окружение shell.
+    settings = runtime.pipeline_settings
     broker = RabbitBroker(settings.rabbitmq_url)
     await broker.start()
     try:
@@ -144,6 +151,7 @@ async def run_scenario(args: argparse.Namespace, label: str) -> dict:
         await broker.stop()
     dataset = args.failure_dataset if label == "D" else args.dataset
     dataset_manifest = json.loads(dataset.with_suffix(".manifest.json").read_text(encoding="utf-8"))
+    await asyncio.to_thread(validate_dataset, dataset, dataset_manifest)
     expected = dataset_manifest["rows"]
     model_uri = f"models:/{models[0]['name']}/{models[0]['version']}"
     if dataset_manifest["model_uri"] != model_uri:
@@ -153,8 +161,8 @@ async def run_scenario(args: argparse.Namespace, label: str) -> dict:
     source_log = (directory / "source.log").open("w", encoding="utf-8")
     command = [
         sys.executable,
-        "-m",
-        "hexrl_platform.task_pipeline.batch_source",
+        "-c",
+        "from hexrl_platform.task_pipeline.batch_source import main; main()",
         "--file",
         str(dataset.resolve()),
         "--batch-id",
@@ -274,7 +282,7 @@ async def run_scenario(args: argparse.Namespace, label: str) -> dict:
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     (directory / "worker.log").write_text(
-        await runtime.run("logs", "--no-color", "worker"), encoding="utf-8"
+        (await runtime.run("logs", "--no-color", "worker")).rstrip() + "\n", encoding="utf-8"
     )
     return manifest
 

@@ -195,3 +195,24 @@ async def test_get_includes_the_original_model_and_result(sessions):
         assert task.result.model_name == "original"
         assert task.result.model_version == "7"
         assert task.completed_at == task.result.completed_at
+
+
+async def test_old_delivery_cannot_decrease_attempts_or_revive_a_failed_task(sessions):
+    message = make_message()
+    async with sessions() as session:
+        repository = TaskRepository(session)
+        await repository.ensure_task(message)
+        await repository.record_attempt(message.task_id, 2, "second failure")
+        await repository.record_attempt(message.task_id, 1, "late first failure")
+        await session.commit()
+        task = await repository.get(message.task_id)
+        assert task is not None and task.attempts == 2
+        await repository.mark_failed(message.task_id, "final failure", 3)
+        await repository.mark_processing(message.task_id)
+        await repository.record_attempt(message.task_id, 1, "late failure")
+        await session.commit()
+        task = await repository.get(message.task_id)
+        assert task is not None
+        assert task.status is TaskStatus.FAILED
+        assert task.attempts == 3
+        assert task.last_error == "final failure"

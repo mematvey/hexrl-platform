@@ -14,7 +14,9 @@ from testcontainers.community.rabbitmq import RabbitMqContainer
 from hexrl_platform.db.models import InferenceTask
 from hexrl_platform.inference.model_loader import LoadedModel
 from hexrl_platform.inference.predict import PredictModel
+from hexrl_platform.task_pipeline import worker as worker_module
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
+from hexrl_platform.task_pipeline.errors import QueueOverloadedError
 from hexrl_platform.task_pipeline.publisher import TaskPublisher, publish_confirmed
 from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER, EXHAUSTED_REASON
@@ -74,8 +76,9 @@ async def test_expired_retry_survives_a_full_tasks_queue(rabbitmq_url):
         await broker.stop()
 
 
+@pytest.mark.parametrize("retry_publish_fails", [False, True])
 async def test_worker_retries_three_times_then_confirms_the_dlq(
-    rabbitmq_url, tmp_path, monkeypatch
+    rabbitmq_url, tmp_path, monkeypatch, retry_publish_fails
 ):
     class FailingModel(PredictModel):
         def __init__(self):
@@ -106,6 +109,16 @@ async def test_worker_retries_three_times_then_confirms_the_dlq(
     assert isinstance(app.broker, RabbitBroker)
     broker = app.broker
     topology = build_topology(prefix, 20, 100)
+    if retry_publish_fails:
+        original = worker_module.publish_confirmed
+
+        async def reject_retry(*args, **kwargs):
+            if kwargs["routing_key"] == topology.retry_routing_key:
+                raise QueueOverloadedError("retry publish unavailable")
+            await original(*args, **kwargs)
+
+        monkeypatch.setattr(worker_module, "publish_confirmed", reject_retry)
+        monkeypatch.setattr(worker_module, "CRASH_PAUSE_S", 0.01)
     task = TaskMessage(
         task_id=uuid4(), payload=HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
     )

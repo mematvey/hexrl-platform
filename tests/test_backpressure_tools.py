@@ -121,6 +121,7 @@ def test_plotting_reconciles_ids_and_uses_observer_clock(tmp_path):
             "end_to_end_ms": -5000,
             "submitted_at": "2026-01-01T00:00:00Z",
             "inference_ms": 2,
+            "delay_ms": 500,
         },
     )
     append_csv(
@@ -137,6 +138,7 @@ def test_plotting_reconciles_ids_and_uses_observer_clock(tmp_path):
     assert summary["negative_raw_latency_rows"] == 1
     assert summary["terminal_rate_s"] == 1
     assert (tmp_path / "overview.png").is_file()
+    assert (tmp_path / "timing.png").is_file()
     append_csv(
         directory / "observations.csv",
         {
@@ -148,3 +150,59 @@ def test_plotting_reconciles_ids_and_uses_observer_clock(tmp_path):
     )
     with pytest.raises(ValueError, match="IDs do not match"):
         plot_results(tmp_path)
+
+
+def test_steady_rates_compare_source_and_worker_in_the_same_time_window():
+    from scripts.backpressure.plot_results import steady_rates
+
+    timestamps = pd.date_range("2026-01-01", periods=101, freq="s", tz="UTC")
+    source = pd.DataFrame(
+        {
+            "ts": timestamps,
+            "t_s": range(101),
+            "published_ok": [4 * index + 20 for index in range(101)],
+        }
+    )
+    metrics = pd.DataFrame(
+        {
+            "ts": timestamps,
+            "elapsed_s": range(101),
+            "completed": [4 * index for index in range(101)],
+            "failed": 0,
+        }
+    )
+    result = steady_rates(source, metrics)
+    assert result is not None
+    assert result["source_rate_s"] == result["worker_terminal_rate_s"] == 4
+    assert result["relative_gap"] == 0
+    assert steady_rates(source.iloc[:1], metrics) is None
+
+
+def test_runner_rejects_a_dataset_changed_after_its_manifest(tmp_path):
+    from scripts.backpressure.run_experiments import validate_dataset
+
+    path = tmp_path / "input.jsonl"
+    manifest = make_dataset(
+        ObservationEncoder(default_map(), 20), path, size=3, seed=1, model_uri="models:/test/1"
+    )
+    validate_dataset(path, manifest)
+    path.write_bytes(path.read_bytes() + b"{}\n")
+    with pytest.raises(ValueError, match="contents do not match"):
+        validate_dataset(path, manifest)
+
+
+def test_benchmark_environment_matches_compose_even_with_stale_shell_values(tmp_path, monkeypatch):
+    from scripts.backpressure.runtime import Runtime
+
+    env_file = tmp_path / "benchmark.env"
+    env_file.write_text(
+        "RABBITMQ_USER=file-user\nRABBITMQ_PASSWORD=file-password\nPREFETCH_COUNT=2\n"
+    )
+    monkeypatch.setenv("RABBITMQ_USER", "stale-shell-user")
+    monkeypatch.setenv("PREFETCH_COUNT", "99")
+    runtime = Runtime(env_file, "test", {"QUEUE_MAX_LENGTH": "null", "QUEUE_PREFIX": "baseline"})
+    settings = runtime.pipeline_settings
+    assert settings.rabbitmq_user == "file-user"
+    assert settings.prefetch_count == 2
+    assert settings.queue_max_length is None
+    assert settings.queue_prefix == "baseline"

@@ -27,7 +27,7 @@ from hexrl_platform.inference.schemas import ModelInfo
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
 from hexrl_platform.task_pipeline.publisher import publish_confirmed
 from hexrl_platform.task_pipeline.repository import TaskRepository
-from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER, decide
+from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER, attempt_number, decide
 from hexrl_platform.task_pipeline.runner import InferenceRunner, limit_torch_threads
 from hexrl_platform.task_pipeline.schemas import TaskMessage, TaskStatus
 from hexrl_platform.task_pipeline.topology import Topology, build_topology, declare_topology
@@ -68,7 +68,7 @@ async def _dead_letter(
         exchange=state.topology.dlx,
         routing_key=state.topology.dead_routing_key,
         timeout_s=state.confirm_timeout_s,
-        headers={**message.headers, DEAD_REASON_HEADER: reason},
+        headers={**message.headers, DEAD_REASON_HEADER: reason, ATTEMPT_HEADER: attempt},
     )
     await message.ack()
     logger.warning("task_dead_lettered", extra={"reason": reason, "attempt": attempt})
@@ -82,14 +82,21 @@ async def _handle_failure(
     *,
     permanent: bool,
 ) -> None:
-    decision = decide(
-        headers=message.headers,
-        queue_name=state.topology.tasks_queue.name,
-        max_deliveries=state.max_deliveries,
-        permanent=permanent,
-    )
     async with state.sessions() as session:
         repository = TaskRepository(session)
+        stored = await repository.get(task.task_id)
+        # Если публикация в retry не подтвердилась, original вернётся со старым
+        # заголовком. Закоммиченные неудачи нельзя забывать при этой доставке.
+        attempt = max(
+            attempt_number(message.headers, state.topology.tasks_queue.name),
+            stored.attempts + 1 if stored is not None else 1,
+        )
+        decision = decide(
+            headers={ATTEMPT_HEADER: attempt},
+            queue_name=state.topology.tasks_queue.name,
+            max_deliveries=state.max_deliveries,
+            permanent=permanent,
+        )
         if decision.retry:
             await repository.record_attempt(task.task_id, decision.attempt, str(error))
         else:
@@ -146,10 +153,17 @@ async def _process_task(message: RabbitMessage, state: Worker) -> None:
     async with state.sessions() as session:
         repository = TaskRepository(session)
         await repository.ensure_task(task)
-        if await repository.get_status(task.task_id) is TaskStatus.COMPLETED:
+        stored = await repository.get(task.task_id)
+        if stored is not None and stored.status is TaskStatus.COMPLETED:
             # оптимизация, а не защита: защита - уникальный ключ в inference_results
             await session.commit()
             await message.ack()
+            return
+        if stored is not None and stored.status is TaskStatus.FAILED:
+            # FAILED уже закоммичен, но прежняя отправка в DLQ могла не удаться.
+            # Повторяем только доставку в DLQ, а не безнадёжный inference.
+            await session.commit()
+            await _dead_letter(state, message, "previously_failed", stored.attempts)
             return
         await repository.mark_processing(task.task_id)
         await session.commit()

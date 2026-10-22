@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, deploy]
+    branches: [main, deploy, 'feat/**', 'fix/**']
 
 env:
   POSTGRES_USER: ci
@@ -28,6 +28,9 @@ jobs:
 
       - name: Format check
         run: uv run --no-sync ruff format --check .
+
+      - name: Type check
+        run: uv run --no-sync ty check
 
       - name: Tests with coverage
         run: uv run --no-sync pytest --cov=hexrl_platform --cov-report=term-missing --cov-fail-under=80

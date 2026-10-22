@@ -1,0 +1,20 @@
+worker-1  | INFO:     Started server process [1]
+worker-1  | INFO:     Waiting for application startup.
+worker-1  | {"timestamp": "2026-10-22T19:14:56.898Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "model_loaded", "service": "hexrl-platform", "service_version": "0.2.0", "component": "hex-navigation-smoke", "component_version": "1"}
+worker-1  | 2026-10-22 19:14:56,898 [32mINFO[0m     - FastStream app starting...
+worker-1  | INFO:     Application startup complete.
+worker-1  | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+worker-1  | 2026-10-22 19:14:56,900 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks |            - `HandleTask` waiting for messages
+worker-1  | 2026-10-22 19:14:56,906 [32mINFO[0m     - FastStream app started successfully! To exit, press CTRL+C
+worker-1  | 2026-10-22 19:14:59,139 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Received
+worker-1  | {"timestamp": "2026-10-22T19:14:59.222Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "c02ecf6d-6b2c-457d-983e-856d31664de2", "attempt": 1}
+worker-1  | 2026-10-22 19:14:59,222 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Processed
+worker-1  | 2026-10-22 19:15:00,220 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Received
+worker-1  | {"timestamp": "2026-10-22T19:15:00.289Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "c02ecf6d-6b2c-457d-983e-856d31664de2", "attempt": 2}
+worker-1  | 2026-10-22 19:15:00,290 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Processed
+worker-1  | 2026-10-22 19:15:01,295 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Received
+worker-1  | {"timestamp": "2026-10-22T19:15:01.377Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 3, "reason": "max_deliveries_reached"}
+worker-1  | 2026-10-22 19:15:01,377 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | c02ecf6d-6 - Processed
+worker-1  | 2026-10-22 19:15:01,486 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | 03ab57d0b8 - Received
+worker-1  | {"timestamp": "2026-10-22T19:15:01.487Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "validation_error"}
+worker-1  | 2026-10-22 19:15:01,487 [32mINFO[0m     - hexrl.inference | hexrl.defense.poison.e2ce67a4b343476f981fb6370159c3a9.tasks | 03ab57d0b8 - Processed

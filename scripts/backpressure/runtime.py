@@ -2,8 +2,11 @@ import asyncio
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from dotenv import dotenv_values
+
+from hexrl_platform.task_pipeline.config import PipelineSettings
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -40,6 +43,17 @@ class Runtime:
             "-f",
             str(ROOT / "scripts/backpressure/compose.benchmark.yaml"),
         ]
+
+    @property
+    def pipeline_settings(self) -> PipelineSettings:
+        values: dict[str, Any] = {
+            name: self.environment[name.upper()]
+            for name in PipelineSettings.model_fields
+            if name.upper() in self.environment
+        }
+        if values.get("queue_max_length") == "null":
+            values["queue_max_length"] = None
+        return PipelineSettings(_env_file=None, **values)
 
     async def run(self, *args: str) -> str:
         process = await asyncio.create_subprocess_exec(

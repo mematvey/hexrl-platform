@@ -24,7 +24,7 @@ from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER
 from hexrl_platform.task_pipeline.schemas import HexState, TaskMessage, TaskStatus
 from hexrl_platform.task_pipeline.topology import build_topology
-from hexrl_platform.task_pipeline.worker import create_worker_app
+from hexrl_platform.task_pipeline.worker import DEAD_REASON_HEADER, create_worker_app
 
 MODEL_VERSION = "7"
 STATE = HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
@@ -327,7 +327,9 @@ def settlements(monkeypatch):
     calls: list[str] = []
 
     async def ack(self, multiple: bool = False) -> None:
-        calls.append("ack")
+        # Автоматический ack тестового читателя DLQ не относится к исходной доставке.
+        if DEAD_REASON_HEADER not in self.headers:
+            calls.append("ack")
 
     async def nack(self, multiple: bool = False, requeue: bool = True) -> None:
         calls.append(f"nack(requeue={requeue})")
@@ -375,3 +377,54 @@ async def test_message_is_not_acked_when_the_retry_publish_fails(database, settl
         await publish(app, make_message())
 
     assert settlements == ["nack(requeue=True)"]
+
+
+async def test_failed_retry_publication_cannot_reset_the_inference_budget(database, settlements):
+    model = FakeModel(error=RuntimeError("model is busy"))
+    app, _ = build_app(database, model)
+    dead = attach_dlq(app)
+    message = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        # Retry без получателя не подтверждается. При повторе original заголовок
+        # остаётся прежним, но три неудачи уже фиксируются в БД.
+        for _ in range(3):
+            await publish(app, message)
+        task, results, _ = await read_task(database, message.task_id)
+        assert task.status is TaskStatus.FAILED
+        assert task.attempts == 3
+        assert model.calls == 3
+        assert results == 0
+        assert len(dead) == 1
+        await publish(app, message)
+        assert model.calls == 3
+    assert settlements == ["nack(requeue=True)", "nack(requeue=True)", "ack", "ack"]
+
+
+async def test_failed_dlq_publication_retries_delivery_without_rerunning_model(
+    database, monkeypatch, settlements
+):
+    model = FakeModel(error=ValueError("invalid state"))
+    app, _ = build_app(database, model)
+    dead = attach_dlq(app)
+    original = worker_module.publish_confirmed
+    failures = 1
+
+    async def temporarily_unavailable(*args, **kwargs):
+        nonlocal failures
+        if failures and kwargs["routing_key"] == topology_for().dead_routing_key:
+            failures -= 1
+            raise ConnectionError("DLQ unavailable")
+        await original(*args, **kwargs)
+
+    monkeypatch.setattr(worker_module, "publish_confirmed", temporarily_unavailable)
+    message = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, message)
+        await publish(app, message)
+    task, results, _ = await read_task(database, message.task_id)
+    assert task.status is TaskStatus.FAILED
+    assert task.attempts == 1
+    assert model.calls == 1
+    assert results == 0
+    assert len(dead) == 1
+    assert settlements == ["nack(requeue=True)", "ack"]

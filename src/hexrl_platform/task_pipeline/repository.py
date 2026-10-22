@@ -4,10 +4,11 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import case, delete, select, update
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import ColumnElement
 
 from hexrl_platform.db.models import InferenceResult, InferenceTask
 from hexrl_platform.task_pipeline.schemas import (
@@ -103,7 +104,7 @@ class TaskRepository:
         await self._insert_task(message, TaskStatus.PENDING)
 
     async def mark_processing(self, task_id: UUID) -> None:
-        await self._update_unless_completed(task_id, {"status": TaskStatus.PROCESSING})
+        await self._update_nonterminal(task_id, {"status": TaskStatus.PROCESSING})
 
     async def save_result(
         self,
@@ -139,21 +140,30 @@ class TaskRepository:
         return inserted
 
     async def mark_failed(self, task_id: UUID, error: str, attempts: int) -> None:
-        await self._update_unless_completed(
+        await self._update_nonterminal(
             task_id,
-            {"status": TaskStatus.FAILED, "last_error": error[:ERROR_LIMIT], "attempts": attempts},
+            {
+                "status": TaskStatus.FAILED,
+                "last_error": error[:ERROR_LIMIT],
+                "attempts": self._attempts_at_least(attempts),
+            },
         )
 
     async def record_attempt(self, task_id: UUID, attempts: int, error: str) -> None:
         # промежуточная неудача: задача вернётся из retry-очереди, статус не финальный
-        await self._update_unless_completed(
+        await self._update_nonterminal(
             task_id,
             {
                 "status": TaskStatus.ACCEPTED,
                 "last_error": error[:ERROR_LIMIT],
-                "attempts": attempts,
+                "attempts": self._attempts_at_least(attempts),
             },
         )
+
+    @staticmethod
+    def _attempts_at_least(attempts: int) -> ColumnElement[int]:
+        # Более поздний commit старой доставки не должен уменьшать счётчик.
+        return case((InferenceTask.attempts < attempts, attempts), else_=InferenceTask.attempts)
 
     async def mark_accepted(self, task_id: UUID) -> None:
         await self._session.execute(
@@ -184,13 +194,13 @@ class TaskRepository:
         )
         await self._session.execute(statement)
 
-    async def _update_unless_completed(self, task_id: UUID, values: dict[str, Any]) -> None:
-        # успевшая завершиться доставка важнее: её результат уже записан
+    async def _update_nonterminal(self, task_id: UUID, values: dict[str, Any]) -> None:
+        # Запоздалая доставка не должна оживлять уже завершённую задачу.
         await self._session.execute(
             update(InferenceTask)
             .where(
                 InferenceTask.task_id == task_id,
-                InferenceTask.status != TaskStatus.COMPLETED,
+                InferenceTask.status.not_in((TaskStatus.COMPLETED, TaskStatus.FAILED)),
             )
             .values(updated_at=datetime.now(UTC), **values)
         )

@@ -10,9 +10,40 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
+def steady_rates(source: pd.DataFrame, metrics: pd.DataFrame) -> dict | None:
+    terminal = metrics.completed + metrics.failed
+    window = metrics[(terminal >= terminal.max() * 0.1) & (terminal <= terminal.max() * 0.8)]
+    if len(window) < 2 or "ts" not in source or "ts" not in metrics:
+        return None
+    start, finish = pd.to_datetime(window.ts, utc=True).iloc[[0, -1]]
+    sent_at = pd.to_datetime(source.ts, utc=True)
+    sent = source[(sent_at >= start) & (sent_at <= finish)]
+    if len(sent) < 2:
+        return None
+    source_duration = sent.t_s.iloc[-1] - sent.t_s.iloc[0]
+    worker_duration = window.elapsed_s.iloc[-1] - window.elapsed_s.iloc[0]
+    if min(source_duration, worker_duration) <= 0:
+        return None
+    source_rate = (sent.published_ok.iloc[-1] - sent.published_ok.iloc[0]) / source_duration
+    completed = window.completed + window.failed
+    worker_rate = (completed.iloc[-1] - completed.iloc[0]) / worker_duration
+    return (
+        {
+            "start": start.isoformat(),
+            "finish": finish.isoformat(),
+            "source_rate_s": float(source_rate),
+            "worker_terminal_rate_s": float(worker_rate),
+            "relative_gap": float(abs(source_rate - worker_rate) / worker_rate),
+        }
+        if worker_rate
+        else None
+    )
+
+
 def plot_results(root: Path) -> dict:
     summaries = {}
     figure, axes = plt.subplots(3, 2, figsize=(13, 12))
+    timing_figure, timing_axes = plt.subplots(3, 1, figsize=(11, 10), sharex=True)
     for label in "ABCD":
         directory = root / label
         if not (directory / "manifest.json").exists():
@@ -23,6 +54,8 @@ def plot_results(root: Path) -> dict:
         tasks = pd.read_csv(directory / "tasks.csv")
         observations = pd.read_csv(directory / "observations.csv")
         if set(tasks.task_id) != set(observations.task_id):
+            plt.close(figure)
+            plt.close(timing_figure)
             raise ValueError("Observed terminal IDs do not match exported tasks")
         tasks = tasks.merge(observations, on="task_id", validate="one_to_one")
         tasks["observed_latency_s"] = (
@@ -48,6 +81,18 @@ def plot_results(root: Path) -> dict:
             label=label,
         )
         completed = tasks[tasks.status == "COMPLETED"]
+        ordered_tasks = completed.sort_values("elapsed_s")
+        for axis, column in zip(
+            timing_axes, ("observed_latency_s", "inference_ms", "delay_ms"), strict=True
+        ):
+            axis.plot(
+                ordered_tasks.elapsed_s,
+                ordered_tasks[column],
+                label=label,
+                marker=".",
+                markersize=2,
+                linewidth=0.5,
+            )
         ordered = np.sort(completed.observed_latency_s.dropna())
         if len(ordered):
             axes[2, 0].plot(ordered, np.arange(1, len(ordered) + 1) / len(ordered), label=label)
@@ -73,6 +118,7 @@ def plot_results(root: Path) -> dict:
             "max_observation_gap_s": float(observations.poll_gap_s.max()),
             "negative_raw_latency_rows": int((tasks.end_to_end_ms < 0).sum()),
             "mean_inference_ms": float(completed.inference_ms.mean()),
+            "steady_state": steady_rates(source, metrics) if label in "BC" else None,
             "redelivered_peak": float(metrics.redelivered_total.max())
             if metrics.redelivered_total.notna().any()
             else None,
@@ -93,6 +139,19 @@ def plot_results(root: Path) -> dict:
     figure.tight_layout()
     figure.savefig(root / "overview.png", dpi=150)
     plt.close(figure)
+    for axis, title, unit in zip(
+        timing_axes,
+        ("Observed end-to-end latency (includes polling)", "Model prediction", "Artificial delay"),
+        ("Seconds", "Milliseconds", "Milliseconds"),
+        strict=True,
+    ):
+        axis.set(title=title, ylabel=unit)
+        axis.grid(alpha=0.3)
+        axis.legend()
+    timing_axes[-1].set_xlabel("Observed completion time, s")
+    timing_figure.tight_layout()
+    timing_figure.savefig(root / "timing.png", dpi=150)
+    plt.close(timing_figure)
     (root / "summary.json").write_text(json.dumps(summaries, indent=2) + "\n", encoding="utf-8")
     return summaries
 

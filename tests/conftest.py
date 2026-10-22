@@ -3,6 +3,8 @@ import os
 os.environ.setdefault("POSTGRES_USER", "test")
 os.environ.setdefault("POSTGRES_PASSWORD", "test")
 os.environ.setdefault("POSTGRES_DB", "test")
+os.environ.setdefault("RABBITMQ_USER", "test")
+os.environ.setdefault("RABBITMQ_PASSWORD", "test")
 
 from collections.abc import AsyncIterator
 

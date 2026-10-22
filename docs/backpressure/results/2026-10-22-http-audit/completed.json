@@ -1,0 +1,502 @@
+[
+  {
+    "task_id": "dac28ec3-e2c5-4ab4-b232-bfb157ecfb62",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.528024Z",
+    "created_at": "2026-10-22T19:14:17.529478Z",
+    "completed_at": "2026-10-22T19:14:23.013496Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 7.301050000023679,
+      "delay_ms": 500.74033700002474,
+      "completed_at": "2026-10-22T19:14:23.013496Z"
+    }
+  },
+  {
+    "task_id": "671add31-be7b-48a9-908f-1a67a7044e18",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.542915Z",
+    "created_at": "2026-10-22T19:14:17.543755Z",
+    "completed_at": "2026-10-22T19:14:23.012929Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.8614000002562534,
+      "delay_ms": 501.00662099976034,
+      "completed_at": "2026-10-22T19:14:23.012929Z"
+    }
+  },
+  {
+    "task_id": "08cbfd01-6f12-4dd6-a9d7-5471a177c7d3",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.552395Z",
+    "created_at": "2026-10-22T19:14:17.553640Z",
+    "completed_at": "2026-10-22T19:14:22.885511Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 3.138694999506697,
+      "delay_ms": 500.2751910005827,
+      "completed_at": "2026-10-22T19:14:22.885511Z"
+    }
+  },
+  {
+    "task_id": "3aca2ac8-3de6-4d2f-b1f0-10ee2fbca30a",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.563978Z",
+    "created_at": "2026-10-22T19:14:17.564898Z",
+    "completed_at": "2026-10-22T19:14:22.883672Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.1572169998762547,
+      "delay_ms": 500.04959300076735,
+      "completed_at": "2026-10-22T19:14:22.883672Z"
+    }
+  },
+  {
+    "task_id": "cfd44818-57e8-424f-b5f0-c84b14b51590",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.574314Z",
+    "created_at": "2026-10-22T19:14:17.575048Z",
+    "completed_at": "2026-10-22T19:14:23.405418Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.305500000147731,
+      "delay_ms": 500.0486870003442,
+      "completed_at": "2026-10-22T19:14:23.405418Z"
+    }
+  },
+  {
+    "task_id": "6acdf48a-887b-41fd-b3db-92eef729b602",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.586234Z",
+    "created_at": "2026-10-22T19:14:17.587204Z",
+    "completed_at": "2026-10-22T19:14:23.407184Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 4.033344999697874,
+      "delay_ms": 500.1126639999711,
+      "completed_at": "2026-10-22T19:14:23.407184Z"
+    }
+  },
+  {
+    "task_id": "025f484b-de40-40f0-a77a-3110e447625c",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.595641Z",
+    "created_at": "2026-10-22T19:14:17.596869Z",
+    "completed_at": "2026-10-22T19:14:23.930097Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 6.292463000136195,
+      "delay_ms": 500.08884299950296,
+      "completed_at": "2026-10-22T19:14:23.930097Z"
+    }
+  },
+  {
+    "task_id": "09e9fc87-f697-4cd6-af9a-2f9c91a2967b",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.606977Z",
+    "created_at": "2026-10-22T19:14:17.607720Z",
+    "completed_at": "2026-10-22T19:14:23.929754Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.018809999754012,
+      "delay_ms": 500.4856449995714,
+      "completed_at": "2026-10-22T19:14:23.929754Z"
+    }
+  },
+  {
+    "task_id": "3f89a1f1-a005-44a6-98ef-53ba476a5305",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.615944Z",
+    "created_at": "2026-10-22T19:14:17.616751Z",
+    "completed_at": "2026-10-22T19:14:24.449925Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.3667639998166123,
+      "delay_ms": 500.08533599975635,
+      "completed_at": "2026-10-22T19:14:24.449925Z"
+    }
+  },
+  {
+    "task_id": "13526101-8884-4ac2-a8dd-1512fd8f12c7",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.626275Z",
+    "created_at": "2026-10-22T19:14:17.627069Z",
+    "completed_at": "2026-10-22T19:14:24.450419Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.452138999615272,
+      "delay_ms": 500.1799520005079,
+      "completed_at": "2026-10-22T19:14:24.450419Z"
+    }
+  },
+  {
+    "task_id": "23de216d-271e-4e5f-bac9-bf29193ded45",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.635498Z",
+    "created_at": "2026-10-22T19:14:17.636422Z",
+    "completed_at": "2026-10-22T19:14:24.970108Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.4440669994874042,
+      "delay_ms": 500.0815640005385,
+      "completed_at": "2026-10-22T19:14:24.970108Z"
+    }
+  },
+  {
+    "task_id": "c5a1daa4-4146-4cc7-827e-32ba42f1612d",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.645638Z",
+    "created_at": "2026-10-22T19:14:17.646471Z",
+    "completed_at": "2026-10-22T19:14:24.970427Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.3526220002167975,
+      "delay_ms": 500.16958600008365,
+      "completed_at": "2026-10-22T19:14:24.970427Z"
+    }
+  },
+  {
+    "task_id": "d4684ede-a3ce-4553-91a1-7f024d4441a8",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.657142Z",
+    "created_at": "2026-10-22T19:14:17.658031Z",
+    "completed_at": "2026-10-22T19:14:25.485983Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.445830999931786,
+      "delay_ms": 500.077035000686,
+      "completed_at": "2026-10-22T19:14:25.485983Z"
+    }
+  },
+  {
+    "task_id": "d6e9dd9d-54f4-4bff-a0cc-e1d47d9ea2bb",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.668959Z",
+    "created_at": "2026-10-22T19:14:17.669924Z",
+    "completed_at": "2026-10-22T19:14:25.488854Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 3.1490190003751195,
+      "delay_ms": 500.2614959994389,
+      "completed_at": "2026-10-22T19:14:25.488854Z"
+    }
+  },
+  {
+    "task_id": "455f74f4-aad3-4ce9-a138-ceb3ec58cb1f",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.679004Z",
+    "created_at": "2026-10-22T19:14:17.679768Z",
+    "completed_at": "2026-10-22T19:14:26.004897Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 3.876189000038721,
+      "delay_ms": 500.0763319994803,
+      "completed_at": "2026-10-22T19:14:26.004897Z"
+    }
+  },
+  {
+    "task_id": "8bebb6f4-1085-4e30-8c30-05519154d123",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.688255Z",
+    "created_at": "2026-10-22T19:14:17.689076Z",
+    "completed_at": "2026-10-22T19:14:26.005249Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 3.1451180002477486,
+      "delay_ms": 500.0854599993545,
+      "completed_at": "2026-10-22T19:14:26.005249Z"
+    }
+  },
+  {
+    "task_id": "b7e560c9-2acf-4845-bb9c-21d764a98f93",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.698969Z",
+    "created_at": "2026-10-22T19:14:17.699815Z",
+    "completed_at": "2026-10-22T19:14:26.522096Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.7609589997155126,
+      "delay_ms": 500.17907900019054,
+      "completed_at": "2026-10-22T19:14:26.522096Z"
+    }
+  },
+  {
+    "task_id": "85af2e8c-b788-4c37-82e0-0b7b4d57b447",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.708350Z",
+    "created_at": "2026-10-22T19:14:17.709169Z",
+    "completed_at": "2026-10-22T19:14:26.522620Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.840232000380638,
+      "delay_ms": 500.60900900007255,
+      "completed_at": "2026-10-22T19:14:26.522620Z"
+    }
+  },
+  {
+    "task_id": "7f6d174e-e08c-45ad-9af1-386681c7ed47",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.718586Z",
+    "created_at": "2026-10-22T19:14:17.719330Z",
+    "completed_at": "2026-10-22T19:14:27.037665Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 2.2681279997414094,
+      "delay_ms": 500.13426799978333,
+      "completed_at": "2026-10-22T19:14:27.037665Z"
+    }
+  },
+  {
+    "task_id": "d52755ad-61fd-4128-a68b-00c5adc54012",
+    "batch_id": null,
+    "status": "COMPLETED",
+    "payload": {
+      "q": 0,
+      "r": 0,
+      "goal_q": 2,
+      "goal_r": -1,
+      "steps_remaining": 20
+    },
+    "attempts": 0,
+    "submitted_at": "2026-10-22T19:14:17.727700Z",
+    "created_at": "2026-10-22T19:14:17.728579Z",
+    "completed_at": "2026-10-22T19:14:27.043443Z",
+    "last_error": null,
+    "result": {
+      "action": 1,
+      "model_name": "hex-navigation-smoke",
+      "model_version": "1",
+      "inference_ms": 1.40343600014603,
+      "delay_ms": 504.1283240007033,
+      "completed_at": "2026-10-22T19:14:27.043443Z"
+    }
+  }
+]

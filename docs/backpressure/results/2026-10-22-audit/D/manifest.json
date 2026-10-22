@@ -1,0 +1,150 @@
+{
+  "scenario": "D",
+  "batch_id": "hw4-D-f6efa8f3a4d7",
+  "queue_prefix": "hexrl.benchmark.hw4-D-f6efa8f3a4d7",
+  "started_at": "2026-10-22T19:10:31.623043+00:00",
+  "duration_s": 147.15599999999904,
+  "workers": 1,
+  "concurrency": 2,
+  "prefetch": 2,
+  "inference_delay_s": 0.5,
+  "queue_limit": 20,
+  "publisher_confirms": true,
+  "dataset": {
+    "generator": "scripts.backpressure.make_dataset:make_dataset",
+    "rows": 500,
+    "seed": 42,
+    "invalid_rows": 50,
+    "sha256": "a457f7acf7d476f459f346ec43e0259db59dbcdb60afbead327836c2dcb3894b",
+    "model_uri": "models:/hex-navigation-smoke/1",
+    "encoder": {
+      "version": "nav-obs-v1",
+      "max_steps": 60,
+      "map": {
+        "radius": 4,
+        "blocked": [
+          {
+            "q": -2,
+            "r": 1
+          },
+          {
+            "q": -1,
+            "r": 1
+          },
+          {
+            "q": 0,
+            "r": 1
+          },
+          {
+            "q": 1,
+            "r": -2
+          },
+          {
+            "q": 2,
+            "r": -2
+          }
+        ]
+      }
+    }
+  },
+  "model": {
+    "name": "hex-navigation-smoke",
+    "version": "1",
+    "alias": "champion",
+    "run_id": "6152e65c1f1b4001b11e3a57fcc3567e",
+    "max_steps": 60
+  },
+  "completed": 450,
+  "failed": 50,
+  "reconciled_unique_tasks": 500,
+  "dlq_unique_tasks": 50,
+  "code": {
+    "base_commit": "1e0b066ace496a98e051b97ba940022a5ba6a35c",
+    "files_sha256": {
+      "docker-compose.yaml": "80cd7aa2a78fa6ed1b4a9b8365ce5262e27536caa15c1248107aad621dbf11ac",
+      "Dockerfile.inference": "aeb60c8d8754097c76ad41a6bccc5041d0ffcd56ca512e3009cc7690b5e279cd",
+      "pyproject.toml": "b9e52bce2bf08d5309359ba56964e2941f1581ddddc48e64792b465a3196f44f",
+      "scripts/backpressure/check_defense.py": "3d5db463f9eab3d410707fd019daaf827e997d29ecf16fdd08866f64ec6fb2c0",
+      "scripts/backpressure/check_http.py": "56ddd78c43f22bf420e81037c943bef04adbf5740ceea05d1195cff1c0d593bd",
+      "scripts/backpressure/collect_metrics.py": "4bf321c8142623fce617b0d3b8ccfca4c039883340333f6a5089f89ae4deb060",
+      "scripts/backpressure/compose.benchmark.yaml": "c9834251d00a4b3b158c6876eb73a0018336460daeeaa6db732f49d3684229a9",
+      "scripts/backpressure/fault_worker.py": "aee1fb843c484549362680db72deac33d5f5d9334cfdc764612e532051b3dc7b",
+      "scripts/backpressure/make_dataset.py": "49d4346d4e6ccb86c2591deb3efc177b5fe6919f707a926a803cbec3e3be4f3e",
+      "scripts/backpressure/plot_results.py": "e900df3d17489d58788e9b277aae071f4ab1f08384eca6d1dc5bb981abff6bed",
+      "scripts/backpressure/run_experiments.py": "e0b1061df0bdf14f5c7b1386c21b75e78d78af43e045ac350e7031950a193c40",
+      "scripts/backpressure/runtime.py": "494c56a944e349e0fbd410191e2ca39f4a0678f799fe890dfad8b4b70be86f30",
+      "scripts/backpressure/slow_consumer.py": "cfb12b78bf99ed428917c940ae4e6031c54ff5b0f192c9c47d005c2066fc81f8",
+      "src/hexrl_platform/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/api/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/api/healthz.py": "af8b3d1f75d8650a2ec98be5a57c9b75be440b5a2bb88ae11aab1a4871ac3274",
+      "src/hexrl_platform/api/v1/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/api/v1/health.py": "308183017e1f3d338fb8bcda81742d37eb59c6d94680e71c2dd8f846810ba413",
+      "src/hexrl_platform/api/v1/tasks.py": "e1b7526307589a5cd348fc9c22ae168054cea8a9ddec3da478479a2238950406",
+      "src/hexrl_platform/api/v1/version.py": "c1fbd20306df065ca811d1bd3f3cbcc291fc1802d3a29ca8329ab82117131c12",
+      "src/hexrl_platform/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/core/config.py": "74a7cdd6168c6eefbda8cc44f1bab4c10dd3acb70ae16a713b57a63d076e8b39",
+      "src/hexrl_platform/core/logging.py": "418564c6751bcf34fe2623617c00d443f465e5032bd379f454817f46cea2092a",
+      "src/hexrl_platform/core/middleware.py": "bf312c293e08265d8c81976d4293dfae363540720842d629e60aa7aca1144d6e",
+      "src/hexrl_platform/db/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/db/models.py": "4279ce391bce6d4900e1f3e66d5625a1a7b065fdd45b0416f633ca2dfd8edc90",
+      "src/hexrl_platform/db/schema.py": "6edf195405bfd89e1fded4d1b4f79f390b63f844f646ee2780473605c0e6f175",
+      "src/hexrl_platform/db/session.py": "4f9e644379e6a72556021e5b44389eda92e1936584a2f5c44bb781f909417ea0",
+      "src/hexrl_platform/inference/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/inference/config.py": "fbd4a3203f0e1c23ad51e17160289744634c7e332491ccea19a0ef0d8db26c31",
+      "src/hexrl_platform/inference/model_loader.py": "3af5726c7f4cf53f99ea124173a6a8778fe9fc753bc21bdccd8699464b677441",
+      "src/hexrl_platform/inference/predict.py": "1b6b213a5ccccea8955ecf9bc9186a38ad0ff92adde6e1529e0bd28cf82d871d",
+      "src/hexrl_platform/inference/schemas.py": "d405e4bcb1d2cc1bb54d484375cd664f8b929db62b65673c19a75973fc557cdf",
+      "src/hexrl_platform/main.py": "70745bdf17e05ba619fadcba54db945bacc544741a4ed5e6114df507b22de437",
+      "src/hexrl_platform/rl/__init__.py": "ccb1df0535edcc6cdfb817cb23f460fbb175163e791579f5435aafdf2e9e36c4",
+      "src/hexrl_platform/rl/eda.py": "1d287cdfa6e49c7e5d9e3e1fc3be2b4cda028b6de31e9f254718d8831cec6cf5",
+      "src/hexrl_platform/rl/evaluation.py": "2771df445ecb6acdd5fb79366df5b1843b524af5220837ce449ebd7faed4b1a5",
+      "src/hexrl_platform/rl/experiment.py": "db3a87281206fb03f92e557ac6e59fa9c118a9df0e84d0196c0e5af287d534a7",
+      "src/hexrl_platform/rl/gym_env.py": "482d233a4b0c484ed01514de79f775aca62de0b86169cb4b80f6f8c78635cd19",
+      "src/hexrl_platform/rl/hex_grid.py": "7571031f63b727ee44ce47a17a7a65968858e25e10ce09c193ca60bee0683443",
+      "src/hexrl_platform/rl/navigation.py": "8cdacbd8a326857130f407bfbf2c86f7cc5e17798b3ae14f539fd41f23c502b5",
+      "src/hexrl_platform/rl/observation.py": "6e016de589e4fc60ba0ff10821ad8adf273919845b29862016a6a12847dfd0f0",
+      "src/hexrl_platform/rl/packaging.py": "667e9bcc839496cafb8e00638cd15995af0fc60fef164e7463e41fbc06a507b4",
+      "src/hexrl_platform/rl/plots.py": "1ee00af3eae668fd2fa4c309b2e59635de0fdfa87a46c5bdaaa1110e0576663e",
+      "src/hexrl_platform/rl/policies.py": "b81e1d2e08409afd1de8895d4bcdfdeca82c0533257768a31dfb181e233a74bc",
+      "src/hexrl_platform/rl/registry.py": "dc249cc31858e6687ffa6ffd98db2d527edb5452dc8ced0b1c862ba7c6efe6f6",
+      "src/hexrl_platform/rl/replay.py": "8f915291431cc9f4953ab73e06db92ea6db552084bdfb43d117ef9142d317869",
+      "src/hexrl_platform/rl/study.py": "cac1d10f3cc5f870122aa85f1dc74b69e5715e2ba063e649b5d2fc372611ed1e",
+      "src/hexrl_platform/rl/tasks.py": "03034c1d25f6a4fe6e4cb655438c28fcc4a4b9d1f8175b1bbc344c669d1db625",
+      "src/hexrl_platform/rl/tracking.py": "e4fd4e7a02052c70dcc2c8562f36a791c9b018e266d966eccc95bc7439946f1c",
+      "src/hexrl_platform/rl/training.py": "6257eeda67130aa2cf36dcec5a409246a0bfc6057229b3a1fcf64edc41200f05",
+      "src/hexrl_platform/rl/values.py": "07c69464ed80097747bfa50fa1e0b27f9c01192a2d39111e256697dbec7d783b",
+      "src/hexrl_platform/schemas/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/schemas/health.py": "a337ae99c91bfaf96f6f4026afb1a5da535a42e093684ab23bc431420db9a846",
+      "src/hexrl_platform/schemas/tasks.py": "eab5f33216ca160c32c6f828412567a399f1e7b0e5e819444a981bf945c98e4f",
+      "src/hexrl_platform/service/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/service/health_service.py": "483915cfd8f3d58ff5467b0c3d1a8f4b9ff4d1461d5436684b0fdec54cf160dd",
+      "src/hexrl_platform/service/tasks.py": "6173ddf6b70ec8c6dd616fa8880f3017554c3f80ab54b371d1cf627401fc7964",
+      "src/hexrl_platform/task_pipeline/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/hexrl_platform/task_pipeline/batch_source.py": "31d8c958c9dd888cad5905e6e758e7bd9d6ca05ab92669a4d89abacf67bee932",
+      "src/hexrl_platform/task_pipeline/config.py": "2d1d742fccd10f5fa9bad2df892b3dcb7f8d69173994fc38ebebae56d6e99d9c",
+      "src/hexrl_platform/task_pipeline/errors.py": "dac82de6cafe77bf0c0d61e81697ae468931e2bda5aa9fd0caaba45eae56581f",
+      "src/hexrl_platform/task_pipeline/publisher.py": "3992a22876575aef4f2b3b425bf34c4cea37871224891d5fc372777cb65b0a5f",
+      "src/hexrl_platform/task_pipeline/repository.py": "367993c56b59f2a710077cd2d49e595f7e6fd09e8ae57d0a20ca288c04b66f55",
+      "src/hexrl_platform/task_pipeline/retries.py": "de1fccfd67706e4a0d5495b40e22fdb1ffbcbddc95f2d7a2ab5d45dfe9fc251e",
+      "src/hexrl_platform/task_pipeline/runner.py": "59baed7a18e447f23c011fc474eabb4349b13f2610ba70fdc7f6ee3d2410716a",
+      "src/hexrl_platform/task_pipeline/schemas.py": "bfeb98c60c707d258b3036cb710a1c57d9c018cf92612fea0d0f13a00fc81b55",
+      "src/hexrl_platform/task_pipeline/topology.py": "aa83c76e336a552670014b10f96fd0ac140b187a581c23b7c9f2308333c88d63",
+      "src/hexrl_platform/task_pipeline/worker.py": "9b21c16d7a5181958b2539b9147a11b7f701a1964b0c71d7a654b8940f6510ac",
+      "uv.lock": "7b5ac854afede2d649b2fde115c2644fc7afe8cfd51ee6494ace01780df84b1f"
+    },
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "events": [
+    {
+      "event": "SIGTERM",
+      "elapsed_s": 7.217999999997119,
+      "processing_after_stop": 0
+    },
+    {
+      "event": "SIGKILL",
+      "elapsed_s": 21.5779999999977
+    }
+  ],
+  "injected_transient_failures_per_process": 2
+}

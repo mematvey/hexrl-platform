@@ -1,0 +1,19 @@
+worker-1  | INFO:     Started server process [1]
+worker-1  | INFO:     Waiting for application startup.
+worker-1  | {"timestamp": "2026-10-22T19:14:36.318Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "model_loaded", "service": "hexrl-platform", "service_version": "0.2.0", "component": "hex-navigation-smoke", "component_version": "1"}
+worker-1  | 2026-10-22 19:14:36,318 [32mINFO[0m     - FastStream app starting...
+worker-1  | INFO:     Application startup complete.
+worker-1  | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+worker-1  | 2026-10-22 19:14:36,320 [32mINFO[0m     - hexrl.inference | hexrl.defense.graceful.9c1d2a87d7ce4efaa38ad1f8762508d5.tasks |            - `HandleTask` waiting for messages
+worker-1  | 2026-10-22 19:14:36,325 [32mINFO[0m     - FastStream app started successfully! To exit, press CTRL+C
+worker-1  | 2026-10-22 19:14:38,790 [32mINFO[0m     - hexrl.inference | hexrl.defense.graceful.9c1d2a87d7ce4efaa38ad1f8762508d5.tasks | 70bf7079-9 - Received
+worker-1  | 2026-10-22 19:14:38,807 [32mINFO[0m     - hexrl.inference | hexrl.defense.graceful.9c1d2a87d7ce4efaa38ad1f8762508d5.tasks | 2a0661ac-8 - Received
+worker-1  | INFO:     Shutting down
+worker-1  | INFO:     Waiting for application shutdown.
+worker-1  | 2026-10-22 19:14:40,283 [32mINFO[0m     - FastStream app shutting down...
+worker-1  | 2026-10-22 19:14:48,833 [32mINFO[0m     - hexrl.inference | hexrl.defense.graceful.9c1d2a87d7ce4efaa38ad1f8762508d5.tasks | 70bf7079-9 - Processed
+worker-1  | 2026-10-22 19:14:48,839 [32mINFO[0m     - hexrl.inference | hexrl.defense.graceful.9c1d2a87d7ce4efaa38ad1f8762508d5.tasks | 2a0661ac-8 - Processed
+worker-1  | 2026-10-22 19:14:48,840 [32mINFO[0m     - FastStream app shut down gracefully.
+worker-1  | {"timestamp": "2026-10-22T19:14:48.844Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "worker_stopped", "service": "hexrl-platform", "service_version": "0.2.0"}
+worker-1  | INFO:     Application shutdown complete.
+worker-1  | INFO:     Finished server process [1]

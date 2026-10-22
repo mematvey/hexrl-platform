@@ -93,3 +93,16 @@ def test_formatter_ignores_unapproved_fields(log_output):
 def test_invalid_log_level():
     with pytest.raises(ValueError, match="Unknown log level"):
         configure_logging("not-a-level")
+
+
+def test_formatter_keeps_task_fields():
+    record = logging.LogRecord(
+        "hexrl_platform.worker", logging.INFO, __file__, 1, "retry", None, None
+    )
+    record.task_id = "task-1"
+    record.attempt = 2
+    record.reason = "transient_error"
+
+    data = json.loads(JsonFormatter().format(record))
+
+    assert (data["task_id"], data["attempt"], data["reason"]) == ("task-1", 2, "transient_error")

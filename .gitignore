@@ -1,6 +1,8 @@
 homeworks/
 data/replays/
 data/experiments/
+data/tasks/
+metrics/
 mlruns/
 .ruff_cache/
 .pytest_cache/

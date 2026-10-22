@@ -16,6 +16,10 @@ LOG_FIELDS = (
     "component",
     "component_version",
     "error_type",
+    "error",
+    "task_id",
+    "attempt",
+    "reason",
 )
 
 

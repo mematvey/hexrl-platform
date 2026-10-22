@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import AsyncExitStack, asynccontextmanager
@@ -24,6 +25,7 @@ from hexrl_platform.inference.model_loader import LoadedModel, load_champion
 from hexrl_platform.inference.predict import InvalidStateError, predict_action
 from hexrl_platform.inference.schemas import ModelInfo
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
+from hexrl_platform.task_pipeline.publisher import publish_confirmed
 from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.retries import decide
 from hexrl_platform.task_pipeline.runner import InferenceRunner, limit_torch_threads
@@ -36,6 +38,8 @@ WORKER_KEY = "worker"
 DEAD_REASON_HEADER = "x-dead-reason"
 # запас поверх самой долгой обработки, чтобы брокер успел дождаться незавершённых задач
 GRACE_MARGIN_S = 10.0
+# пауза перед возвратом сообщения после сбоя обработчика: иначе недоступная БД крутит цикл вхолостую
+CRASH_PAUSE_S = 1.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,6 +50,7 @@ class WorkerState:
     runner: InferenceRunner
     sessions: async_sessionmaker[AsyncSession]
     max_deliveries: int
+    confirm_timeout_s: float
 
 
 Worker = Annotated[WorkerState, Context(WORKER_KEY)]
@@ -56,20 +61,17 @@ EngineFactory = Callable[[], AsyncEngine]
 async def _dead_letter(
     state: WorkerState, message: RabbitMessage, reason: str, attempt: int
 ) -> None:
-    """Отправляет сообщение в DLQ и только потом подтверждает исходное.
-
-    reject(requeue=False) отправил бы его в DLX основной очереди, то есть в
-    retry-очередь, а оттуда обратно в работу - это путь повтора, а не отказа.
-    """
-    await state.broker.publish(
+    # reject отправил бы сообщение в DLX основной очереди, то есть в retry; нужен именно DLQ
+    await publish_confirmed(
+        state.broker,
         message.body,
         exchange=state.topology.dlx,
         routing_key=state.topology.dead_routing_key,
-        persist=True,
+        timeout_s=state.confirm_timeout_s,
         headers={**message.headers, DEAD_REASON_HEADER: reason},
     )
     await message.ack()
-    logger.warning("task_dead_lettered", extra={"error_type": reason, "status_code": attempt})
+    logger.warning("task_dead_lettered", extra={"reason": reason, "attempt": attempt})
 
 
 async def _handle_failure(
@@ -99,13 +101,31 @@ async def _handle_failure(
         await message.reject()
         logger.warning(
             "task_retry_scheduled",
-            extra={"error_type": type(error).__name__, "status_code": decision.attempt},
+            extra={
+                "error_type": type(error).__name__,
+                "task_id": str(task.task_id),
+                "attempt": decision.attempt,
+            },
         )
         return
     await _dead_letter(state, message, decision.reason, decision.attempt)
 
 
 async def handle_task(message: RabbitMessage, state: Worker) -> None:
+    try:
+        await _process_task(message, state)
+    except Exception as error:  # noqa: BLE001 - воркер не должен падать из-за одной задачи
+        # при ручном ack исключение само ничего не подтверждает: без nack сообщение
+        # осталось бы неподтверждённым и заняло слот prefetch до рестарта воркера
+        logger.error(
+            "task_handler_crashed", extra={"error_type": type(error).__name__, "error": str(error)}
+        )
+        await asyncio.sleep(CRASH_PAUSE_S)
+        if message.committed is None:
+            await message.nack(requeue=True)
+
+
+async def _process_task(message: RabbitMessage, state: Worker) -> None:
     try:
         task = TaskMessage.model_validate_json(bytes(message.body))
     except ValidationError:
@@ -146,10 +166,6 @@ def create_worker_app(
     loader: Loader = load_champion,
     engine_factory: EngineFactory | None = None,
 ) -> AsgiFastStream:
-    """Фабрика приложения.
-
-    loader и engine_factory подменяются в тестах: поднимать MLflow и Postgres не нужно.
-    """
     core = get_settings()
     pipeline = get_pipeline_settings()
     inference = get_inference_settings()
@@ -206,6 +222,7 @@ def create_worker_app(
                     runner=runner,
                     sessions=create_session_factory(engine),
                     max_deliveries=pipeline.max_deliveries,
+                    confirm_timeout_s=pipeline.publish_confirm_timeout_s,
                 ),
             )
             stack.callback(context.reset_global, WORKER_KEY)
@@ -216,7 +233,6 @@ def create_worker_app(
 
     @get
     async def model_route(scope: Scope) -> AsgiResponse:
-        """Какая версия модели сейчас обслуживается."""
         model = loaded.get("model")
         if model is None:
             return AsgiResponse(b'{"detail": "model is not loaded"}', status_code=503)

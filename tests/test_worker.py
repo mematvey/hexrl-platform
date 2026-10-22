@@ -9,13 +9,17 @@ import pandas as pd
 import pytest
 from faststream import TestApp
 from faststream.rabbit import TestRabbitBroker
+from faststream.rabbit.message import RabbitMessage
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from hexrl_platform.db.models import InferenceResult, InferenceTask
 from hexrl_platform.inference.model_loader import LoadedModel
+from hexrl_platform.inference.predict import PredictModel
+from hexrl_platform.task_pipeline import worker as worker_module
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
+from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.schemas import HexState, TaskMessage, TaskStatus
 from hexrl_platform.task_pipeline.topology import build_topology
 from hexrl_platform.task_pipeline.worker import create_worker_app
@@ -24,9 +28,7 @@ MODEL_VERSION = "7"
 STATE = HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
 
 
-class FakeModel:
-    """Подменяет pyfunc-модель: отдаёт действие или падает нужной ошибкой."""
-
+class FakeModel(PredictModel):
     def __init__(self, action: int = 2, error: Exception | None = None) -> None:
         self.action = action
         self.error = error
@@ -306,3 +308,50 @@ async def test_transient_error_is_retried_before_failing(database):
     assert task.attempts == 1
     assert "busy" in task.last_error
     assert results == 0
+
+
+@pytest.fixture
+def settlements(monkeypatch):
+    """Записывает, чем воркер закрыл сообщение: ack или nack(requeue)."""
+    calls: list[str] = []
+
+    async def ack(self, multiple: bool = False) -> None:
+        calls.append("ack")
+
+    async def nack(self, multiple: bool = False, requeue: bool = True) -> None:
+        calls.append(f"nack(requeue={requeue})")
+
+    monkeypatch.setattr(RabbitMessage, "ack", ack)
+    monkeypatch.setattr(RabbitMessage, "nack", nack)
+    monkeypatch.setattr(worker_module, "CRASH_PAUSE_S", 0)
+    return calls
+
+
+async def test_handler_crash_returns_the_message_instead_of_leaving_it_unacked(
+    database, monkeypatch, settlements
+):
+    """БД недоступна: при ручном ack исключение само сообщение не закроет, нужен явный nack."""
+
+    async def database_down(self, message):
+        raise ConnectionError("database is down")
+
+    monkeypatch.setattr(TaskRepository, "ensure_task", database_down)
+    model = FakeModel()
+    app, _ = build_app(database, model)
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, make_message())
+
+    assert settlements == ["nack(requeue=True)"]
+    assert model.calls == 0
+
+
+async def test_message_is_not_acked_when_the_dlq_publish_fails(database, settlements):
+    """Нет получателя DLQ (тест-брокер падает, как упал бы возврат mandatory): не ack."""
+    app, _ = build_app(database, FakeModel())
+
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, {"not": "a task"})
+
+    assert "ack" not in settlements
+    assert settlements == ["nack(requeue=True)"]

@@ -1,3 +1,0 @@
-payload,reason,attempt
-"{""task_id"":""c02ecf6d-6b2c-457d-983e-856d31664de2"",""batch_id"":null,""payload"":{""q"":0,""r"":0,""goal_q"":2,""goal_r"":-1,""steps_remaining"":20},""submitted_at"":""2026-10-22T19:14:59.132651Z""}",max_deliveries_reached,3
-"{""invalid"": ""defense-check""}",validation_error,1

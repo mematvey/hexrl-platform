@@ -1,2 +1,0 @@
-{"timestamp": "2026-10-22T19:04:36.642Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.batch_source", "event": "batch_source_started batch=hw4-A-0afba1fa5db7 queue=hexrl.benchmark.hw4-A-0afba1fa5db7.tasks", "service": "hexrl-platform", "service_version": "0.2.0"}
-{"timestamp": "2026-10-22T19:04:36.785Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.batch_source", "event": "batch_source_finished published=500 rejected=0 invalid=0", "service": "hexrl-platform", "service_version": "0.2.0"}

@@ -12,7 +12,7 @@ from typing import Protocol
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 import psutil
-from faststream.rabbit import RabbitBroker
+from faststream.rabbit import Channel, RabbitBroker
 from pydantic import ValidationError
 
 from hexrl_platform.core.logging import configure_logging
@@ -169,11 +169,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--metrics-interval", type=float, default=0.5)
     parser.add_argument("--queue-prefix")
     parser.add_argument(
+        "--no-backpressure",
+        action="store_true",
+        help="disable publisher confirms for an isolated unbounded baseline",
+    )
+    parser.add_argument(
         "--unbounded",
         action="store_true",
         help="queue without length limit (baseline experiment only; use a separate --queue-prefix)",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.no_backpressure and not (args.unbounded and args.queue_prefix):
+        parser.error("--no-backpressure requires --unbounded and an explicit --queue-prefix")
+    return args
 
 
 async def amain(args: argparse.Namespace) -> SourceStats:
@@ -184,7 +192,10 @@ async def amain(args: argparse.Namespace) -> SourceStats:
 
     stats = SourceStats()
     backoff = Backoff(settings.backoff_base_s, settings.backoff_cap_s, random.Random())
-    broker = RabbitBroker(settings.rabbitmq_url)
+    broker = RabbitBroker(
+        settings.rabbitmq_url,
+        default_channel=Channel(publisher_confirms=not args.no_backpressure),
+    )
     await broker.start()
     metrics_task = None
     try:
@@ -214,3 +225,7 @@ def main() -> None:
         stats.rejected,
         stats.invalid_lines,
     )
+
+
+if __name__ == "__main__":
+    main()

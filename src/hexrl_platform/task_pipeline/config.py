@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class PipelineSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore", env_parse_none_str="null"
+    )
 
     rabbitmq_user: str
     rabbitmq_password: str

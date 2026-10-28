@@ -19,4 +19,4 @@ COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1
 USER appuser
 EXPOSE 8001
-CMD ["hexrl-inference"]
+CMD ["hexrl-worker"]

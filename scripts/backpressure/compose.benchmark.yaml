@@ -1,0 +1,21 @@
+services:
+  db:
+    ports:
+      - "127.0.0.1:${BENCHMARK_DB_PORT:-25432}:5432"
+  app:
+    environment:
+      QUEUE_PREFIX: ${QUEUE_PREFIX:-hexrl.hw4}
+      QUEUE_MAX_LENGTH: ${QUEUE_MAX_LENGTH:-20}
+      ESTIMATED_WORKER_COUNT: ${ESTIMATED_WORKER_COUNT:-1}
+  worker:
+    command: ["python", "/workspace/scripts/backpressure/fault_worker.py"]
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    environment:
+      QUEUE_PREFIX: ${QUEUE_PREFIX:-hexrl.hw4}
+      QUEUE_MAX_LENGTH: ${QUEUE_MAX_LENGTH:-20}
+      INFERENCE_DELAY_S: ${INFERENCE_DELAY_S:-0.5}
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+      PREFETCH_COUNT: ${PREFETCH_COUNT:-2}
+      BENCHMARK_TRANSIENT_FAILURES: ${BENCHMARK_TRANSIENT_FAILURES:-0}

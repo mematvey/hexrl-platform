@@ -1,19 +1,17 @@
 import mlflow
 import pytest
-from asgi_lifespan import LifespanManager
-from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient
 from mlflow.tracking import MlflowClient
 
 from hexrl_platform.inference.config import InferenceSettings
-from hexrl_platform.inference.main import create_app
-from hexrl_platform.inference.model_loader import load_champion
+from hexrl_platform.inference.model_loader import LoadedModel, load_champion
+from hexrl_platform.inference.predict import InvalidStateError, predict_action
 from hexrl_platform.rl.experiment import run_study
 from hexrl_platform.rl.hex_grid import DIRECTIONS
 from hexrl_platform.rl.registry import RegistryConfig, register_study
 from hexrl_platform.rl.replay import ReplayGenerationConfig, generate_replays
 from hexrl_platform.rl.study import StudyConfig
 from hexrl_platform.rl.training import DQNConfig
+from hexrl_platform.task_pipeline.schemas import HexState
 
 MODEL_NAME = "nav-e2e"
 TINY_DQN = DQNConfig(
@@ -55,68 +53,59 @@ def registry(tmp_path_factory):
             mlflow.set_tracking_uri(previous_uri)
 
 
-def make_app(tracking_uri: str) -> FastAPI:
-    settings = InferenceSettings(mlflow_tracking_uri=tracking_uri, model_name=MODEL_NAME)
-    return create_app(loader=lambda _: load_champion(settings))
+def load(tracking_uri: str) -> LoadedModel:
+    return load_champion(InferenceSettings(mlflow_tracking_uri=tracking_uri, model_name=MODEL_NAME))
 
 
-def client_for(app: FastAPI) -> AsyncClient:
-    return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
-
-
-async def test_service_serves_the_registered_champion(registry):
+def test_champion_is_loaded_by_alias(registry):
     tracking_uri, result = registry
-    app = make_app(tracking_uri)
-    async with LifespanManager(app), client_for(app) as client:
-        model = (await client.get("/model")).json()
-        assert model["name"] == MODEL_NAME
-        assert model["alias"] == "champion"
-        assert model["version"] == result.champion_version
-        assert model["run_id"] == result.champion.run_id
-        assert model["max_steps"] == 12
+    loaded = load(tracking_uri)
 
-        response = await client.post(
-            "/process", json={"q": 2, "r": 0, "goal_q": 0, "goal_r": 0, "steps_remaining": 5}
-        )
-        assert response.status_code == 200
-        body = response.json()
-        direction = DIRECTIONS[body["action"]]
-        assert body["direction"] == {"dq": direction.q, "dr": direction.r}
-        assert body["model"]["version"] == result.champion_version
+    assert loaded.name == MODEL_NAME
+    assert loaded.alias == "champion"
+    assert loaded.version == result.champion_version
+    assert loaded.run_id == result.champion.run_id
+    assert loaded.max_steps == 12
+
+
+def test_loaded_model_predicts_a_valid_direction(registry):
+    tracking_uri, _ = registry
+    loaded = load(tracking_uri)
+
+    action = predict_action(loaded.model, HexState(q=2, r=0, goal_q=0, goal_r=0, steps_remaining=5))
+
+    assert 0 <= action < len(DIRECTIONS)
 
 
 @pytest.mark.parametrize(
-    "payload",
+    "state",
     [
         # (0, 1) is a wall on the default map
-        {"q": 0, "r": 1, "goal_q": 2, "goal_r": 0, "steps_remaining": 5},
-        {"q": 9, "r": 9, "goal_q": 0, "goal_r": 0, "steps_remaining": 5},
-        # Above max_steps of the loaded model, which the request schema cannot know
-        {"q": 2, "r": 0, "goal_q": 0, "goal_r": 0, "steps_remaining": 13},
+        HexState(q=0, r=1, goal_q=2, goal_r=0, steps_remaining=5),
+        HexState(q=9, r=9, goal_q=0, goal_r=0, steps_remaining=5),
+        # Above max_steps of the loaded model, which the message schema cannot know
+        HexState(q=2, r=0, goal_q=0, goal_r=0, steps_remaining=13),
     ],
 )
-async def test_states_outside_the_model_map_are_rejected(registry, payload):
+def test_states_outside_the_model_map_are_rejected(registry, state):
     tracking_uri, _ = registry
-    app = make_app(tracking_uri)
-    async with LifespanManager(app), client_for(app) as client:
-        assert (await client.post("/process", json=payload)).status_code == 422
+    loaded = load(tracking_uri)
+
+    with pytest.raises(InvalidStateError):
+        predict_action(loaded.model, state)
 
 
-async def test_alias_switch_reaches_only_a_restarted_service(registry):
+def test_alias_switch_reaches_only_a_reloaded_model(registry):
     tracking_uri, result = registry
     registry_client = MlflowClient(tracking_uri=tracking_uri)
     champion = result.champion_version
     (other,) = set(result.versions.values()) - {champion}
 
-    running = make_app(tracking_uri)
-    async with LifespanManager(running), client_for(running) as client:
-        registry_client.set_registered_model_alias(MODEL_NAME, "champion", other)
-        try:
-            # The model is loaded once at startup, so a running process keeps the old version
-            assert (await client.get("/model")).json()["version"] == champion
-
-            restarted = make_app(tracking_uri)
-            async with LifespanManager(restarted), client_for(restarted) as fresh:
-                assert (await fresh.get("/model")).json()["version"] == other
-        finally:
-            registry_client.set_registered_model_alias(MODEL_NAME, "champion", champion)
+    running = load(tracking_uri)
+    registry_client.set_registered_model_alias(MODEL_NAME, "champion", other)
+    try:
+        # The model is loaded once at startup, so a running worker keeps the old version
+        assert running.version == champion
+        assert load(tracking_uri).version == other
+    finally:
+        registry_client.set_registered_model_alias(MODEL_NAME, "champion", champion)

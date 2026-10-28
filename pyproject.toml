@@ -1,12 +1,15 @@
 [project]
 name = "hexrl-platform"
-version = "0.2.0"
-description = "A platform for learning RL in interactive way with clean visualization"
+version = "0.3.0"
+description = "Platform for training, evaluating and serving RL agents"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "anyio>=4.15,<5",
     "asyncpg>=0.31.0",
     "fastapi>=0.141.1",
+    "faststream[rabbit]>=0.7.7",
+    "psutil>=7.2.2",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0.54",
@@ -14,7 +17,8 @@ dependencies = [
 ]
 
 [project.scripts]
-hexrl-inference = "hexrl_platform.inference.main:main"
+hexrl-worker = "hexrl_platform.task_pipeline.worker:main"
+hexrl-batch-source = "hexrl_platform.task_pipeline.batch_source:main"
 hexrl-platform = "hexrl_platform.main:main"
 hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"
@@ -35,6 +39,8 @@ dev = [
     "ty>=0.0.83",
     "pre-commit>=4.6.2",
     "pytest-cov>=7.1.0",
+    "aiosqlite>=0.21",
+    "testcontainers[rabbitmq]>=4.15.0",
 ]
 experiments = [
     "matplotlib>=3.10",
@@ -87,6 +93,8 @@ explicit = true
 testpaths=["tests"]
 asyncio_mode="auto"
 pythonpath=["."]
+addopts = "-m 'not integration'"
+markers = ["integration: tests with real Docker services"]
 
 [tool.ruff]
 target-version="py312"

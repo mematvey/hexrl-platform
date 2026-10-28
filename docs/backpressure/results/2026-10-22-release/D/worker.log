@@ -1,0 +1,1151 @@
+worker-1  | INFO:     Started server process [1]
+worker-1  | INFO:     Waiting for application startup.
+worker-1  | {"timestamp": "2026-10-22T18:29:51.152Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "model_loaded", "service": "hexrl-platform", "service_version": "0.2.0", "component": "hex-navigation-smoke", "component_version": "1"}
+worker-1  | 2026-10-22 18:29:51,152 [32mINFO[0m     - FastStream app starting...
+worker-1  | INFO:     Application startup complete.
+worker-1  | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+worker-1  | 2026-10-22 18:29:51,154 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks |            - `HandleTask` waiting for messages
+worker-1  | 2026-10-22 18:29:51,164 [32mINFO[0m     - FastStream app started successfully! To exit, press CTRL+C
+worker-1  | 2026-10-22 18:29:54,397 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fe38a90d-8 - Received
+worker-1  | 2026-10-22 18:29:54,434 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71bd05b6-8 - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:54.427Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "fe38a90d-8b20-5670-b6a7-1137399c68e5", "attempt": 1}
+worker-1  | 2026-10-22 18:29:54,428 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fe38a90d-8 - Processed
+worker-1  | 2026-10-22 18:29:54,428 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3a8990ac-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:54.452Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "71bd05b6-881c-5a80-aedb-f2ce01747068", "attempt": 1}
+worker-1  | 2026-10-22 18:29:54,452 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71bd05b6-8 - Processed
+worker-1  | 2026-10-22 18:29:54,453 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3e6b8ebe-9 - Received
+worker-1  | 2026-10-22 18:29:54,948 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3a8990ac-2 - Processed
+worker-1  | 2026-10-22 18:29:54,949 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8caf3921-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:54.962Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:29:54.968Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:29:54,968 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3e6b8ebe-9 - Processed
+worker-1  | 2026-10-22 18:29:54,968 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 045d3e65-a - Received
+worker-1  | 2026-10-22 18:29:55,470 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8caf3921-c - Processed
+worker-1  | 2026-10-22 18:29:55,471 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f8084b7-d - Received
+worker-1  | 2026-10-22 18:29:55,482 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 045d3e65-a - Processed
+worker-1  | 2026-10-22 18:29:55,483 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4e0debb6-a - Received
+worker-1  | 2026-10-22 18:29:55,991 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f8084b7-d - Processed
+worker-1  | 2026-10-22 18:29:55,992 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f3d6603-8 - Received
+worker-1  | 2026-10-22 18:29:56,020 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4e0debb6-a - Processed
+worker-1  | 2026-10-22 18:29:56,020 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a13ab01-0 - Received
+worker-1  | 2026-10-22 18:29:56,531 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f3d6603-8 - Processed
+worker-1  | 2026-10-22 18:29:56,531 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a41833e0-f - Received
+worker-1  | 2026-10-22 18:29:56,540 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a13ab01-0 - Processed
+worker-1  | 2026-10-22 18:29:56,540 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c46b87b7-e - Received
+worker-1  | 2026-10-22 18:29:57,056 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a41833e0-f - Processed
+worker-1  | 2026-10-22 18:29:57,057 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be3662a6-4 - Received
+worker-1  | 2026-10-22 18:29:57,058 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c46b87b7-e - Processed
+worker-1  | 2026-10-22 18:29:57,059 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 90ed74e2-a - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:57.567Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:29:57.570Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:29:57.576Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:29:57,576 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be3662a6-4 - Processed
+worker-1  | 2026-10-22 18:29:57,577 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f4d73427-3 - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:57.578Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:29:57,578 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 90ed74e2-a - Processed
+worker-1  | 2026-10-22 18:29:57,578 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e57a9a66-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:58.089Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:29:58.098Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:29:58,098 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e57a9a66-c - Processed
+worker-1  | 2026-10-22 18:29:58,099 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f4d73427-3 - Processed
+worker-1  | 2026-10-22 18:29:58,099 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bbfd8994-5 - Received
+worker-1  | 2026-10-22 18:29:58,099 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3602de04-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:29:58.609Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:29:58.621Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:29:58,622 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bbfd8994-5 - Processed
+worker-1  | 2026-10-22 18:29:58,622 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3602de04-c - Processed
+worker-1  | 2026-10-22 18:29:58,622 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a2172fa4-d - Received
+worker-1  | 2026-10-22 18:29:58,622 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e68ce4d1-9 - Received
+worker-1  | INFO:     Shutting down
+worker-1  | INFO:     Waiting for application shutdown.
+worker-1  | 2026-10-22 18:29:59,094 [32mINFO[0m     - FastStream app shutting down...
+worker-1  | 2026-10-22 18:29:59,143 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e68ce4d1-9 - Processed
+worker-1  | 2026-10-22 18:29:59,149 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a2172fa4-d - Processed
+worker-1  | 2026-10-22 18:29:59,151 [32mINFO[0m     - FastStream app shut down gracefully.
+worker-1  | {"timestamp": "2026-10-22T18:29:59.155Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "worker_stopped", "service": "hexrl-platform", "service_version": "0.2.0"}
+worker-1  | INFO:     Application shutdown complete.
+worker-1  | INFO:     Finished server process [1]
+worker-1  | INFO:     Started server process [1]
+worker-1  | INFO:     Waiting for application startup.
+worker-1  | {"timestamp": "2026-10-22T18:30:12.962Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "model_loaded", "service": "hexrl-platform", "service_version": "0.2.0", "component": "hex-navigation-smoke", "component_version": "1"}
+worker-1  | 2026-10-22 18:30:12,963 [32mINFO[0m     - FastStream app starting...
+worker-1  | INFO:     Application startup complete.
+worker-1  | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+worker-1  | 2026-10-22 18:30:12,965 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks |            - `HandleTask` waiting for messages
+worker-1  | 2026-10-22 18:30:12,975 [32mINFO[0m     - FastStream app started successfully! To exit, press CTRL+C
+worker-1  | 2026-10-22 18:30:12,975 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a8ab765-b - Received
+worker-1  | 2026-10-22 18:30:12,976 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1c0a411-5 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:13.524Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "1a8ab765-ba8c-5bf8-bfa3-542f668e08b0", "attempt": 1}
+worker-1  | 2026-10-22 18:30:13,525 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a8ab765-b - Processed
+worker-1  | {"timestamp": "2026-10-22T18:30:13.525Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "d1c0a411-567d-5f62-ade1-8b9bb726e3d0", "attempt": 1}
+worker-1  | 2026-10-22 18:30:13,525 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1c0a411-5 - Processed
+worker-1  | 2026-10-22 18:30:13,525 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 30892760-0 - Received
+worker-1  | 2026-10-22 18:30:13,525 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d685cead-b - Received
+worker-1  | 2026-10-22 18:30:14,057 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d685cead-b - Processed
+worker-1  | 2026-10-22 18:30:14,058 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0688b259-7 - Received
+worker-1  | 2026-10-22 18:30:14,059 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 30892760-0 - Processed
+worker-1  | 2026-10-22 18:30:14,060 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6a9a94d5-9 - Received
+worker-1  | 2026-10-22 18:30:14,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0688b259-7 - Processed
+worker-1  | 2026-10-22 18:30:14,576 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 44bf5dba-1 - Received
+worker-1  | 2026-10-22 18:30:14,584 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6a9a94d5-9 - Processed
+worker-1  | 2026-10-22 18:30:14,585 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e74069e-2 - Received
+worker-1  | 2026-10-22 18:30:15,103 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 44bf5dba-1 - Processed
+worker-1  | 2026-10-22 18:30:15,104 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b47edb53-1 - Received
+worker-1  | 2026-10-22 18:30:15,104 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e74069e-2 - Processed
+worker-1  | 2026-10-22 18:30:15,105 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c3f5fed0-c - Received
+worker-1  | 2026-10-22 18:30:15,628 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c3f5fed0-c - Processed
+worker-1  | 2026-10-22 18:30:15,629 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8741c952-e - Received
+worker-1  | 2026-10-22 18:30:15,630 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b47edb53-1 - Processed
+worker-1  | 2026-10-22 18:30:15,631 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 290e8259-0 - Received
+worker-1  | 2026-10-22 18:30:16,156 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8741c952-e - Processed
+worker-1  | 2026-10-22 18:30:16,157 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a0f7a2c6-6 - Received
+worker-1  | 2026-10-22 18:30:16,158 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 290e8259-0 - Processed
+worker-1  | 2026-10-22 18:30:16,159 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f74364c-c - Received
+worker-1  | 2026-10-22 18:30:16,679 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a0f7a2c6-6 - Processed
+worker-1  | 2026-10-22 18:30:16,680 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 279442d6-f - Received
+worker-1  | 2026-10-22 18:30:16,681 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f74364c-c - Processed
+worker-1  | 2026-10-22 18:30:16,682 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b1fd7a0c-1 - Received
+worker-1  | 2026-10-22 18:30:17,204 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 279442d6-f - Processed
+worker-1  | 2026-10-22 18:30:17,205 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 408f804f-c - Received
+worker-1  | 2026-10-22 18:30:17,206 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b1fd7a0c-1 - Processed
+worker-1  | 2026-10-22 18:30:17,207 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 226c60bd-c - Received
+worker-1  | 2026-10-22 18:30:17,726 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 408f804f-c - Processed
+worker-1  | 2026-10-22 18:30:17,727 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e959398f-6 - Received
+worker-1  | 2026-10-22 18:30:17,731 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 226c60bd-c - Processed
+worker-1  | 2026-10-22 18:30:17,732 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f50cbe5-c - Received
+worker-1  | 2026-10-22 18:30:18,252 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e959398f-6 - Processed
+worker-1  | 2026-10-22 18:30:18,254 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f5a6ba6-a - Received
+worker-1  | 2026-10-22 18:30:18,254 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f50cbe5-c - Processed
+worker-1  | 2026-10-22 18:30:18,255 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7b4c43-1 - Received
+worker-1  | 2026-10-22 18:30:18,775 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3f5a6ba6-a - Processed
+worker-1  | 2026-10-22 18:30:18,775 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 10aef4b1-7 - Received
+worker-1  | 2026-10-22 18:30:18,784 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7b4c43-1 - Processed
+worker-1  | 2026-10-22 18:30:18,784 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 88e0dfd4-3 - Received
+worker-1  | 2026-10-22 18:30:19,301 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 10aef4b1-7 - Processed
+worker-1  | 2026-10-22 18:30:19,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 24f271d7-c - Received
+worker-1  | 2026-10-22 18:30:19,303 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 88e0dfd4-3 - Processed
+worker-1  | 2026-10-22 18:30:19,304 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8786730-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:19.814Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:19.822Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:19,823 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 24f271d7-c - Processed
+worker-1  | 2026-10-22 18:30:19,823 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8786730-2 - Processed
+worker-1  | 2026-10-22 18:30:19,823 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fe38a90d-8 - Received
+worker-1  | 2026-10-22 18:30:19,824 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71bd05b6-8 - Received
+worker-1  | 2026-10-22 18:30:20,346 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fe38a90d-8 - Processed
+worker-1  | 2026-10-22 18:30:20,347 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5f69874f-0 - Received
+worker-1  | 2026-10-22 18:30:20,348 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71bd05b6-8 - Processed
+worker-1  | 2026-10-22 18:30:20,348 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 94c7b090-0 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:20.859Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:30:20,866 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5f69874f-0 - Processed
+worker-1  | 2026-10-22 18:30:20,866 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b463f1d-1 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:20.870Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:20,870 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 94c7b090-0 - Processed
+worker-1  | 2026-10-22 18:30:20,871 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7dd798-1 - Received
+worker-1  | INFO:     Started server process [1]
+worker-1  | INFO:     Waiting for application startup.
+worker-1  | {"timestamp": "2026-10-22T18:30:26.914Z", "level": "INFO", "logger": "hexrl_platform.task_pipeline.worker", "event": "model_loaded", "service": "hexrl-platform", "service_version": "0.2.0", "component": "hex-navigation-smoke", "component_version": "1"}
+worker-1  | 2026-10-22 18:30:26,915 [32mINFO[0m     - FastStream app starting...
+worker-1  | INFO:     Application startup complete.
+worker-1  | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+worker-1  | 2026-10-22 18:30:26,917 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks |            - `HandleTask` waiting for messages
+worker-1  | 2026-10-22 18:30:26,924 [32mINFO[0m     - FastStream app started successfully! To exit, press CTRL+C
+worker-1  | 2026-10-22 18:30:26,924 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b463f1d-1 - Received
+worker-1  | 2026-10-22 18:30:26,924 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7dd798-1 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:27.517Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "0b463f1d-1b75-56fb-9aed-8b9e5d296988", "attempt": 1}
+worker-1  | 2026-10-22 18:30:27,517 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b463f1d-1 - Processed
+worker-1  | {"timestamp": "2026-10-22T18:30:27.517Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_retry_scheduled", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "RuntimeError", "task_id": "db7dd798-145a-5195-bbb1-71268dedc3de", "attempt": 1}
+worker-1  | 2026-10-22 18:30:27,517 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7dd798-1 - Processed
+worker-1  | 2026-10-22 18:30:27,518 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a8ab765-b - Received
+worker-1  | 2026-10-22 18:30:27,518 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1c0a411-5 - Received
+worker-1  | 2026-10-22 18:30:28,045 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1a8ab765-b - Processed
+worker-1  | 2026-10-22 18:30:28,046 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b21fb237-3 - Received
+worker-1  | 2026-10-22 18:30:28,047 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1c0a411-5 - Processed
+worker-1  | 2026-10-22 18:30:28,047 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 67c17296-1 - Received
+worker-1  | 2026-10-22 18:30:21,244 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b21fb237-3 - Processed
+worker-1  | 2026-10-22 18:30:21,245 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0692defb-6 - Received
+worker-1  | 2026-10-22 18:30:21,247 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 67c17296-1 - Processed
+worker-1  | 2026-10-22 18:30:21,248 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dc413c3e-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:21.758Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:21.772Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:21,772 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0692defb-6 - Processed
+worker-1  | 2026-10-22 18:30:21,772 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dc413c3e-f - Processed
+worker-1  | 2026-10-22 18:30:21,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b4f6831-a - Received
+worker-1  | 2026-10-22 18:30:21,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02de83da-9 - Received
+worker-1  | 2026-10-22 18:30:22,296 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02de83da-9 - Processed
+worker-1  | 2026-10-22 18:30:22,297 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73354e8c-9 - Received
+worker-1  | 2026-10-22 18:30:22,298 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b4f6831-a - Processed
+worker-1  | 2026-10-22 18:30:22,299 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 502e4fbc-9 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:22.815Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:22.825Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:22,826 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 502e4fbc-9 - Processed
+worker-1  | 2026-10-22 18:30:22,826 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73354e8c-9 - Processed
+worker-1  | 2026-10-22 18:30:22,826 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 970ab7a7-4 - Received
+worker-1  | 2026-10-22 18:30:22,827 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d32baaa4-a - Received
+worker-1  | 2026-10-22 18:30:23,346 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 970ab7a7-4 - Processed
+worker-1  | 2026-10-22 18:30:23,346 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7e3c6acd-8 - Received
+worker-1  | 2026-10-22 18:30:23,348 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d32baaa4-a - Processed
+worker-1  | 2026-10-22 18:30:23,348 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 51f34c9d-3 - Received
+worker-1  | 2026-10-22 18:30:23,868 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7e3c6acd-8 - Processed
+worker-1  | 2026-10-22 18:30:23,869 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d52fc6f4-7 - Received
+worker-1  | 2026-10-22 18:30:23,870 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 51f34c9d-3 - Processed
+worker-1  | 2026-10-22 18:30:23,871 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4a3544b7-1 - Received
+worker-1  | 2026-10-22 18:30:24,412 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4a3544b7-1 - Processed
+worker-1  | 2026-10-22 18:30:24,413 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e409a67c-1 - Received
+worker-1  | 2026-10-22 18:30:24,420 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d52fc6f4-7 - Processed
+worker-1  | 2026-10-22 18:30:24,421 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bd3f3301-4 - Received
+worker-1  | 2026-10-22 18:30:24,935 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e409a67c-1 - Processed
+worker-1  | 2026-10-22 18:30:24,937 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d7f414c7-7 - Received
+worker-1  | 2026-10-22 18:30:24,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bd3f3301-4 - Processed
+worker-1  | 2026-10-22 18:30:24,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f91884d0-8 - Received
+worker-1  | 2026-10-22 18:30:24,494 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d7f414c7-7 - Processed
+worker-1  | 2026-10-22 18:30:24,494 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2931d476-2 - Received
+worker-1  | 2026-10-22 18:30:24,504 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f91884d0-8 - Processed
+worker-1  | 2026-10-22 18:30:24,505 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c211827-2 - Received
+worker-1  | 2026-10-22 18:30:25,015 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2931d476-2 - Processed
+worker-1  | 2026-10-22 18:30:25,017 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c211827-2 - Processed
+worker-1  | 2026-10-22 18:30:25,023 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 869f97ed-8 - Received
+worker-1  | 2026-10-22 18:30:25,024 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8cd8d02b-0 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:25.535Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:30:25,545 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 869f97ed-8 - Processed
+worker-1  | 2026-10-22 18:30:25,545 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15adefe2-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:25.548Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:25,548 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8cd8d02b-0 - Processed
+worker-1  | 2026-10-22 18:30:25,550 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71293e77-5 - Received
+worker-1  | 2026-10-22 18:30:26,082 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15adefe2-2 - Processed
+worker-1  | 2026-10-22 18:30:26,083 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2ff27b41-0 - Received
+worker-1  | 2026-10-22 18:30:26,084 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71293e77-5 - Processed
+worker-1  | 2026-10-22 18:30:26,085 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 744026a6-3 - Received
+worker-1  | 2026-10-22 18:30:26,598 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2ff27b41-0 - Processed
+worker-1  | 2026-10-22 18:30:26,599 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4bbe420d-2 - Received
+worker-1  | 2026-10-22 18:30:26,609 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 744026a6-3 - Processed
+worker-1  | 2026-10-22 18:30:26,610 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f2fe16cd-b - Received
+worker-1  | 2026-10-22 18:30:27,123 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4bbe420d-2 - Processed
+worker-1  | 2026-10-22 18:30:27,124 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b463f1d-1 - Received
+worker-1  | 2026-10-22 18:30:27,129 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f2fe16cd-b - Processed
+worker-1  | 2026-10-22 18:30:27,129 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7dd798-1 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:27.643Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:30:27,646 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b463f1d-1 - Processed
+worker-1  | 2026-10-22 18:30:27,647 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4825a585-e - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:27.649Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 2, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:27,649 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db7dd798-1 - Processed
+worker-1  | 2026-10-22 18:30:27,649 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f8a9cb61-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:28.162Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:28.172Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:28,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f8a9cb61-f - Processed
+worker-1  | 2026-10-22 18:30:28,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0331ec50-2 - Received
+worker-1  | 2026-10-22 18:30:28,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4825a585-e - Processed
+worker-1  | 2026-10-22 18:30:28,174 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 426fa51a-d - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:28.691Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:30:28,691 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0331ec50-2 - Processed
+worker-1  | 2026-10-22 18:30:28,692 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 467222bb-9 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:28.698Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:28,698 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 426fa51a-d - Processed
+worker-1  | 2026-10-22 18:30:28,698 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a700f3ad-8 - Received
+worker-1  | 2026-10-22 18:30:28,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 467222bb-9 - Processed
+worker-1  | 2026-10-22 18:30:28,774 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bc8e1cbf-5 - Received
+worker-1  | 2026-10-22 18:30:28,808 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a700f3ad-8 - Processed
+worker-1  | 2026-10-22 18:30:28,808 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | efa0bfe5-b - Received
+worker-1  | 2026-10-22 18:30:29,221 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bc8e1cbf-5 - Processed
+worker-1  | 2026-10-22 18:30:29,221 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e12dba52-8 - Received
+worker-1  | 2026-10-22 18:30:29,256 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | efa0bfe5-b - Processed
+worker-1  | 2026-10-22 18:30:29,257 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 94f26d6a-2 - Received
+worker-1  | 2026-10-22 18:30:29,741 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e12dba52-8 - Processed
+worker-1  | 2026-10-22 18:30:29,742 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b25416a1-5 - Received
+worker-1  | 2026-10-22 18:30:29,771 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 94f26d6a-2 - Processed
+worker-1  | 2026-10-22 18:30:29,772 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c48b7a9-e - Received
+worker-1  | 2026-10-22 18:30:30,262 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b25416a1-5 - Processed
+worker-1  | 2026-10-22 18:30:30,263 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b305c076-a - Received
+worker-1  | 2026-10-22 18:30:30,286 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c48b7a9-e - Processed
+worker-1  | 2026-10-22 18:30:30,286 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5b34a422-9 - Received
+worker-1  | 2026-10-22 18:30:30,783 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b305c076-a - Processed
+worker-1  | 2026-10-22 18:30:30,783 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a7853785-3 - Received
+worker-1  | 2026-10-22 18:30:30,800 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5b34a422-9 - Processed
+worker-1  | 2026-10-22 18:30:30,801 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 53893f50-0 - Received
+worker-1  | 2026-10-22 18:30:31,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a7853785-3 - Processed
+worker-1  | 2026-10-22 18:30:31,303 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f5479fc4-f - Received
+worker-1  | 2026-10-22 18:30:31,319 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 53893f50-0 - Processed
+worker-1  | 2026-10-22 18:30:31,320 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 58d491ce-0 - Received
+worker-1  | 2026-10-22 18:30:31,819 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f5479fc4-f - Processed
+worker-1  | 2026-10-22 18:30:31,820 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e988c527-1 - Received
+worker-1  | 2026-10-22 18:30:31,885 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 58d491ce-0 - Processed
+worker-1  | 2026-10-22 18:30:31,886 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aa42aed2-9 - Received
+worker-1  | 2026-10-22 18:30:32,336 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e988c527-1 - Processed
+worker-1  | 2026-10-22 18:30:32,336 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afa581ab-3 - Received
+worker-1  | 2026-10-22 18:30:32,450 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aa42aed2-9 - Processed
+worker-1  | 2026-10-22 18:30:32,451 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c88766a-8 - Received
+worker-1  | 2026-10-22 18:30:32,865 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afa581ab-3 - Processed
+worker-1  | 2026-10-22 18:30:32,865 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a645910b-6 - Received
+worker-1  | 2026-10-22 18:30:33,019 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c88766a-8 - Processed
+worker-1  | 2026-10-22 18:30:33,019 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3384c33-0 - Received
+worker-1  | 2026-10-22 18:30:33,384 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a645910b-6 - Processed
+worker-1  | 2026-10-22 18:30:33,385 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4397c549-0 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:33.531Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:33.538Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:33,538 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3384c33-0 - Processed
+worker-1  | 2026-10-22 18:30:33,538 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 901b6a71-c - Received
+worker-1  | 2026-10-22 18:30:33,908 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4397c549-0 - Processed
+worker-1  | 2026-10-22 18:30:33,909 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 229cc114-5 - Received
+worker-1  | 2026-10-22 18:30:34,055 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 901b6a71-c - Processed
+worker-1  | 2026-10-22 18:30:34,055 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50c8ae6a-4 - Received
+worker-1  | 2026-10-22 18:30:34,439 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 229cc114-5 - Processed
+worker-1  | 2026-10-22 18:30:34,440 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c8fea68-6 - Received
+worker-1  | 2026-10-22 18:30:34,109 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50c8ae6a-4 - Processed
+worker-1  | 2026-10-22 18:30:34,109 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4de5899b-f - Received
+worker-1  | 2026-10-22 18:30:34,459 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c8fea68-6 - Processed
+worker-1  | 2026-10-22 18:30:34,460 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27370a8c-b - Received
+worker-1  | 2026-10-22 18:30:34,627 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4de5899b-f - Processed
+worker-1  | 2026-10-22 18:30:34,628 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b38f8d7-6 - Received
+worker-1  | 2026-10-22 18:30:34,976 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27370a8c-b - Processed
+worker-1  | 2026-10-22 18:30:34,976 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dd27239d-c - Received
+worker-1  | 2026-10-22 18:30:35,142 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b38f8d7-6 - Processed
+worker-1  | 2026-10-22 18:30:35,143 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4211824e-4 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:35.483Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:35.489Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:35,489 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dd27239d-c - Processed
+worker-1  | 2026-10-22 18:30:35,489 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d48432d5-7 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:35.651Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:35.658Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:35,658 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4211824e-4 - Processed
+worker-1  | 2026-10-22 18:30:35,658 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b5c41289-d - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:35.997Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:36.006Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:36,007 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d48432d5-7 - Processed
+worker-1  | 2026-10-22 18:30:36,020 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 401c4191-a - Received
+worker-1  | 2026-10-22 18:30:36,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b5c41289-d - Processed
+worker-1  | 2026-10-22 18:30:36,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 51acd7da-7 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:36.533Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:36.544Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:36,544 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 401c4191-a - Processed
+worker-1  | 2026-10-22 18:30:36,544 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 324fd7d5-5 - Received
+worker-1  | 2026-10-22 18:30:36,715 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 51acd7da-7 - Processed
+worker-1  | 2026-10-22 18:30:36,716 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 49c7b23d-b - Received
+worker-1  | 2026-10-22 18:30:37,057 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 324fd7d5-5 - Processed
+worker-1  | 2026-10-22 18:30:37,058 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b20d10b-8 - Received
+worker-1  | 2026-10-22 18:30:37,233 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 49c7b23d-b - Processed
+worker-1  | 2026-10-22 18:30:37,234 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ecdf4110-0 - Received
+worker-1  | 2026-10-22 18:30:37,573 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b20d10b-8 - Processed
+worker-1  | 2026-10-22 18:30:37,573 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | af373d05-4 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:37.746Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:37.753Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:37,753 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ecdf4110-0 - Processed
+worker-1  | 2026-10-22 18:30:37,753 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6a9b0620-0 - Received
+worker-1  | 2026-10-22 18:30:38,091 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | af373d05-4 - Processed
+worker-1  | 2026-10-22 18:30:38,091 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0f80bb42-d - Received
+worker-1  | 2026-10-22 18:30:38,270 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6a9b0620-0 - Processed
+worker-1  | 2026-10-22 18:30:38,271 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3cbd7df-6 - Received
+worker-1  | 2026-10-22 18:30:38,605 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0f80bb42-d - Processed
+worker-1  | 2026-10-22 18:30:38,606 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1b7604e0-8 - Received
+worker-1  | 2026-10-22 18:30:38,787 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3cbd7df-6 - Processed
+worker-1  | 2026-10-22 18:30:38,788 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d988dcde-a - Received
+worker-1  | 2026-10-22 18:30:39,129 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1b7604e0-8 - Processed
+worker-1  | 2026-10-22 18:30:39,129 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 12091a5a-6 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:39.296Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:39.304Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:39,304 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d988dcde-a - Processed
+worker-1  | 2026-10-22 18:30:39,304 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a5ebe696-b - Received
+worker-1  | 2026-10-22 18:30:39,147 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 12091a5a-6 - Processed
+worker-1  | 2026-10-22 18:30:39,148 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fc0c137e-3 - Received
+worker-1  | 2026-10-22 18:30:39,332 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a5ebe696-b - Processed
+worker-1  | 2026-10-22 18:30:39,333 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 58627606-5 - Received
+worker-1  | 2026-10-22 18:30:39,670 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fc0c137e-3 - Processed
+worker-1  | 2026-10-22 18:30:39,671 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eef3ca36-5 - Received
+worker-1  | 2026-10-22 18:30:39,848 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 58627606-5 - Processed
+worker-1  | 2026-10-22 18:30:39,849 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d4fef783-0 - Received
+worker-1  | 2026-10-22 18:30:40,187 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eef3ca36-5 - Processed
+worker-1  | 2026-10-22 18:30:40,187 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 461b1f37-d - Received
+worker-1  | 2026-10-22 18:30:40,364 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d4fef783-0 - Processed
+worker-1  | 2026-10-22 18:30:40,365 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2d283b67-a - Received
+worker-1  | 2026-10-22 18:30:40,715 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 461b1f37-d - Processed
+worker-1  | 2026-10-22 18:30:40,716 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b7f4bbe8-2 - Received
+worker-1  | 2026-10-22 18:30:40,881 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2d283b67-a - Processed
+worker-1  | 2026-10-22 18:30:40,882 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b6f4f4a1-4 - Received
+worker-1  | 2026-10-22 18:30:41,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b7f4bbe8-2 - Processed
+worker-1  | 2026-10-22 18:30:41,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1459ce4d-2 - Received
+worker-1  | 2026-10-22 18:30:41,398 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b6f4f4a1-4 - Processed
+worker-1  | 2026-10-22 18:30:41,399 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fb846b6d-4 - Received
+worker-1  | 2026-10-22 18:30:41,749 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1459ce4d-2 - Processed
+worker-1  | 2026-10-22 18:30:41,750 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 03fdba58-2 - Received
+worker-1  | 2026-10-22 18:30:41,914 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fb846b6d-4 - Processed
+worker-1  | 2026-10-22 18:30:41,915 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d691bdf8-b - Received
+worker-1  | 2026-10-22 18:30:42,277 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 03fdba58-2 - Processed
+worker-1  | 2026-10-22 18:30:42,278 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6ff5f9bb-8 - Received
+worker-1  | 2026-10-22 18:30:42,431 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d691bdf8-b - Processed
+worker-1  | 2026-10-22 18:30:42,431 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e894e195-a - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:42.803Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:42.811Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:42,812 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6ff5f9bb-8 - Processed
+worker-1  | 2026-10-22 18:30:42,812 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 91b41bb2-6 - Received
+worker-1  | 2026-10-22 18:30:42,950 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e894e195-a - Processed
+worker-1  | 2026-10-22 18:30:42,951 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 619b98a8-8 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:43.328Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:43.334Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:43,334 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 91b41bb2-6 - Processed
+worker-1  | 2026-10-22 18:30:43,334 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d74b38ff-6 - Received
+worker-1  | 2026-10-22 18:30:43,471 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 619b98a8-8 - Processed
+worker-1  | 2026-10-22 18:30:43,472 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15d31ecc-8 - Received
+worker-1  | 2026-10-22 18:30:43,853 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d74b38ff-6 - Processed
+worker-1  | 2026-10-22 18:30:43,854 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c5395d4-5 - Received
+worker-1  | 2026-10-22 18:30:43,994 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15d31ecc-8 - Processed
+worker-1  | 2026-10-22 18:30:43,994 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f60b6d93-a - Received
+worker-1  | 2026-10-22 18:30:44,384 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c5395d4-5 - Processed
+worker-1  | 2026-10-22 18:30:44,385 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 56a6bdfb-2 - Received
+worker-1  | 2026-10-22 18:30:44,509 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f60b6d93-a - Processed
+worker-1  | 2026-10-22 18:30:44,509 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b90b2dc-a - Received
+worker-1  | 2026-10-22 18:30:44,410 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 56a6bdfb-2 - Processed
+worker-1  | 2026-10-22 18:30:44,411 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bef80fb0-7 - Received
+worker-1  | 2026-10-22 18:30:44,525 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4b90b2dc-a - Processed
+worker-1  | 2026-10-22 18:30:44,526 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c07915e-8 - Received
+worker-1  | 2026-10-22 18:30:44,935 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bef80fb0-7 - Processed
+worker-1  | 2026-10-22 18:30:44,936 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0827c5c-7 - Received
+worker-1  | 2026-10-22 18:30:45,045 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c07915e-8 - Processed
+worker-1  | 2026-10-22 18:30:45,046 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f3a7aeaf-e - Received
+worker-1  | 2026-10-22 18:30:45,457 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0827c5c-7 - Processed
+worker-1  | 2026-10-22 18:30:45,458 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f3477824-4 - Received
+worker-1  | 2026-10-22 18:30:45,568 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f3a7aeaf-e - Processed
+worker-1  | 2026-10-22 18:30:45,568 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 74751b94-5 - Received
+worker-1  | 2026-10-22 18:30:45,990 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f3477824-4 - Processed
+worker-1  | 2026-10-22 18:30:45,990 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 068be876-5 - Received
+worker-1  | 2026-10-22 18:30:46,090 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 74751b94-5 - Processed
+worker-1  | 2026-10-22 18:30:46,091 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8db84631-0 - Received
+worker-1  | 2026-10-22 18:30:46,506 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 068be876-5 - Processed
+worker-1  | 2026-10-22 18:30:46,506 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8435852f-0 - Received
+worker-1  | 2026-10-22 18:30:46,606 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8db84631-0 - Processed
+worker-1  | 2026-10-22 18:30:46,607 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27556cab-e - Received
+worker-1  | 2026-10-22 18:30:47,020 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8435852f-0 - Processed
+worker-1  | 2026-10-22 18:30:47,021 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cae17fb9-f - Received
+worker-1  | 2026-10-22 18:30:47,123 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27556cab-e - Processed
+worker-1  | 2026-10-22 18:30:47,124 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25e11582-7 - Received
+worker-1  | 2026-10-22 18:30:47,538 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cae17fb9-f - Processed
+worker-1  | 2026-10-22 18:30:47,539 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c7c65eb-7 - Received
+worker-1  | 2026-10-22 18:30:47,640 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25e11582-7 - Processed
+worker-1  | 2026-10-22 18:30:47,641 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4362d9e2-6 - Received
+worker-1  | 2026-10-22 18:30:48,077 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c7c65eb-7 - Processed
+worker-1  | 2026-10-22 18:30:48,077 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1ad53d69-c - Received
+worker-1  | 2026-10-22 18:30:48,163 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4362d9e2-6 - Processed
+worker-1  | 2026-10-22 18:30:48,164 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 23180f9a-d - Received
+worker-1  | 2026-10-22 18:30:48,638 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1ad53d69-c - Processed
+worker-1  | 2026-10-22 18:30:48,639 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f196566d-7 - Received
+worker-1  | 2026-10-22 18:30:48,679 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 23180f9a-d - Processed
+worker-1  | 2026-10-22 18:30:48,680 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 437403f9-9 - Received
+worker-1  | 2026-10-22 18:30:49,165 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f196566d-7 - Processed
+worker-1  | 2026-10-22 18:30:49,165 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f0dec1fb-9 - Received
+worker-1  | 2026-10-22 18:30:49,195 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 437403f9-9 - Processed
+worker-1  | 2026-10-22 18:30:49,195 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c56dab2-8 - Received
+worker-1  | 2026-10-22 18:30:49,183 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f0dec1fb-9 - Processed
+worker-1  | 2026-10-22 18:30:49,184 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 98053c01-1 - Received
+worker-1  | 2026-10-22 18:30:49,215 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c56dab2-8 - Processed
+worker-1  | 2026-10-22 18:30:49,216 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1714ef60-7 - Received
+worker-1  | 2026-10-22 18:30:49,703 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 98053c01-1 - Processed
+worker-1  | 2026-10-22 18:30:49,704 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 282d83f9-d - Received
+worker-1  | 2026-10-22 18:30:49,731 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1714ef60-7 - Processed
+worker-1  | 2026-10-22 18:30:49,731 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 17c3f274-d - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:50.213Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:50.224Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:50,224 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 282d83f9-d - Processed
+worker-1  | 2026-10-22 18:30:50,224 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e9e1ff80-2 - Received
+worker-1  | 2026-10-22 18:30:50,246 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 17c3f274-d - Processed
+worker-1  | 2026-10-22 18:30:50,246 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 673917d4-d - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:50.734Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:50.740Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:50,740 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e9e1ff80-2 - Processed
+worker-1  | 2026-10-22 18:30:50,740 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 47017298-1 - Received
+worker-1  | 2026-10-22 18:30:50,762 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 673917d4-d - Processed
+worker-1  | 2026-10-22 18:30:50,763 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b627b706-6 - Received
+worker-1  | 2026-10-22 18:30:51,261 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 47017298-1 - Processed
+worker-1  | 2026-10-22 18:30:51,261 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 841a357e-9 - Received
+worker-1  | 2026-10-22 18:30:51,274 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b627b706-6 - Processed
+worker-1  | 2026-10-22 18:30:51,275 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5fdadff-0 - Received
+worker-1  | 2026-10-22 18:30:51,786 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 841a357e-9 - Processed
+worker-1  | 2026-10-22 18:30:51,787 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5389a375-3 - Received
+worker-1  | 2026-10-22 18:30:51,797 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5fdadff-0 - Processed
+worker-1  | 2026-10-22 18:30:51,797 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 616068a4-6 - Received
+worker-1  | 2026-10-22 18:30:52,317 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5389a375-3 - Processed
+worker-1  | 2026-10-22 18:30:52,317 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e0cfdb68-5 - Received
+worker-1  | 2026-10-22 18:30:52,319 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 616068a4-6 - Processed
+worker-1  | 2026-10-22 18:30:52,320 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a1f4538-8 - Received
+worker-1  | 2026-10-22 18:30:52,842 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e0cfdb68-5 - Processed
+worker-1  | 2026-10-22 18:30:52,842 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e370e5ae-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:52.854Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:52.861Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:52,861 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a1f4538-8 - Processed
+worker-1  | 2026-10-22 18:30:52,861 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be92e344-7 - Received
+worker-1  | 2026-10-22 18:30:53,358 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e370e5ae-c - Processed
+worker-1  | 2026-10-22 18:30:53,358 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c3d0a16c-4 - Received
+worker-1  | 2026-10-22 18:30:53,374 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be92e344-7 - Processed
+worker-1  | 2026-10-22 18:30:53,375 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 78a1b396-6 - Received
+worker-1  | 2026-10-22 18:30:53,873 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c3d0a16c-4 - Processed
+worker-1  | 2026-10-22 18:30:53,874 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6711e366-7 - Received
+worker-1  | 2026-10-22 18:30:53,886 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 78a1b396-6 - Processed
+worker-1  | 2026-10-22 18:30:53,887 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 135d27d7-f - Received
+worker-1  | 2026-10-22 18:30:54,393 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6711e366-7 - Processed
+worker-1  | 2026-10-22 18:30:54,394 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e243c35-c - Received
+worker-1  | 2026-10-22 18:30:54,403 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 135d27d7-f - Processed
+worker-1  | 2026-10-22 18:30:54,404 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6243e231-e - Received
+worker-1  | 2026-10-22 18:30:54,408 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e243c35-c - Processed
+worker-1  | 2026-10-22 18:30:54,409 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ed75c5b-5 - Received
+worker-1  | 2026-10-22 18:30:54,427 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6243e231-e - Processed
+worker-1  | 2026-10-22 18:30:54,428 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8a682114-b - Received
+worker-1  | 2026-10-22 18:30:54,930 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ed75c5b-5 - Processed
+worker-1  | 2026-10-22 18:30:54,930 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cb255058-7 - Received
+worker-1  | 2026-10-22 18:30:54,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8a682114-b - Processed
+worker-1  | 2026-10-22 18:30:54,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d159dd0-5 - Received
+worker-1  | {"timestamp": "2026-10-22T18:30:55.445Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:30:55.452Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:30:55,453 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cb255058-7 - Processed
+worker-1  | 2026-10-22 18:30:55,453 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 569fd747-c - Received
+worker-1  | 2026-10-22 18:30:55,463 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d159dd0-5 - Processed
+worker-1  | 2026-10-22 18:30:55,464 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c968e9e7-8 - Received
+worker-1  | 2026-10-22 18:30:55,808 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 569fd747-c - Processed
+worker-1  | 2026-10-22 18:30:55,809 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eb55b2bd-e - Received
+worker-1  | 2026-10-22 18:30:55,823 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c968e9e7-8 - Processed
+worker-1  | 2026-10-22 18:30:55,824 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b75e6ca4-1 - Received
+worker-1  | 2026-10-22 18:30:56,336 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eb55b2bd-e - Processed
+worker-1  | 2026-10-22 18:30:56,337 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 65a3fff9-4 - Received
+worker-1  | 2026-10-22 18:30:56,338 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b75e6ca4-1 - Processed
+worker-1  | 2026-10-22 18:30:56,339 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 57c44256-7 - Received
+worker-1  | 2026-10-22 18:30:56,855 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 65a3fff9-4 - Processed
+worker-1  | 2026-10-22 18:30:56,855 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7d3776a3-4 - Received
+worker-1  | 2026-10-22 18:30:56,856 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 57c44256-7 - Processed
+worker-1  | 2026-10-22 18:30:56,861 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 46d10f45-7 - Received
+worker-1  | 2026-10-22 18:30:57,378 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7d3776a3-4 - Processed
+worker-1  | 2026-10-22 18:30:57,379 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 655c3a89-5 - Received
+worker-1  | 2026-10-22 18:30:57,380 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 46d10f45-7 - Processed
+worker-1  | 2026-10-22 18:30:57,381 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 657a9e8a-c - Received
+worker-1  | 2026-10-22 18:30:57,905 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 655c3a89-5 - Processed
+worker-1  | 2026-10-22 18:30:57,906 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 69af91fb-a - Received
+worker-1  | 2026-10-22 18:30:57,908 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 657a9e8a-c - Processed
+worker-1  | 2026-10-22 18:30:57,909 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 277728af-a - Received
+worker-1  | 2026-10-22 18:30:58,428 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 69af91fb-a - Processed
+worker-1  | 2026-10-22 18:30:58,429 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8917a396-b - Received
+worker-1  | 2026-10-22 18:30:58,430 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 277728af-a - Processed
+worker-1  | 2026-10-22 18:30:58,430 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 84bb0405-5 - Received
+worker-1  | 2026-10-22 18:30:58,955 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8917a396-b - Processed
+worker-1  | 2026-10-22 18:30:58,955 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2390a2b7-3 - Received
+worker-1  | 2026-10-22 18:30:58,956 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 84bb0405-5 - Processed
+worker-1  | 2026-10-22 18:30:58,957 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25f2d49e-b - Received
+worker-1  | 2026-10-22 18:30:59,136 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2390a2b7-3 - Processed
+worker-1  | 2026-10-22 18:30:59,137 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7178353a-6 - Received
+worker-1  | 2026-10-22 18:30:59,139 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25f2d49e-b - Processed
+worker-1  | 2026-10-22 18:30:59,140 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d2f019d0-9 - Received
+worker-1  | 2026-10-22 18:30:59,660 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7178353a-6 - Processed
+worker-1  | 2026-10-22 18:30:59,661 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 680b04a8-a - Received
+worker-1  | 2026-10-22 18:30:59,662 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d2f019d0-9 - Processed
+worker-1  | 2026-10-22 18:30:59,662 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f626e6b8-b - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:00.170Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:00.178Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:00,179 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 680b04a8-a - Processed
+worker-1  | 2026-10-22 18:31:00,179 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a8c5a263-4 - Received
+worker-1  | 2026-10-22 18:31:00,189 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f626e6b8-b - Processed
+worker-1  | 2026-10-22 18:31:00,190 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8256991-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:00.690Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:00.696Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:00,698 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a8c5a263-4 - Processed
+worker-1  | 2026-10-22 18:31:00,699 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db8b911c-2 - Received
+worker-1  | 2026-10-22 18:31:00,707 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8256991-2 - Processed
+worker-1  | 2026-10-22 18:31:00,707 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 601181b1-a - Received
+worker-1  | 2026-10-22 18:31:01,225 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db8b911c-2 - Processed
+worker-1  | 2026-10-22 18:31:01,226 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cd03cd3e-1 - Received
+worker-1  | 2026-10-22 18:31:01,266 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 601181b1-a - Processed
+worker-1  | 2026-10-22 18:31:01,266 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 193c802f-5 - Received
+worker-1  | 2026-10-22 18:31:01,743 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cd03cd3e-1 - Processed
+worker-1  | 2026-10-22 18:31:01,743 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c84dbbe3-4 - Received
+worker-1  | 2026-10-22 18:31:01,829 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 193c802f-5 - Processed
+worker-1  | 2026-10-22 18:31:01,830 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f6a12bd9-6 - Received
+worker-1  | 2026-10-22 18:31:02,258 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c84dbbe3-4 - Processed
+worker-1  | 2026-10-22 18:31:02,258 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 88ce53b2-e - Received
+worker-1  | 2026-10-22 18:31:02,396 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f6a12bd9-6 - Processed
+worker-1  | 2026-10-22 18:31:02,397 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 16dd79c5-1 - Received
+worker-1  | 2026-10-22 18:31:02,774 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 88ce53b2-e - Processed
+worker-1  | 2026-10-22 18:31:02,774 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73a97ac8-7 - Received
+worker-1  | 2026-10-22 18:31:02,912 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 16dd79c5-1 - Processed
+worker-1  | 2026-10-22 18:31:02,913 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db954f10-c - Received
+worker-1  | 2026-10-22 18:31:03,301 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73a97ac8-7 - Processed
+worker-1  | 2026-10-22 18:31:03,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 587cc56b-d - Received
+worker-1  | 2026-10-22 18:31:03,458 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | db954f10-c - Processed
+worker-1  | 2026-10-22 18:31:03,459 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e4dc3f2b-3 - Received
+worker-1  | 2026-10-22 18:31:03,821 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 587cc56b-d - Processed
+worker-1  | 2026-10-22 18:31:03,822 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3b6ffc18-7 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:04.006Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:04.013Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:04,013 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e4dc3f2b-3 - Processed
+worker-1  | 2026-10-22 18:31:04,014 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c10d4f64-6 - Received
+worker-1  | 2026-10-22 18:31:04,338 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3b6ffc18-7 - Processed
+worker-1  | 2026-10-22 18:31:04,339 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71c93a38-f - Received
+worker-1  | 2026-10-22 18:31:04,560 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c10d4f64-6 - Processed
+worker-1  | 2026-10-22 18:31:04,560 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b2feecd0-6 - Received
+worker-1  | 2026-10-22 18:31:04,356 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 71c93a38-f - Processed
+worker-1  | 2026-10-22 18:31:04,356 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 52e142b3-3 - Received
+worker-1  | 2026-10-22 18:31:04,613 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b2feecd0-6 - Processed
+worker-1  | 2026-10-22 18:31:04,614 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3222eef3-d - Received
+worker-1  | 2026-10-22 18:31:04,881 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 52e142b3-3 - Processed
+worker-1  | 2026-10-22 18:31:04,881 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c7ceae4-d - Received
+worker-1  | 2026-10-22 18:31:05,161 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3222eef3-d - Processed
+worker-1  | 2026-10-22 18:31:05,161 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0627f9ad-0 - Received
+worker-1  | 2026-10-22 18:31:05,396 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c7ceae4-d - Processed
+worker-1  | 2026-10-22 18:31:05,397 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f38f47e0-9 - Received
+worker-1  | 2026-10-22 18:31:05,682 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0627f9ad-0 - Processed
+worker-1  | 2026-10-22 18:31:05,683 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0dd526d-f - Received
+worker-1  | 2026-10-22 18:31:05,914 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f38f47e0-9 - Processed
+worker-1  | 2026-10-22 18:31:05,914 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8b5911f-6 - Received
+worker-1  | 2026-10-22 18:31:06,201 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0dd526d-f - Processed
+worker-1  | 2026-10-22 18:31:06,202 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9f952b85-7 - Received
+worker-1  | 2026-10-22 18:31:06,428 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8b5911f-6 - Processed
+worker-1  | 2026-10-22 18:31:06,429 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1dead3c4-5 - Received
+worker-1  | 2026-10-22 18:31:06,733 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9f952b85-7 - Processed
+worker-1  | 2026-10-22 18:31:06,734 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 16d3a2a0-4 - Received
+worker-1  | 2026-10-22 18:31:06,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1dead3c4-5 - Processed
+worker-1  | 2026-10-22 18:31:06,945 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7d9e7ea9-9 - Received
+worker-1  | 2026-10-22 18:31:07,255 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 16d3a2a0-4 - Processed
+worker-1  | 2026-10-22 18:31:07,256 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eb93c01b-d - Received
+worker-1  | 2026-10-22 18:31:07,460 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7d9e7ea9-9 - Processed
+worker-1  | 2026-10-22 18:31:07,460 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 340bfa32-7 - Received
+worker-1  | 2026-10-22 18:31:07,778 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eb93c01b-d - Processed
+worker-1  | 2026-10-22 18:31:07,778 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fa330585-e - Received
+worker-1  | 2026-10-22 18:31:07,976 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 340bfa32-7 - Processed
+worker-1  | 2026-10-22 18:31:07,976 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3613eb4-2 - Received
+worker-1  | 2026-10-22 18:31:08,328 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fa330585-e - Processed
+worker-1  | 2026-10-22 18:31:08,328 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b8701814-c - Received
+worker-1  | 2026-10-22 18:31:08,493 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a3613eb4-2 - Processed
+worker-1  | 2026-10-22 18:31:08,494 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c01af2fb-b - Received
+worker-1  | 2026-10-22 18:31:08,849 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b8701814-c - Processed
+worker-1  | 2026-10-22 18:31:08,849 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7b14803e-2 - Received
+worker-1  | 2026-10-22 18:31:09,013 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c01af2fb-b - Processed
+worker-1  | 2026-10-22 18:31:09,014 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ecc4d33d-3 - Received
+worker-1  | 2026-10-22 18:31:09,414 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7b14803e-2 - Processed
+worker-1  | 2026-10-22 18:31:09,415 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 43e750cf-e - Received
+worker-1  | 2026-10-22 18:31:09,528 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ecc4d33d-3 - Processed
+worker-1  | 2026-10-22 18:31:09,529 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a60cfe09-7 - Received
+worker-1  | 2026-10-22 18:31:09,436 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 43e750cf-e - Processed
+worker-1  | 2026-10-22 18:31:09,437 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e9f7250d-b - Received
+worker-1  | 2026-10-22 18:31:09,550 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a60cfe09-7 - Processed
+worker-1  | 2026-10-22 18:31:09,550 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 074ce781-4 - Received
+worker-1  | 2026-10-22 18:31:09,963 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e9f7250d-b - Processed
+worker-1  | 2026-10-22 18:31:09,964 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f16a8311-9 - Received
+worker-1  | 2026-10-22 18:31:10,066 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 074ce781-4 - Processed
+worker-1  | 2026-10-22 18:31:10,066 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73e045e5-b - Received
+worker-1  | 2026-10-22 18:31:10,487 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f16a8311-9 - Processed
+worker-1  | 2026-10-22 18:31:10,487 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9013389d-0 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:10.576Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:10.582Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:10,582 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73e045e5-b - Processed
+worker-1  | 2026-10-22 18:31:10,582 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f14afb4c-4 - Received
+worker-1  | 2026-10-22 18:31:11,007 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9013389d-0 - Processed
+worker-1  | 2026-10-22 18:31:11,007 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9045edfd-7 - Received
+worker-1  | 2026-10-22 18:31:11,098 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f14afb4c-4 - Processed
+worker-1  | 2026-10-22 18:31:11,099 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 68084ea6-e - Received
+worker-1  | 2026-10-22 18:31:11,526 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9045edfd-7 - Processed
+worker-1  | 2026-10-22 18:31:11,527 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50601f57-7 - Received
+worker-1  | 2026-10-22 18:31:11,616 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 68084ea6-e - Processed
+worker-1  | 2026-10-22 18:31:11,616 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a665d8cd-6 - Received
+worker-1  | 2026-10-22 18:31:12,050 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50601f57-7 - Processed
+worker-1  | 2026-10-22 18:31:12,050 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bf50b9f6-a - Received
+worker-1  | 2026-10-22 18:31:12,137 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a665d8cd-6 - Processed
+worker-1  | 2026-10-22 18:31:12,138 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 84a8261b-5 - Received
+worker-1  | 2026-10-22 18:31:12,571 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bf50b9f6-a - Processed
+worker-1  | 2026-10-22 18:31:12,572 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | daf31ad2-8 - Received
+worker-1  | 2026-10-22 18:31:12,652 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 84a8261b-5 - Processed
+worker-1  | 2026-10-22 18:31:12,653 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7c75d49b-2 - Received
+worker-1  | 2026-10-22 18:31:13,098 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | daf31ad2-8 - Processed
+worker-1  | 2026-10-22 18:31:13,099 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7ef1ba76-8 - Received
+worker-1  | 2026-10-22 18:31:13,170 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7c75d49b-2 - Processed
+worker-1  | 2026-10-22 18:31:13,170 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 82445a31-c - Received
+worker-1  | 2026-10-22 18:31:13,628 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7ef1ba76-8 - Processed
+worker-1  | 2026-10-22 18:31:13,629 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | edad8bdc-5 - Received
+worker-1  | 2026-10-22 18:31:13,687 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 82445a31-c - Processed
+worker-1  | 2026-10-22 18:31:13,688 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fc0cd74e-9 - Received
+worker-1  | 2026-10-22 18:31:14,145 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | edad8bdc-5 - Processed
+worker-1  | 2026-10-22 18:31:14,146 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 53f94896-6 - Received
+worker-1  | 2026-10-22 18:31:14,206 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fc0cd74e-9 - Processed
+worker-1  | 2026-10-22 18:31:14,206 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ca4d6bf-f - Received
+worker-1  | 2026-10-22 18:31:14,164 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 53f94896-6 - Processed
+worker-1  | 2026-10-22 18:31:14,165 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bc3862ef-b - Received
+worker-1  | 2026-10-22 18:31:14,215 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ca4d6bf-f - Processed
+worker-1  | 2026-10-22 18:31:14,215 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 33e0a945-b - Received
+worker-1  | 2026-10-22 18:31:14,694 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bc3862ef-b - Processed
+worker-1  | 2026-10-22 18:31:14,694 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9a113c91-4 - Received
+worker-1  | 2026-10-22 18:31:14,737 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 33e0a945-b - Processed
+worker-1  | 2026-10-22 18:31:14,737 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 77e434a8-1 - Received
+worker-1  | 2026-10-22 18:31:15,219 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9a113c91-4 - Processed
+worker-1  | 2026-10-22 18:31:15,220 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d711bb08-c - Received
+worker-1  | 2026-10-22 18:31:15,254 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 77e434a8-1 - Processed
+worker-1  | 2026-10-22 18:31:15,254 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 228c46f0-5 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:15.759Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:15.772Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:15,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d711bb08-c - Processed
+worker-1  | 2026-10-22 18:31:15,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5a3fe376-e - Received
+worker-1  | 2026-10-22 18:31:15,773 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 228c46f0-5 - Processed
+worker-1  | 2026-10-22 18:31:15,774 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f767306c-6 - Received
+worker-1  | 2026-10-22 18:31:16,294 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f767306c-6 - Processed
+worker-1  | 2026-10-22 18:31:16,294 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 74d98a46-8 - Received
+worker-1  | 2026-10-22 18:31:16,327 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5a3fe376-e - Processed
+worker-1  | 2026-10-22 18:31:16,327 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1cecc741-1 - Received
+worker-1  | 2026-10-22 18:31:16,810 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 74d98a46-8 - Processed
+worker-1  | 2026-10-22 18:31:16,811 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bfe0fc2b-5 - Received
+worker-1  | 2026-10-22 18:31:16,891 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1cecc741-1 - Processed
+worker-1  | 2026-10-22 18:31:16,892 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1c4379d5-9 - Received
+worker-1  | 2026-10-22 18:31:17,334 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bfe0fc2b-5 - Processed
+worker-1  | 2026-10-22 18:31:17,334 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2867f86b-c - Received
+worker-1  | 2026-10-22 18:31:17,457 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1c4379d5-9 - Processed
+worker-1  | 2026-10-22 18:31:17,457 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 384b8e5f-d - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:17.847Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:17.853Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:17,853 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2867f86b-c - Processed
+worker-1  | 2026-10-22 18:31:17,853 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d55d1b1d-8 - Received
+worker-1  | 2026-10-22 18:31:17,980 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 384b8e5f-d - Processed
+worker-1  | 2026-10-22 18:31:17,980 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e0226ad0-3 - Received
+worker-1  | 2026-10-22 18:31:18,369 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d55d1b1d-8 - Processed
+worker-1  | 2026-10-22 18:31:18,412 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 79d0aa01-a - Received
+worker-1  | 2026-10-22 18:31:18,499 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e0226ad0-3 - Processed
+worker-1  | 2026-10-22 18:31:18,500 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a866b8c6-e - Received
+worker-1  | 2026-10-22 18:31:18,929 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 79d0aa01-a - Processed
+worker-1  | 2026-10-22 18:31:18,930 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 09e8ee29-3 - Received
+worker-1  | 2026-10-22 18:31:19,024 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a866b8c6-e - Processed
+worker-1  | 2026-10-22 18:31:19,025 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25316837-6 - Received
+worker-1  | 2026-10-22 18:31:19,450 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 09e8ee29-3 - Processed
+worker-1  | 2026-10-22 18:31:19,451 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afcc8fb0-a - Received
+worker-1  | 2026-10-22 18:31:19,542 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 25316837-6 - Processed
+worker-1  | 2026-10-22 18:31:19,543 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5740a56-9 - Received
+worker-1  | 2026-10-22 18:31:19,474 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afcc8fb0-a - Processed
+worker-1  | 2026-10-22 18:31:19,474 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6d828d4f-5 - Received
+worker-1  | 2026-10-22 18:31:19,566 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5740a56-9 - Processed
+worker-1  | 2026-10-22 18:31:19,566 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bb2d0ac1-f - Received
+worker-1  | 2026-10-22 18:31:19,994 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6d828d4f-5 - Processed
+worker-1  | 2026-10-22 18:31:19,995 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1dffdd36-2 - Received
+worker-1  | 2026-10-22 18:31:20,131 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bb2d0ac1-f - Processed
+worker-1  | 2026-10-22 18:31:20,132 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4cc5c508-4 - Received
+worker-1  | 2026-10-22 18:31:20,513 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1dffdd36-2 - Processed
+worker-1  | 2026-10-22 18:31:20,514 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1949acb6-b - Received
+worker-1  | 2026-10-22 18:31:20,649 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4cc5c508-4 - Processed
+worker-1  | 2026-10-22 18:31:20,649 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 435b35ad-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:21.023Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:21.029Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:21,029 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1949acb6-b - Processed
+worker-1  | 2026-10-22 18:31:21,030 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3a4eb494-0 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:21.166Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:21.173Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:21,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 435b35ad-f - Processed
+worker-1  | 2026-10-22 18:31:21,174 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a85c2172-c - Received
+worker-1  | 2026-10-22 18:31:21,545 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3a4eb494-0 - Processed
+worker-1  | 2026-10-22 18:31:21,546 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1561e754-d - Received
+worker-1  | 2026-10-22 18:31:21,690 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a85c2172-c - Processed
+worker-1  | 2026-10-22 18:31:21,691 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ade4df02-0 - Received
+worker-1  | 2026-10-22 18:31:22,060 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1561e754-d - Processed
+worker-1  | 2026-10-22 18:31:22,060 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a7994e63-4 - Received
+worker-1  | 2026-10-22 18:31:22,256 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ade4df02-0 - Processed
+worker-1  | 2026-10-22 18:31:22,256 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 718738d7-4 - Received
+worker-1  | 2026-10-22 18:31:22,580 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a7994e63-4 - Processed
+worker-1  | 2026-10-22 18:31:22,581 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7251e530-5 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:22.801Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:22.808Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:22,808 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 718738d7-4 - Processed
+worker-1  | 2026-10-22 18:31:22,809 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0e8cfc4-3 - Received
+worker-1  | 2026-10-22 18:31:23,095 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7251e530-5 - Processed
+worker-1  | 2026-10-22 18:31:23,095 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5578e6e7-c - Received
+worker-1  | 2026-10-22 18:31:22,967 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0e8cfc4-3 - Processed
+worker-1  | 2026-10-22 18:31:22,967 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ca200027-f - Received
+worker-1  | 2026-10-22 18:31:23,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5578e6e7-c - Processed
+worker-1  | 2026-10-22 18:31:23,232 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b0ee9a4-f - Received
+worker-1  | 2026-10-22 18:31:23,518 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ca200027-f - Processed
+worker-1  | 2026-10-22 18:31:23,519 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f882efe1-0 - Received
+worker-1  | 2026-10-22 18:31:23,748 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b0ee9a4-f - Processed
+worker-1  | 2026-10-22 18:31:23,748 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be301f67-0 - Received
+worker-1  | 2026-10-22 18:31:24,079 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f882efe1-0 - Processed
+worker-1  | 2026-10-22 18:31:24,080 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1a011cf-c - Received
+worker-1  | 2026-10-22 18:31:30,132 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | be301f67-0 - Processed
+worker-1  | 2026-10-22 18:31:30,133 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d5948658-b - Received
+worker-1  | 2026-10-22 18:31:24,476 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d1a011cf-c - Processed
+worker-1  | 2026-10-22 18:31:24,477 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36845ed4-3 - Received
+worker-1  | 2026-10-22 18:31:24,663 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d5948658-b - Processed
+worker-1  | 2026-10-22 18:31:24,664 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8d2d224f-b - Received
+worker-1  | 2026-10-22 18:31:25,037 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36845ed4-3 - Processed
+worker-1  | 2026-10-22 18:31:25,037 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1f9a2596-6 - Received
+worker-1  | 2026-10-22 18:31:25,186 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8d2d224f-b - Processed
+worker-1  | 2026-10-22 18:31:25,187 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d0f393a4-e - Received
+worker-1  | 2026-10-22 18:31:25,556 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1f9a2596-6 - Processed
+worker-1  | 2026-10-22 18:31:25,556 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a5b2f0d-e - Received
+worker-1  | 2026-10-22 18:31:25,705 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d0f393a4-e - Processed
+worker-1  | 2026-10-22 18:31:25,706 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f5c0cd4d-3 - Received
+worker-1  | 2026-10-22 18:31:26,071 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a5b2f0d-e - Processed
+worker-1  | 2026-10-22 18:31:26,072 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e4ca32db-0 - Received
+worker-1  | 2026-10-22 18:31:26,221 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f5c0cd4d-3 - Processed
+worker-1  | 2026-10-22 18:31:26,222 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e7f7e7ec-1 - Received
+worker-1  | 2026-10-22 18:31:26,629 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e4ca32db-0 - Processed
+worker-1  | 2026-10-22 18:31:26,630 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 85e78e26-6 - Received
+worker-1  | 2026-10-22 18:31:26,740 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e7f7e7ec-1 - Processed
+worker-1  | 2026-10-22 18:31:26,741 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2d1bf04d-f - Received
+worker-1  | 2026-10-22 18:31:27,173 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 85e78e26-6 - Processed
+worker-1  | 2026-10-22 18:31:27,174 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7cefb942-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:27.254Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:27.260Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:27,260 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2d1bf04d-f - Processed
+worker-1  | 2026-10-22 18:31:27,260 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 48f6de33-7 - Received
+worker-1  | 2026-10-22 18:31:27,694 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7cefb942-c - Processed
+worker-1  | 2026-10-22 18:31:27,694 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0d872a37-6 - Received
+worker-1  | 2026-10-22 18:31:27,776 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 48f6de33-7 - Processed
+worker-1  | 2026-10-22 18:31:27,776 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cc2641a7-c - Received
+worker-1  | 2026-10-22 18:31:28,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0d872a37-6 - Processed
+worker-1  | 2026-10-22 18:31:28,232 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aed19230-9 - Received
+worker-1  | 2026-10-22 18:31:28,293 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cc2641a7-c - Processed
+worker-1  | 2026-10-22 18:31:28,294 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e7da7a9-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:28.758Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:28.763Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:28,764 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aed19230-9 - Processed
+worker-1  | 2026-10-22 18:31:28,764 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b901e8a9-6 - Received
+worker-1  | 2026-10-22 18:31:28,809 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e7da7a9-f - Processed
+worker-1  | 2026-10-22 18:31:28,810 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cebcf9ee-8 - Received
+worker-1  | 2026-10-22 18:31:29,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b901e8a9-6 - Processed
+worker-1  | 2026-10-22 18:31:29,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ea6c171a-9 - Received
+worker-1  | 2026-10-22 18:31:29,341 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cebcf9ee-8 - Processed
+worker-1  | 2026-10-22 18:31:29,341 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fba8e416-9 - Received
+worker-1  | 2026-10-22 18:31:29,330 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ea6c171a-9 - Processed
+worker-1  | 2026-10-22 18:31:29,331 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e6f70619-e - Received
+worker-1  | 2026-10-22 18:31:29,361 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fba8e416-9 - Processed
+worker-1  | 2026-10-22 18:31:29,361 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73ea8d70-c - Received
+worker-1  | 2026-10-22 18:31:29,867 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e6f70619-e - Processed
+worker-1  | 2026-10-22 18:31:29,868 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 271ee569-0 - Received
+worker-1  | 2026-10-22 18:31:29,880 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 73ea8d70-c - Processed
+worker-1  | 2026-10-22 18:31:29,881 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c51dd93f-7 - Received
+worker-1  | 2026-10-22 18:31:30,382 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 271ee569-0 - Processed
+worker-1  | 2026-10-22 18:31:30,383 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50c4640a-2 - Received
+worker-1  | 2026-10-22 18:31:30,395 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c51dd93f-7 - Processed
+worker-1  | 2026-10-22 18:31:30,396 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7c56a002-1 - Received
+worker-1  | 2026-10-22 18:31:30,921 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50c4640a-2 - Processed
+worker-1  | 2026-10-22 18:31:30,922 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 31592689-c - Received
+worker-1  | 2026-10-22 18:31:30,923 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7c56a002-1 - Processed
+worker-1  | 2026-10-22 18:31:30,924 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02c06a07-f - Received
+worker-1  | 2026-10-22 18:31:31,445 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 31592689-c - Processed
+worker-1  | 2026-10-22 18:31:31,446 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ad044e5-8 - Received
+worker-1  | 2026-10-22 18:31:31,447 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02c06a07-f - Processed
+worker-1  | 2026-10-22 18:31:31,448 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b60c51e6-b - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:31.961Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:31:31,969 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b60c51e6-b - Processed
+worker-1  | 2026-10-22 18:31:31,969 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c7cd14cc-c - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:31.972Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:31,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8ad044e5-8 - Processed
+worker-1  | 2026-10-22 18:31:31,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 77079b4b-e - Received
+worker-1  | 2026-10-22 18:31:32,500 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c7cd14cc-c - Processed
+worker-1  | 2026-10-22 18:31:32,501 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02736e8c-1 - Received
+worker-1  | 2026-10-22 18:31:32,522 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 77079b4b-e - Processed
+worker-1  | 2026-10-22 18:31:32,522 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1ed2254f-4 - Received
+worker-1  | 2026-10-22 18:31:33,018 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 02736e8c-1 - Processed
+worker-1  | 2026-10-22 18:31:33,019 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0dc96543-2 - Received
+worker-1  | 2026-10-22 18:31:33,038 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1ed2254f-4 - Processed
+worker-1  | 2026-10-22 18:31:33,039 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6c2fc84a-8 - Received
+worker-1  | 2026-10-22 18:31:33,536 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0dc96543-2 - Processed
+worker-1  | 2026-10-22 18:31:33,537 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bfbc7f79-0 - Received
+worker-1  | 2026-10-22 18:31:33,555 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6c2fc84a-8 - Processed
+worker-1  | 2026-10-22 18:31:33,555 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e724ac2-6 - Received
+worker-1  | 2026-10-22 18:31:34,056 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bfbc7f79-0 - Processed
+worker-1  | 2026-10-22 18:31:34,056 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e6407505-8 - Received
+worker-1  | 2026-10-22 18:31:34,068 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1e724ac2-6 - Processed
+worker-1  | 2026-10-22 18:31:34,069 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 598db424-f - Received
+worker-1  | 2026-10-22 18:31:34,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e6407505-8 - Processed
+worker-1  | 2026-10-22 18:31:34,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 40b0305e-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:34.580Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:34.585Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:34,586 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 598db424-f - Processed
+worker-1  | 2026-10-22 18:31:34,586 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 43748302-2 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:34.588Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | 2026-10-22 18:31:34,591 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 40b0305e-2 - Processed
+worker-1  | 2026-10-22 18:31:34,592 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a60f9138-3 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:34.595Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:34,595 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 43748302-2 - Processed
+worker-1  | 2026-10-22 18:31:34,596 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8b382c12-1 - Received
+worker-1  | 2026-10-22 18:31:35,116 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a60f9138-3 - Processed
+worker-1  | 2026-10-22 18:31:35,117 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e54c21d4-6 - Received
+worker-1  | 2026-10-22 18:31:35,118 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8b382c12-1 - Processed
+worker-1  | 2026-10-22 18:31:35,119 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 620bc7a5-9 - Received
+worker-1  | 2026-10-22 18:31:35,640 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 620bc7a5-9 - Processed
+worker-1  | 2026-10-22 18:31:35,640 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d205b8f9-8 - Received
+worker-1  | 2026-10-22 18:31:35,641 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e54c21d4-6 - Processed
+worker-1  | 2026-10-22 18:31:35,642 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8d9c97db-6 - Received
+worker-1  | 2026-10-22 18:31:36,166 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8d9c97db-6 - Processed
+worker-1  | 2026-10-22 18:31:36,166 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d97900f-9 - Received
+worker-1  | 2026-10-22 18:31:36,167 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d205b8f9-8 - Processed
+worker-1  | 2026-10-22 18:31:36,168 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5c46d75-9 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:36.680Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:36.690Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:36,690 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d97900f-9 - Processed
+worker-1  | 2026-10-22 18:31:36,691 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5c46d75-9 - Processed
+worker-1  | 2026-10-22 18:31:36,691 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b979b2b3-e - Received
+worker-1  | 2026-10-22 18:31:36,691 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4fc337d9-d - Received
+worker-1  | 2026-10-22 18:31:37,218 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b979b2b3-e - Processed
+worker-1  | 2026-10-22 18:31:37,218 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 940d1ca7-7 - Received
+worker-1  | 2026-10-22 18:31:37,244 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4fc337d9-d - Processed
+worker-1  | 2026-10-22 18:31:37,245 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ea46cd2b-5 - Received
+worker-1  | 2026-10-22 18:31:37,735 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 940d1ca7-7 - Processed
+worker-1  | 2026-10-22 18:31:37,735 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8e5a0870-a - Received
+worker-1  | 2026-10-22 18:31:37,768 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ea46cd2b-5 - Processed
+worker-1  | 2026-10-22 18:31:37,769 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2902ff24-9 - Received
+worker-1  | 2026-10-22 18:31:38,249 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8e5a0870-a - Processed
+worker-1  | 2026-10-22 18:31:38,250 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8e4186c-5 - Received
+worker-1  | 2026-10-22 18:31:38,286 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2902ff24-9 - Processed
+worker-1  | 2026-10-22 18:31:38,287 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 414f09e0-5 - Received
+worker-1  | 2026-10-22 18:31:38,763 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8e4186c-5 - Processed
+worker-1  | 2026-10-22 18:31:38,764 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c04ac55-7 - Received
+worker-1  | 2026-10-22 18:31:38,851 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 414f09e0-5 - Processed
+worker-1  | 2026-10-22 18:31:38,851 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d3a35d13-0 - Received
+worker-1  | 2026-10-22 18:31:39,282 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0c04ac55-7 - Processed
+worker-1  | 2026-10-22 18:31:39,282 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c5d0cd9-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:39.360Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:39.365Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:39,366 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d3a35d13-0 - Processed
+worker-1  | 2026-10-22 18:31:39,366 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7e310cef-f - Received
+worker-1  | 2026-10-22 18:31:39,293 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c5d0cd9-f - Processed
+worker-1  | 2026-10-22 18:31:39,294 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f369d8be-7 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:39.386Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:39.393Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:39,393 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7e310cef-f - Processed
+worker-1  | 2026-10-22 18:31:39,393 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2c719218-f - Received
+worker-1  | 2026-10-22 18:31:39,807 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f369d8be-7 - Processed
+worker-1  | 2026-10-22 18:31:39,808 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 34618b0b-a - Received
+worker-1  | 2026-10-22 18:31:39,924 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2c719218-f - Processed
+worker-1  | 2026-10-22 18:31:39,925 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e2183fff-9 - Received
+worker-1  | 2026-10-22 18:31:40,332 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 34618b0b-a - Processed
+worker-1  | 2026-10-22 18:31:40,333 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9756c7ee-9 - Received
+worker-1  | 2026-10-22 18:31:40,445 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e2183fff-9 - Processed
+worker-1  | 2026-10-22 18:31:40,446 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | edb9ece1-9 - Received
+worker-1  | 2026-10-22 18:31:40,854 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9756c7ee-9 - Processed
+worker-1  | 2026-10-22 18:31:40,854 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e55f17cf-5 - Received
+worker-1  | 2026-10-22 18:31:40,978 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | edb9ece1-9 - Processed
+worker-1  | 2026-10-22 18:31:40,979 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d9a9d96f-2 - Received
+worker-1  | 2026-10-22 18:31:41,373 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e55f17cf-5 - Processed
+worker-1  | 2026-10-22 18:31:41,373 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9d48fb8e-c - Received
+worker-1  | 2026-10-22 18:31:41,530 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d9a9d96f-2 - Processed
+worker-1  | 2026-10-22 18:31:41,531 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0e4e3108-6 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:41.889Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:41.899Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:41,900 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9d48fb8e-c - Processed
+worker-1  | 2026-10-22 18:31:41,900 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4ab1af57-2 - Received
+worker-1  | 2026-10-22 18:31:42,060 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0e4e3108-6 - Processed
+worker-1  | 2026-10-22 18:31:42,061 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afdf2852-9 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:42.407Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:42.413Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:42,413 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4ab1af57-2 - Processed
+worker-1  | 2026-10-22 18:31:42,414 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 87f83d22-6 - Received
+worker-1  | 2026-10-22 18:31:42,574 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | afdf2852-9 - Processed
+worker-1  | 2026-10-22 18:31:42,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1b651422-1 - Received
+worker-1  | 2026-10-22 18:31:42,929 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 87f83d22-6 - Processed
+worker-1  | 2026-10-22 18:31:42,930 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50357b2b-6 - Received
+worker-1  | 2026-10-22 18:31:43,090 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1b651422-1 - Processed
+worker-1  | 2026-10-22 18:31:43,090 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36010be1-9 - Received
+worker-1  | 2026-10-22 18:31:43,444 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50357b2b-6 - Processed
+worker-1  | 2026-10-22 18:31:43,445 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d6c5b79d-5 - Received
+worker-1  | 2026-10-22 18:31:43,606 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36010be1-9 - Processed
+worker-1  | 2026-10-22 18:31:43,606 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c895cc6e-f - Received
+worker-1  | 2026-10-22 18:31:43,979 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d6c5b79d-5 - Processed
+worker-1  | 2026-10-22 18:31:43,979 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 33b2c344-f - Received
+worker-1  | 2026-10-22 18:31:44,125 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c895cc6e-f - Processed
+worker-1  | 2026-10-22 18:31:44,125 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8f3eafbe-b - Received
+worker-1  | 2026-10-22 18:31:44,509 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 33b2c344-f - Processed
+worker-1  | 2026-10-22 18:31:44,509 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cc626deb-a - Received
+worker-1  | 2026-10-22 18:31:44,641 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8f3eafbe-b - Processed
+worker-1  | 2026-10-22 18:31:44,641 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 28ae9510-7 - Received
+worker-1  | 2026-10-22 18:31:44,530 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cc626deb-a - Processed
+worker-1  | 2026-10-22 18:31:44,530 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c611b82-7 - Received
+worker-1  | 2026-10-22 18:31:44,654 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 28ae9510-7 - Processed
+worker-1  | 2026-10-22 18:31:44,655 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f3d196f-5 - Received
+worker-1  | 2026-10-22 18:31:45,049 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c611b82-7 - Processed
+worker-1  | 2026-10-22 18:31:45,050 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2bbda753-a - Received
+worker-1  | 2026-10-22 18:31:45,171 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7f3d196f-5 - Processed
+worker-1  | 2026-10-22 18:31:45,172 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 34c96a37-e - Received
+worker-1  | 2026-10-22 18:31:45,574 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2bbda753-a - Processed
+worker-1  | 2026-10-22 18:31:45,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27434f14-b - Received
+worker-1  | 2026-10-22 18:31:45,689 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 34c96a37-e - Processed
+worker-1  | 2026-10-22 18:31:45,689 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 12fd4f89-1 - Received
+worker-1  | 2026-10-22 18:31:46,097 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27434f14-b - Processed
+worker-1  | 2026-10-22 18:31:46,098 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f70487bb-8 - Received
+worker-1  | 2026-10-22 18:31:46,208 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 12fd4f89-1 - Processed
+worker-1  | 2026-10-22 18:31:46,208 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50876728-b - Received
+worker-1  | 2026-10-22 18:31:46,612 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f70487bb-8 - Processed
+worker-1  | 2026-10-22 18:31:46,612 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3dcf5800-6 - Received
+worker-1  | 2026-10-22 18:31:46,724 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50876728-b - Processed
+worker-1  | 2026-10-22 18:31:46,725 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f33277a3-5 - Received
+worker-1  | 2026-10-22 18:31:47,127 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3dcf5800-6 - Processed
+worker-1  | 2026-10-22 18:31:47,128 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b78dc40e-5 - Received
+worker-1  | 2026-10-22 18:31:47,260 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f33277a3-5 - Processed
+worker-1  | 2026-10-22 18:31:47,260 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f355acbf-9 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:47.638Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:47.646Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:47,646 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b78dc40e-5 - Processed
+worker-1  | 2026-10-22 18:31:47,647 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cb4e162b-d - Received
+worker-1  | 2026-10-22 18:31:47,826 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f355acbf-9 - Processed
+worker-1  | 2026-10-22 18:31:47,827 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8171b9b7-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:48.154Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:48.161Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:48,161 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | cb4e162b-d - Processed
+worker-1  | 2026-10-22 18:31:48,161 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1f620081-9 - Received
+worker-1  | 2026-10-22 18:31:48,345 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8171b9b7-f - Processed
+worker-1  | 2026-10-22 18:31:48,346 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7349185f-7 - Received
+worker-1  | 2026-10-22 18:31:48,682 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 1f620081-9 - Processed
+worker-1  | 2026-10-22 18:31:48,683 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2565f74a-3 - Received
+worker-1  | 2026-10-22 18:31:48,874 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7349185f-7 - Processed
+worker-1  | 2026-10-22 18:31:48,875 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 421a2c88-a - Received
+worker-1  | 2026-10-22 18:31:49,201 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2565f74a-3 - Processed
+worker-1  | 2026-10-22 18:31:49,204 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 05f56586-2 - Received
+worker-1  | 2026-10-22 18:31:49,390 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 421a2c88-a - Processed
+worker-1  | 2026-10-22 18:31:49,391 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a0e808d0-c - Received
+worker-1  | 2026-10-22 18:31:55,211 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 05f56586-2 - Processed
+worker-1  | 2026-10-22 18:31:55,212 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c0b2c81-1 - Received
+worker-1  | 2026-10-22 18:31:49,409 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a0e808d0-c - Processed
+worker-1  | 2026-10-22 18:31:49,410 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6582f84b-2 - Received
+worker-1  | 2026-10-22 18:31:49,739 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4c0b2c81-1 - Processed
+worker-1  | 2026-10-22 18:31:49,739 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d6ff0be-b - Received
+worker-1  | 2026-10-22 18:31:49,957 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6582f84b-2 - Processed
+worker-1  | 2026-10-22 18:31:49,958 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a001e241-b - Received
+worker-1  | 2026-10-22 18:31:50,258 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5d6ff0be-b - Processed
+worker-1  | 2026-10-22 18:31:50,259 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3545aa2f-b - Received
+worker-1  | 2026-10-22 18:31:50,405 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a001e241-b - Processed
+worker-1  | 2026-10-22 18:31:50,405 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7687539d-a - Received
+worker-1  | 2026-10-22 18:31:50,676 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3545aa2f-b - Processed
+worker-1  | 2026-10-22 18:31:50,677 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 21143be1-b - Received
+worker-1  | 2026-10-22 18:31:50,957 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7687539d-a - Processed
+worker-1  | 2026-10-22 18:31:50,958 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0fed37d1-b - Received
+worker-1  | 2026-10-22 18:31:51,192 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 21143be1-b - Processed
+worker-1  | 2026-10-22 18:31:51,193 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c38bb89d-5 - Received
+worker-1  | 2026-10-22 18:31:51,493 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0fed37d1-b - Processed
+worker-1  | 2026-10-22 18:31:51,494 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d18e097a-5 - Received
+worker-1  | 2026-10-22 18:31:51,713 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c38bb89d-5 - Processed
+worker-1  | 2026-10-22 18:31:51,714 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0fe177b-6 - Received
+worker-1  | 2026-10-22 18:31:52,058 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d18e097a-5 - Processed
+worker-1  | 2026-10-22 18:31:52,059 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b13d8ee5-b - Received
+worker-1  | 2026-10-22 18:31:52,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b0fe177b-6 - Processed
+worker-1  | 2026-10-22 18:31:52,231 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f1188f6f-9 - Received
+worker-1  | 2026-10-22 18:31:52,584 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b13d8ee5-b - Processed
+worker-1  | 2026-10-22 18:31:52,585 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8cfe37a3-a - Received
+worker-1  | 2026-10-22 18:31:52,746 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f1188f6f-9 - Processed
+worker-1  | 2026-10-22 18:31:52,746 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d8ab3045-a - Received
+worker-1  | 2026-10-22 18:31:53,104 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8cfe37a3-a - Processed
+worker-1  | 2026-10-22 18:31:53,105 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aecf84f2-d - Received
+worker-1  | 2026-10-22 18:31:53,261 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d8ab3045-a - Processed
+worker-1  | 2026-10-22 18:31:53,262 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eceb809a-b - Received
+worker-1  | 2026-10-22 18:31:53,624 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | aecf84f2-d - Processed
+worker-1  | 2026-10-22 18:31:53,625 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8dd0f25-2 - Received
+worker-1  | 2026-10-22 18:31:53,784 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | eceb809a-b - Processed
+worker-1  | 2026-10-22 18:31:53,784 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b6aca3b1-2 - Received
+worker-1  | 2026-10-22 18:31:54,159 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c8dd0f25-2 - Processed
+worker-1  | 2026-10-22 18:31:54,160 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50ad67de-e - Received
+worker-1  | 2026-10-22 18:31:54,301 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b6aca3b1-2 - Processed
+worker-1  | 2026-10-22 18:31:54,302 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bd09b849-9 - Received
+worker-1  | 2026-10-22 18:31:54,295 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 50ad67de-e - Processed
+worker-1  | 2026-10-22 18:31:54,296 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9a796e3e-6 - Received
+worker-1  | 2026-10-22 18:31:54,414 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bd09b849-9 - Processed
+worker-1  | 2026-10-22 18:31:54,414 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f54d9bc2-7 - Received
+worker-1  | 2026-10-22 18:31:54,826 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 9a796e3e-6 - Processed
+worker-1  | 2026-10-22 18:31:54,827 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6de60fed-6 - Received
+worker-1  | 2026-10-22 18:31:54,928 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | f54d9bc2-7 - Processed
+worker-1  | 2026-10-22 18:31:54,928 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 96415874-6 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:55.384Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:55.390Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:55,391 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6de60fed-6 - Processed
+worker-1  | 2026-10-22 18:31:55,392 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5844047-1 - Received
+worker-1  | 2026-10-22 18:31:55,448 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 96415874-6 - Processed
+worker-1  | 2026-10-22 18:31:55,449 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b2c19b6-6 - Received
+worker-1  | 2026-10-22 18:31:55,914 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | e5844047-1 - Processed
+worker-1  | 2026-10-22 18:31:55,914 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 382797de-f - Received
+worker-1  | 2026-10-22 18:31:55,964 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 0b2c19b6-6 - Processed
+worker-1  | 2026-10-22 18:31:55,964 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 493d04b7-3 - Received
+worker-1  | 2026-10-22 18:31:56,486 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 382797de-f - Processed
+worker-1  | 2026-10-22 18:31:56,487 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 046da94e-d - Received
+worker-1  | 2026-10-22 18:31:56,488 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 493d04b7-3 - Processed
+worker-1  | 2026-10-22 18:31:56,489 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7de2de02-c - Received
+worker-1  | 2026-10-22 18:31:57,016 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7de2de02-c - Processed
+worker-1  | 2026-10-22 18:31:57,017 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a96e824e-6 - Received
+worker-1  | 2026-10-22 18:31:57,032 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 046da94e-d - Processed
+worker-1  | 2026-10-22 18:31:57,033 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3ec5f003-1 - Received
+worker-1  | 2026-10-22 18:31:57,533 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a96e824e-6 - Processed
+worker-1  | 2026-10-22 18:31:57,534 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fa487279-7 - Received
+worker-1  | 2026-10-22 18:31:57,593 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3ec5f003-1 - Processed
+worker-1  | 2026-10-22 18:31:57,593 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c3cd703-b - Received
+worker-1  | 2026-10-22 18:31:58,050 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fa487279-7 - Processed
+worker-1  | 2026-10-22 18:31:58,050 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dfbebc0d-1 - Received
+worker-1  | {"timestamp": "2026-10-22T18:31:58.106Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:31:58.111Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:31:58,112 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c3cd703-b - Processed
+worker-1  | 2026-10-22 18:31:58,112 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5b1b3afb-0 - Received
+worker-1  | 2026-10-22 18:31:58,569 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | dfbebc0d-1 - Processed
+worker-1  | 2026-10-22 18:31:58,569 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 95d7d512-4 - Received
+worker-1  | 2026-10-22 18:31:58,677 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5b1b3afb-0 - Processed
+worker-1  | 2026-10-22 18:31:58,677 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fbf66dea-a - Received
+worker-1  | 2026-10-22 18:31:59,084 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 95d7d512-4 - Processed
+worker-1  | 2026-10-22 18:31:59,084 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b956b9f7-2 - Received
+worker-1  | 2026-10-22 18:31:59,200 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fbf66dea-a - Processed
+worker-1  | 2026-10-22 18:31:59,204 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8788d73a-1 - Received
+worker-1  | 2026-10-22 18:31:59,599 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b956b9f7-2 - Processed
+worker-1  | 2026-10-22 18:31:59,605 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 38aa87e4-9 - Received
+worker-1  | 2026-10-22 18:32:05,211 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8788d73a-1 - Processed
+worker-1  | 2026-10-22 18:32:05,211 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c24c624-b - Received
+worker-1  | 2026-10-22 18:32:05,613 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 38aa87e4-9 - Processed
+worker-1  | 2026-10-22 18:32:05,614 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b24b2578-a - Received
+worker-1  | 2026-10-22 18:32:05,727 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8c24c624-b - Processed
+worker-1  | 2026-10-22 18:32:05,728 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7ed63f10-9 - Received
+worker-1  | 2026-10-22 18:32:06,129 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b24b2578-a - Processed
+worker-1  | 2026-10-22 18:32:06,130 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c850291-a - Received
+worker-1  | 2026-10-22 18:32:06,247 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 7ed63f10-9 - Processed
+worker-1  | 2026-10-22 18:32:06,247 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15fb3596-f - Received
+worker-1  | 2026-10-22 18:32:06,650 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c850291-a - Processed
+worker-1  | 2026-10-22 18:32:06,650 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 82f3ee5f-e - Received
+worker-1  | 2026-10-22 18:32:06,769 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 15fb3596-f - Processed
+worker-1  | 2026-10-22 18:32:06,770 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6225a519-3 - Received
+worker-1  | 2026-10-22 18:32:07,172 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 82f3ee5f-e - Processed
+worker-1  | 2026-10-22 18:32:07,174 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6cb63fae-6 - Received
+worker-1  | 2026-10-22 18:32:07,288 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6225a519-3 - Processed
+worker-1  | 2026-10-22 18:32:07,288 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27d271d2-c - Received
+worker-1  | 2026-10-22 18:32:07,689 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 6cb63fae-6 - Processed
+worker-1  | 2026-10-22 18:32:07,690 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 57752fb8-0 - Received
+worker-1  | 2026-10-22 18:32:07,803 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 27d271d2-c - Processed
+worker-1  | 2026-10-22 18:32:07,804 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 475bccad-b - Received
+worker-1  | 2026-10-22 18:32:08,209 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 57752fb8-0 - Processed
+worker-1  | 2026-10-22 18:32:08,210 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3bd0f596-a - Received
+worker-1  | 2026-10-22 18:32:08,327 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 475bccad-b - Processed
+worker-1  | 2026-10-22 18:32:08,328 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3550d547-6 - Received
+worker-1  | 2026-10-22 18:32:08,725 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3bd0f596-a - Processed
+worker-1  | 2026-10-22 18:32:08,726 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b97ccd50-8 - Received
+worker-1  | 2026-10-22 18:32:08,851 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3550d547-6 - Processed
+worker-1  | 2026-10-22 18:32:08,851 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c25f4902-4 - Received
+worker-1  | 2026-10-22 18:32:09,251 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | b97ccd50-8 - Processed
+worker-1  | 2026-10-22 18:32:09,251 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 99671cbb-8 - Received
+worker-1  | 2026-10-22 18:32:09,375 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c25f4902-4 - Processed
+worker-1  | 2026-10-22 18:32:09,375 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c559f7d2-5 - Received
+worker-1  | 2026-10-22 18:32:09,769 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 99671cbb-8 - Processed
+worker-1  | 2026-10-22 18:32:09,770 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ebfb7bd4-8 - Received
+worker-1  | 2026-10-22 18:32:09,899 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | c559f7d2-5 - Processed
+worker-1  | 2026-10-22 18:32:09,900 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 354bb807-3 - Received
+worker-1  | 2026-10-22 18:32:10,291 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ebfb7bd4-8 - Processed
+worker-1  | 2026-10-22 18:32:10,291 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4d95ee28-d - Received
+worker-1  | 2026-10-22 18:32:10,419 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 354bb807-3 - Processed
+worker-1  | 2026-10-22 18:32:10,420 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ac509eda-a - Received
+worker-1  | 2026-10-22 18:32:10,815 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 4d95ee28-d - Processed
+worker-1  | 2026-10-22 18:32:10,816 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a708afb-4 - Received
+worker-1  | 2026-10-22 18:32:10,938 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | ac509eda-a - Processed
+worker-1  | 2026-10-22 18:32:10,939 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 17db9327-1 - Received
+worker-1  | 2026-10-22 18:32:11,330 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 2a708afb-4 - Processed
+worker-1  | 2026-10-22 18:32:11,332 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 900b6b96-1 - Received
+worker-1  | 2026-10-22 18:32:11,455 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 17db9327-1 - Processed
+worker-1  | 2026-10-22 18:32:11,456 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a20a6dd0-4 - Received
+worker-1  | 2026-10-22 18:32:11,850 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 900b6b96-1 - Processed
+worker-1  | 2026-10-22 18:32:11,850 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | de36b660-e - Received
+worker-1  | 2026-10-22 18:32:11,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | a20a6dd0-4 - Processed
+worker-1  | 2026-10-22 18:32:11,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 054a55b1-5 - Received
+worker-1  | 2026-10-22 18:32:12,376 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | de36b660-e - Processed
+worker-1  | 2026-10-22 18:32:12,376 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fdc69b9b-f - Received
+worker-1  | {"timestamp": "2026-10-22T18:32:12.487Z", "level": "WARNING", "logger": "hexrl_platform.inference.predict", "event": "invalid_state", "service": "hexrl-platform", "service_version": "0.2.0", "error_type": "ValueError"}
+worker-1  | {"timestamp": "2026-10-22T18:32:12.493Z", "level": "WARNING", "logger": "hexrl_platform.task_pipeline.worker", "event": "task_dead_lettered", "service": "hexrl-platform", "service_version": "0.2.0", "attempt": 1, "reason": "permanent_error"}
+worker-1  | 2026-10-22 18:32:12,493 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 054a55b1-5 - Processed
+worker-1  | 2026-10-22 18:32:12,494 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36a05a24-e - Received
+worker-1  | 2026-10-22 18:32:12,911 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | fdc69b9b-f - Processed
+worker-1  | 2026-10-22 18:32:12,912 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c256cba-f - Received
+worker-1  | 2026-10-22 18:32:13,017 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 36a05a24-e - Processed
+worker-1  | 2026-10-22 18:32:13,017 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bf294922-2 - Received
+worker-1  | 2026-10-22 18:32:13,443 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 3c256cba-f - Processed
+worker-1  | 2026-10-22 18:32:13,444 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 885d360b-c - Received
+worker-1  | 2026-10-22 18:32:13,536 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | bf294922-2 - Processed
+worker-1  | 2026-10-22 18:32:13,537 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 614dd19f-f - Received
+worker-1  | 2026-10-22 18:32:13,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 885d360b-c - Processed
+worker-1  | 2026-10-22 18:32:13,972 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c304f78-7 - Received
+worker-1  | 2026-10-22 18:32:14,057 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 614dd19f-f - Processed
+worker-1  | 2026-10-22 18:32:14,058 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8f012d78-7 - Received
+worker-1  | 2026-10-22 18:32:14,502 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 5c304f78-7 - Processed
+worker-1  | 2026-10-22 18:32:14,502 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d0977b4d-b - Received
+worker-1  | 2026-10-22 18:32:14,575 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | 8f012d78-7 - Processed
+worker-1  | 2026-10-22 18:32:15,030 [32mINFO[0m     - hexrl.inference | hexrl.benchmark.hw4-D-8618de370bc7.tasks | d0977b4d-b - Processed

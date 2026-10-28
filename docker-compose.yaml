@@ -22,14 +22,19 @@ services:
 
   app:
     build: .
-    env_file: .env
+    env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+      APP_PORT: "8000"
     ports:
       - "${APP_PORT:-8000}:8000"
     depends_on:
       db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks: [ backend ]
     healthcheck:
@@ -150,17 +155,76 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
-  inference:
+  rabbitmq:
+    image: rabbitmq:4.3.6-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >-
+        -rabbit dead_letter_worker_publisher_confirm_timeout ${RETRY_FORWARD_CONFIRM_TIMEOUT_MS:-1000}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    networks: [ backend ]
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  batch-source:
+    build: .
+    profiles: [ batch ]
+    env_file: ${HEXRL_ENV_FILE:-.env}
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+    command:
+      - hexrl-batch-source
+      - --file
+      - /data/tasks.jsonl
+      - --batch-id
+      - ${BATCH_ID:-compose}
+      - --metrics-csv
+      - /metrics/source.csv
+    volumes:
+      - ./data/tasks:/data:ro
+      - ./metrics:/metrics
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks: [ backend ]
+    restart: "no"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  worker:
     build:
       context: .
       dockerfile: Dockerfile.inference
-    env_file: .env
+    env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5000
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
       INFERENCE_PORT: "8001"
-    ports:
-      - "127.0.0.1:${INFERENCE_PORT:-8001}:8001"
     depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       mlflow:
         condition: service_healthy
       artifact-store:
@@ -168,6 +232,11 @@ services:
     networks: [ backend ]
     # The app exits when the champion cannot be loaded; retry until it is registered
     restart: on-failure
+    # Longer than the slowest batch in flight (prefetch x delay) plus commits,
+    # otherwise Docker sends SIGKILL before the worker finishes acking
+    stop_grace_period: 40s
+    # No published port on purpose: `docker compose up --scale worker=2` would
+    # collide on it. Probe from inside: docker compose exec worker ...
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8001/healthz', timeout=2)" ]
       interval: 10s
@@ -182,6 +251,7 @@ services:
       options: { max-size: "10m", max-file: "3" }
 
 volumes:
+  rabbitmq-data:
   pgdata:
   mlflow-pgdata:
   mlflow-artifacts:

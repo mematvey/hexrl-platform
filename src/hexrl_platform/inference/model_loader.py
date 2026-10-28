@@ -1,18 +1,18 @@
 import logging
 from dataclasses import dataclass
-from typing import Any
 
 import mlflow
 from mlflow.tracking import MlflowClient
 
 from hexrl_platform.inference.config import InferenceSettings
+from hexrl_platform.inference.predict import PredictModel, PyfuncModel
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
 class LoadedModel:
-    model: Any
+    model: PredictModel
     name: str
     alias: str
     version: str
@@ -34,7 +34,7 @@ def load_champion(settings: InferenceSettings) -> LoadedModel:
     encoder = model.unwrap_python_model().policy.encoder
 
     return LoadedModel(
-        model=model,
+        model=PyfuncModel(model),
         name=settings.model_name,
         alias=settings.model_alias,
         version=str(model_version.version),

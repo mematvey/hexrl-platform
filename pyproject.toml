@@ -1,7 +1,7 @@
 [project]
 name = "hexrl-platform"
-version = "0.2.0"
-description = "A platform for learning RL in interactive way with clean visualization"
+version = "0.3.0"
+description = "Platform for training, evaluating and serving RL agents"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

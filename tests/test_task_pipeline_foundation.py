@@ -127,15 +127,17 @@ async def test_publish_nack_means_overloaded():
 async def test_publish_confirm_timeout_means_overloaded():
     broker = AsyncMock()
     broker.publish.side_effect = TimeoutError
-    with pytest.raises(QueueOverloadedError):
+    with pytest.raises(QueueOverloadedError) as rejected:
         await make_publisher(broker).publish(make_message())
+    assert rejected.value.reason == "timeout"
 
 
 async def test_publish_connection_loss_means_overloaded():
     broker = AsyncMock()
     broker.publish.side_effect = AMQPConnectionError()
-    with pytest.raises(QueueOverloadedError):
+    with pytest.raises(QueueOverloadedError) as rejected:
         await make_publisher(broker).publish(make_message())
+    assert rejected.value.reason == "unavailable"
 
 
 async def test_publish_returned_message_is_topology_error_not_success():

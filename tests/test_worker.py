@@ -34,6 +34,118 @@ MODEL_VERSION = "7"
 STATE = HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
 
 
+async def test_metrics_distinguish_completed_task_and_duplicate(database, metrics):
+    app, _ = build_app(database, FakeModel())
+    message = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, message)
+        await publish(app, message)
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.completed"][0].value == 1
+        assert data["hexrl.worker.task.duration"][0].count == 1
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["ok"] == counts["duplicate"] == 1
+        assert data["hexrl.worker.inflight"][0].value == 0
+        assert data["hexrl.worker.predict.duration"][0].count == 1
+        assert not any(name.startswith("messaging.") for name in data)
+
+
+async def test_worker_metrics_clear_inflight_on_cancellation(database, metrics):
+    entered = threading.Event()
+    release = threading.Event()
+
+    class Blocking(FakeModel):
+        def predict(self, data):
+            entered.set()
+            release.wait(timeout=5)
+            return super().predict(data)
+
+    app, _ = build_app(database, Blocking())
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        delivery = asyncio.create_task(publish(app, make_message()))
+        try:
+            assert await asyncio.to_thread(entered.wait, 5)
+            assert metrics("hexrl-worker")["hexrl.worker.inflight"][0].value == 1
+            delivery.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await delivery
+            data = metrics("hexrl-worker")
+            assert data["hexrl.worker.inflight"][0].value == 0
+            cancelled = next(
+                point
+                for point in data["hexrl.worker.attempts"]
+                if point.attributes["outcome"] == "cancelled"
+            )
+            assert cancelled.value == 1
+            assert data["hexrl.worker.completed"][0].value == 0
+        finally:
+            release.set()
+
+
+async def test_worker_metrics_count_confirmed_retry_and_dlq(database, metrics):
+    app, _ = build_app(database, FakeModel(error=RuntimeError("test error")))
+    topology = topology_for()
+    retries = []
+    attach_dlq(app)
+
+    @app.broker.subscriber(topology.retry_queue, topology.dlx)
+    async def collect(message: IncomingMessage):
+        retries.append(dict(message.headers))
+
+    task = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, task)
+        for _ in range(2):
+            await publish(app, task, headers=retries.pop(0))
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.retries"][0].value == 2
+        assert data["hexrl.worker.dlq.publications"][0].value == 1
+        assert data["hexrl.worker.completed"][0].value == 0
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["error"] == 2
+        assert counts["dlq"] == 1
+        assert data["hexrl.worker.inflight"][0].value == 0
+
+
+async def test_concurrent_duplicate_inference_counts_only_inserted_result(database, metrics):
+    both_started = threading.Event()
+    release = threading.Event()
+    lock = threading.Lock()
+    calls = 0
+
+    class Model(FakeModel):
+        def predict(self, data):
+            nonlocal calls
+            with lock:
+                calls += 1
+                if calls == 2:
+                    both_started.set()
+            release.wait(timeout=5)
+            return super().predict(data)
+
+    app, _ = build_app(database, Model())
+    task = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        deliveries = asyncio.gather(publish(app, task), publish(app, task))
+        try:
+            assert await asyncio.to_thread(both_started.wait, 5)
+        finally:
+            release.set()
+            await deliveries
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.completed"][0].value == 1
+        assert data["hexrl.worker.task.duration"][0].count == 1
+        assert data["hexrl.worker.predict.duration"][0].count == 2
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["ok"] == counts["duplicate"] == 1
+
+
 async def test_api_publish_process_thread_and_database_share_trace(database, traces):
     from hexrl_platform.api.v1.tasks import get_publisher
     from hexrl_platform.db.session import get_session

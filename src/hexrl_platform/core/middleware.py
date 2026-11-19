@@ -55,6 +55,12 @@ def add_request_logging(app: FastAPI) -> None:
             error_type = type(exc).__name__
             raise
         finally:
+            route = request.scope.get("route")
+            template = getattr(route, "path", "unmatched")
+            if template != "/healthz":
+                app.state.telemetry.metrics.request_finished(
+                    request.method, template, status_code, time.perf_counter() - started
+                )
             details = {
                 "method": request.method,
                 "path": request.url.path,

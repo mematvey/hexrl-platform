@@ -44,6 +44,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         topology = build_topology(
             pipeline.queue_prefix, pipeline.queue_max_length, pipeline.retry_delay_ms
         )
+        app.state.telemetry.metrics.set_queue_limit(pipeline.queue_max_length)
         await declare_topology(broker, topology)
         app.state.engine = engine
         app.state.session_factory = sessions

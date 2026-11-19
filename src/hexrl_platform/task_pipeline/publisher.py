@@ -52,10 +52,12 @@ async def publish_confirmed(
         raise QueueOverloadedError(f"broker rejected publish to {routing_key}") from exc
     except TimeoutError as exc:
         logger.warning("publish_confirm_timeout", extra={"reason": routing_key})
-        raise QueueOverloadedError(f"no confirm for {routing_key}") from exc
+        raise QueueOverloadedError(f"no confirm for {routing_key}", reason="timeout") from exc
     except (AMQPError, ConnectionError, OSError) as exc:
         logger.warning("publish_broker_unavailable", extra={"reason": routing_key})
-        raise QueueOverloadedError(f"broker unavailable for {routing_key}") from exc
+        raise QueueOverloadedError(
+            f"broker unavailable for {routing_key}", reason="unavailable"
+        ) from exc
 
     # aio-pika не бросает исключение на возврат mandatory-сообщения, а отдаёт его как результат
     if isinstance(result, DeliveredMessage):

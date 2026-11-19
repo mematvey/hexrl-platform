@@ -144,6 +144,7 @@ def test_disabled_sdk_never_constructs_an_exporter(monkeypatch):
 
 
 def test_otlp_exports_protobuf_with_configured_resource_and_error(monkeypatch):
+    monkeypatch.setenv("OTEL_METRICS_EXPORTER", "none")
     requests = []
 
     class Handler(BaseHTTPRequestHandler):

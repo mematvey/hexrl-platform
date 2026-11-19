@@ -17,6 +17,7 @@ from faststream.rabbit import Channel, RabbitBroker
 from pydantic import ValidationError
 
 from hexrl_platform.core.logging import configure_logging, task_context
+from hexrl_platform.core.metrics import current_metrics
 from hexrl_platform.core.telemetry import Telemetry, operation
 from hexrl_platform.task_pipeline.config import PipelineSettings
 from hexrl_platform.task_pipeline.errors import QueueOverloadedError
@@ -90,6 +91,7 @@ async def run_batch(
     backoff: Backoff,
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
 ) -> None:
+    metrics = current_metrics()
     async for line_no, raw in lines:
         if not raw.strip():
             continue
@@ -98,6 +100,7 @@ async def run_batch(
             state = HexState.model_validate_json(raw)
         except ValidationError:
             stats.invalid_lines += 1
+            metrics.source_invalid.add(1)
             logger.warning("invalid_line line=%d", line_no)
             continue
 
@@ -111,8 +114,9 @@ async def run_batch(
             while True:
                 try:
                     await publisher.publish(message)
-                except QueueOverloadedError:
+                except QueueOverloadedError as error:
                     stats.rejected += 1
+                    metrics.source_rejections.add(1, {"reason": error.reason})
                     delay = backoff.delay(attempt)
                     attempt += 1
                     stats.wait_s_total += delay
@@ -120,9 +124,14 @@ async def run_batch(
                     with operation(
                         "source.wait", {"retry.attempt": attempt, "wait.duration_s": delay}
                     ):
-                        await sleep(delay)
+                        started = time.monotonic()
+                        try:
+                            await sleep(delay)
+                        finally:
+                            metrics.source_wait.add(time.monotonic() - started)
                 else:
                     stats.published_ok += 1
+                    metrics.source_published.add(1)
                     logger.info("task_published")
                     break
 
@@ -202,6 +211,7 @@ async def amain(args: argparse.Namespace) -> SourceStats:
     stats = SourceStats()
     backoff = Backoff(settings.backoff_base_s, settings.backoff_cap_s, random.Random())
     telemetry = Telemetry.from_env("hexrl-source")
+    telemetry.metrics.set_queue_limit(max_length)
     broker = RabbitBroker(
         settings.rabbitmq_url,
         default_channel=Channel(publisher_confirms=not args.no_backpressure),
@@ -210,6 +220,9 @@ async def amain(args: argparse.Namespace) -> SourceStats:
     )
     metrics_task = None
     try:
+        # Нулевая точка до первого задания: короткий пакет может закончиться
+        # раньше периодического экспорта. Сеть не блокирует event loop.
+        await asyncio.to_thread(telemetry.flush_metrics)
         await broker.start()
         await declare_topology(broker, topology)
         publisher = TaskPublisher(broker, topology, settings.publish_confirm_timeout_s)
@@ -226,8 +239,10 @@ async def amain(args: argparse.Namespace) -> SourceStats:
         if metrics_task:
             metrics_task.cancel()
             await asyncio.gather(metrics_task, return_exceptions=True)
-        await broker.stop()
-        await asyncio.to_thread(telemetry.shutdown)
+        try:
+            await broker.stop()
+        finally:
+            await asyncio.to_thread(telemetry.shutdown)
         logger.info("source_stopped")
     return stats
 

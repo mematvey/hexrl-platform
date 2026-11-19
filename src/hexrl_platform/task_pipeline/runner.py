@@ -4,6 +4,7 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from contextvars import copy_context
 
+from hexrl_platform.core.metrics import current_metrics
 from hexrl_platform.core.telemetry import operation
 from hexrl_platform.task_pipeline.schemas import HexState, Prediction
 
@@ -38,11 +39,18 @@ class InferenceRunner:
         started = time.perf_counter()
         time.sleep(self._delay_s)
         delayed = time.perf_counter()
-        with operation(
-            "inference",
-            {"model.alias": self._model_alias, "model.version": self._model_version},
-        ):
-            action = self._predict(state)
+        metrics = current_metrics()
+        metrics.delay_duration.record(delayed - started)
+        outcome = "error"
+        try:
+            with operation(
+                "inference",
+                {"model.alias": self._model_alias, "model.version": self._model_version},
+            ):
+                action = self._predict(state)
+            outcome = "ok"
+        finally:
+            metrics.predict_duration.record(time.perf_counter() - delayed, {"outcome": outcome})
         finished = time.perf_counter()
         return Prediction(
             action=action,

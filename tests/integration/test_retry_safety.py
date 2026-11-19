@@ -241,6 +241,81 @@ async def test_http_trace_crosses_real_rabbitmq_and_inference_thread(
         get_pipeline_settings.cache_clear()
 
 
+@pytest.mark.parametrize("retry_publish_fails", [False, True])
+async def test_metrics_follow_real_retry_deliveries_and_confirmed_dlq(
+    rabbitmq_url, tmp_path, monkeypatch, metrics, retry_publish_fails
+):
+    class Model(PredictModel):
+        def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+            raise RuntimeError("temporary test failure")
+
+    address = urlsplit(rabbitmq_url)
+    prefix = f"metrics-retry.{uuid4().hex}"
+    for key, value in {
+        "RABBITMQ_USER": "retry-test",
+        "RABBITMQ_PASSWORD": "retry-test",
+        "RABBITMQ_HOST": address.hostname,
+        "RABBITMQ_PORT": str(address.port),
+        "QUEUE_PREFIX": prefix,
+        "INFERENCE_DELAY_S": "0",
+        "RETRY_DELAY_MS": "100",
+        "MAX_DELIVERIES": "3",
+    }.items():
+        monkeypatch.setenv(key, value)
+    get_pipeline_settings.cache_clear()
+    engine = create_async_engine(f"sqlite+aiosqlite:///{(tmp_path / 'metrics.db').as_posix()}")
+    model = LoadedModel(Model(), "test-policy", "champion", "1", "run", 20)
+    app = create_worker_app(loader=lambda _: model, engine_factory=lambda: engine)
+    broker = app.broker
+    assert isinstance(broker, RabbitBroker)
+    topology = build_topology(prefix, 20, 100)
+    if retry_publish_fails:
+        original = worker_module.publish_confirmed
+        failed = False
+
+        async def publish(*args, **kwargs):
+            nonlocal failed
+            if kwargs["routing_key"] == topology.retry_routing_key and not failed:
+                failed = True
+                raise QueueOverloadedError("retry publication failed")
+            await original(*args, **kwargs)
+
+        monkeypatch.setattr(worker_module, "publish_confirmed", publish)
+        monkeypatch.setattr(worker_module, "CRASH_PAUSE_S", 0.01)
+    task = TaskMessage(
+        task_id=uuid4(), payload=HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
+    )
+    try:
+        async with TestApp(app):
+            await TaskPublisher(broker, topology, 1).publish(task)
+            queue = await broker.declare_queue(topology.dlq)
+            async with queue.iterator() as messages:
+                dead = await asyncio.wait_for(anext(messages), 10)
+                await dead.ack()
+            async with asyncio.timeout(5):
+                while True:
+                    data = metrics("hexrl-worker")
+                    counts = {
+                        point.attributes["outcome"]: point.value
+                        for point in data["hexrl.worker.attempts"]
+                    }
+                    if counts["dlq"] == 1:
+                        break
+                    await asyncio.sleep(0.01)
+            assert counts["error"] == 2
+            assert data["hexrl.worker.retries"][0].value == (1 if retry_publish_fails else 2)
+            assert data["hexrl.worker.dlq.publications"][0].value == 1
+            assert data["hexrl.worker.completed"][0].value == 0
+            assert data["hexrl.worker.inflight"][0].value == 0
+            # TTL заново публикует сообщение, это не AMQP redelivered.
+            redeliveries = data["hexrl.worker.redeliveries"][0].value
+            assert redeliveries >= 1 if retry_publish_fails else redeliveries == 0
+            assert sum(point.count for point in data["hexrl.worker.predict.duration"]) == 3
+    finally:
+        await engine.dispose()
+        get_pipeline_settings.cache_clear()
+
+
 async def test_real_worker_never_buffers_more_than_its_prefetch(
     rabbitmq_url, tmp_path, monkeypatch
 ):

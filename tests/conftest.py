@@ -13,12 +13,16 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
+from opentelemetry import trace
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from hexrl_platform import main as main_module
+from hexrl_platform.core.metrics import histogram_views
 from hexrl_platform.core.telemetry import Telemetry
 from hexrl_platform.db.session import get_session
 from hexrl_platform.main import create_app
@@ -39,7 +43,7 @@ def traces(monkeypatch):
     exporters = []
     providers = []
 
-    def create(service):
+    def create(service, **kwargs):
         provider = TracerProvider(resource=Resource({"service.name": service}))
         exporter = InMemorySpanExporter()
         provider.add_span_processor(SimpleSpanProcessor(exporter))
@@ -51,6 +55,41 @@ def traces(monkeypatch):
     yield lambda: tuple(span for exporter in exporters for span in exporter.get_finished_spans())
     for provider in providers:
         provider.shutdown()
+
+
+@pytest.fixture
+def metrics(monkeypatch):
+    readers = {}
+    telemetries = []
+
+    def create(service, **kwargs):
+        reader = InMemoryMetricReader()
+        readers.setdefault(service, []).append(reader)
+        provider = MeterProvider(
+            metric_readers=[reader],
+            resource=Resource({"service.name": service}),
+            views=histogram_views(kwargs.get("inference_delay_s", 0.5)),
+            shutdown_on_exit=False,
+        )
+        telemetry = Telemetry(trace.NoOpTracerProvider(), provider, role=service.rsplit("-", 1)[-1])
+        telemetries.append(telemetry)
+        return telemetry
+
+    def collect(service):
+        result = {}
+        for reader in readers[service]:
+            data = reader.get_metrics_data()
+            if data is not None:
+                for resource in data.resource_metrics:
+                    for scope in resource.scope_metrics:
+                        for metric in scope.metrics:
+                            result.setdefault(metric.name, []).extend(metric.data.data_points)
+        return result
+
+    monkeypatch.setattr(Telemetry, "from_env", staticmethod(create))
+    yield collect
+    for telemetry in telemetries:
+        telemetry.shutdown()
 
 
 class FakeResult:

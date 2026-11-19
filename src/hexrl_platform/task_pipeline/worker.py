@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from collections.abc import AsyncIterator, Callable
 from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
@@ -19,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from hexrl_platform.core.config import get_settings
 from hexrl_platform.core.logging import configure_logging, task_context
+from hexrl_platform.core.metrics import Outcome
 from hexrl_platform.core.telemetry import Telemetry, operation, record_error
 from hexrl_platform.db.schema import create_schema
 from hexrl_platform.db.session import create_engine, create_session_factory
@@ -75,6 +77,7 @@ async def _dead_letter(
         timeout_s=state.confirm_timeout_s,
         headers={**message.headers, DEAD_REASON_HEADER: reason, ATTEMPT_HEADER: attempt},
     )
+    state.telemetry.metrics.worker_dlq.add(1)
     await message.ack()
     logger.warning("task_dead_lettered", extra={"reason": reason, "attempt": attempt})
 
@@ -86,7 +89,7 @@ async def _handle_failure(
     error: Exception,
     *,
     permanent: bool,
-) -> None:
+) -> Outcome:
     async with state.sessions() as session:
         repository = TaskRepository(session)
         stored = await repository.get(task.task_id)
@@ -127,6 +130,7 @@ async def _handle_failure(
             headers={**message.headers, ATTEMPT_HEADER: decision.attempt + 1},
             message_id=str(task.task_id),
         )
+        state.telemetry.metrics.worker_retries.add(1)
         await message.ack()
         logger.warning(
             "task_retry_scheduled",
@@ -136,19 +140,30 @@ async def _handle_failure(
                 "attempt": decision.attempt,
             },
         )
-        return
+        return "error"
     await _dead_letter(state, message, decision.reason, decision.attempt)
+    return "dlq"
 
 
 async def handle_task(message: RabbitMessage, state: Worker) -> None:
+    metrics = state.telemetry.metrics
+    metrics.worker_started(redelivered=bool(message.raw_message.redelivered))
+    started = time.perf_counter()
+    outcome: Outcome = "cancelled"
+    try:
+        outcome = await _handle_task(message, state)
+    finally:
+        metrics.worker_finished(outcome, time.perf_counter() - started)
+
+
+async def _handle_task(message: RabbitMessage, state: WorkerState) -> Outcome:
     with state.telemetry.scope():
         try:
             task = TaskMessage.model_validate_json(bytes(message.body))
         except ValidationError as error:
             record_error(error)
             logger.warning("task_validation_failed", extra={"attempt": 1})
-            await _guard_task(message, state, None)
-            return
+            return await _guard_task(message, state, None)
         with task_context(str(task.task_id), task.batch_id):
             span = trace.get_current_span()
             span.set_attribute(
@@ -159,15 +174,18 @@ async def handle_task(message: RabbitMessage, state: Worker) -> None:
                 "messaging.message.redelivered", bool(message.raw_message.redelivered)
             )
             logger.info("task_processing_started")
-            await _guard_task(message, state, task)
+            return await _guard_task(message, state, task)
 
 
-async def _guard_task(message: RabbitMessage, state: WorkerState, task: TaskMessage | None) -> None:
+async def _guard_task(
+    message: RabbitMessage, state: WorkerState, task: TaskMessage | None
+) -> Outcome:
     try:
         if task is None:
             await _dead_letter(state, message, "validation_error", attempt=1)
+            return "dlq"
         else:
-            await _process_task(message, state, task)
+            return await _process_task(message, state, task)
     except Exception as error:
         # при ручном ack исключение само ничего не подтверждает: без nack сообщение
         # осталось бы неподтверждённым и заняло слот prefetch до рестарта воркера
@@ -176,9 +194,10 @@ async def _guard_task(message: RabbitMessage, state: WorkerState, task: TaskMess
         await asyncio.sleep(CRASH_PAUSE_S)
         if message.committed is None:
             await message.nack(requeue=True)
+        return "error"
 
 
-async def _process_task(message: RabbitMessage, state: WorkerState, task: TaskMessage) -> None:
+async def _process_task(message: RabbitMessage, state: WorkerState, task: TaskMessage) -> Outcome:
     async with state.sessions() as session:
         repository = TaskRepository(session)
         await repository.ensure_task(task)
@@ -188,36 +207,37 @@ async def _process_task(message: RabbitMessage, state: WorkerState, task: TaskMe
             await session.commit()
             await message.ack()
             logger.info("task_duplicate_skipped", extra={"reason": "already_completed"})
-            return
+            return "duplicate"
         if stored is not None and stored.status is TaskStatus.FAILED:
             # FAILED уже закоммичен, но прежняя отправка в DLQ могла не удаться.
             # Повторяем только доставку в DLQ, а не безнадёжный inference.
             await session.commit()
             await _dead_letter(state, message, "previously_failed", stored.attempts)
-            return
+            return "dlq"
         await repository.mark_processing(task.task_id)
         await session.commit()
 
     try:
         prediction = await state.runner.run(task.payload)
     except InvalidStateError as error:
-        await _handle_failure(state, message, task, error, permanent=True)
-        return
+        return await _handle_failure(state, message, task, error, permanent=True)
     except Exception as error:  # noqa: BLE001 - воркер не должен падать из-за одной задачи
-        await _handle_failure(state, message, task, error, permanent=False)
-        return
+        return await _handle_failure(state, message, task, error, permanent=False)
 
     with operation("db.save_result"):
         async with state.sessions() as session:
-            await TaskRepository(session).save_result(
+            inserted = await TaskRepository(session).save_result(
                 task.task_id, prediction, state.model.version, model_name=state.model.name
             )
             await session.commit()
+    if inserted:
+        state.telemetry.metrics.task_completed(task.submitted_at)
 
     # ack строго после commit: падение между ними даёт повторную доставку,
     # которую отобьёт уникальный ключ, а обратный порядок потерял бы задачу
     await message.ack()
     logger.info("task_completed")
+    return "ok" if inserted else "duplicate"
 
 
 def create_worker_app(
@@ -228,7 +248,7 @@ def create_worker_app(
     pipeline = get_pipeline_settings()
     inference = get_inference_settings()
     configure_logging(core.log_level, "hexrl-worker")
-    telemetry = Telemetry.from_env("hexrl-worker")
+    telemetry = Telemetry.from_env("hexrl-worker", inference_delay_s=pipeline.inference_delay_s)
 
     graceful_timeout = pipeline.prefetch_count * pipeline.inference_delay_s + GRACE_MARGIN_S
     # Топология объявляется до subscriber: FastStream кэширует очередь вместе с

@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import csv
 import logging
+import os
 import random
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
@@ -15,7 +16,8 @@ import psutil
 from faststream.rabbit import Channel, RabbitBroker
 from pydantic import ValidationError
 
-from hexrl_platform.core.logging import configure_logging
+from hexrl_platform.core.logging import configure_logging, task_context
+from hexrl_platform.core.telemetry import Telemetry, operation
 from hexrl_platform.task_pipeline.config import PipelineSettings
 from hexrl_platform.task_pipeline.errors import QueueOverloadedError
 from hexrl_platform.task_pipeline.publisher import TaskPublisher
@@ -102,20 +104,27 @@ async def run_batch(
         message = TaskMessage(
             task_id=task_id_for(batch_id, line_no), batch_id=batch_id, payload=state
         )
-        attempt = 0
-        # следующую строку не читаем, пока эта не принята: в памяти всегда одна запись
-        while True:
-            try:
-                await publisher.publish(message)
-            except QueueOverloadedError:
-                stats.rejected += 1
-                delay = backoff.delay(attempt)
-                attempt += 1
-                stats.wait_s_total += delay
-                await sleep(delay)
-            else:
-                stats.published_ok += 1
-                break
+        # Отдельный трейс на строку, не один огромный трейс на весь файл.
+        with operation("source.task"), task_context(str(message.task_id), batch_id):
+            attempt = 0
+            # следующую строку не читаем, пока эта не принята: в памяти всегда одна запись
+            while True:
+                try:
+                    await publisher.publish(message)
+                except QueueOverloadedError:
+                    stats.rejected += 1
+                    delay = backoff.delay(attempt)
+                    attempt += 1
+                    stats.wait_s_total += delay
+                    logger.warning("source_backoff", extra={"attempt": attempt, "wait_s": delay})
+                    with operation(
+                        "source.wait", {"retry.attempt": attempt, "wait.duration_s": delay}
+                    ):
+                        await sleep(delay)
+                else:
+                    stats.published_ok += 1
+                    logger.info("task_published")
+                    break
 
 
 class MetricsWriter:
@@ -192,13 +201,16 @@ async def amain(args: argparse.Namespace) -> SourceStats:
 
     stats = SourceStats()
     backoff = Backoff(settings.backoff_base_s, settings.backoff_cap_s, random.Random())
+    telemetry = Telemetry.from_env("hexrl-source")
     broker = RabbitBroker(
         settings.rabbitmq_url,
         default_channel=Channel(publisher_confirms=not args.no_backpressure),
+        middlewares=[telemetry.middleware()],
+        logger=logging.getLogger("hexrl_platform.broker"),
     )
-    await broker.start()
     metrics_task = None
     try:
+        await broker.start()
         await declare_topology(broker, topology)
         publisher = TaskPublisher(broker, topology, settings.publish_confirm_timeout_s)
         if args.metrics_csv:
@@ -207,17 +219,21 @@ async def amain(args: argparse.Namespace) -> SourceStats:
         logger.info(
             "batch_source_started batch=%s queue=%s", args.batch_id, topology.tasks_queue.name
         )
-        await run_batch(publisher, read_lines(args.file), args.batch_id, stats, backoff)
+        with telemetry.scope():
+            await run_batch(publisher, read_lines(args.file), args.batch_id, stats, backoff)
     finally:
+        logger.info("source_stopping")
         if metrics_task:
             metrics_task.cancel()
             await asyncio.gather(metrics_task, return_exceptions=True)
         await broker.stop()
+        await asyncio.to_thread(telemetry.shutdown)
+        logger.info("source_stopped")
     return stats
 
 
 def main() -> None:
-    configure_logging("INFO")
+    configure_logging(os.getenv("LOG_LEVEL", "INFO"), "hexrl-source")
     stats = asyncio.run(amain(parse_args()))
     logger.info(
         "batch_source_finished published=%d rejected=%d invalid=%d",

@@ -9,6 +9,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from hexrl_platform.core.config import Settings
+from hexrl_platform.core.logging import task_context
+from hexrl_platform.core.telemetry import operation, record_error
 from hexrl_platform.task_pipeline.config import PipelineSettings
 from hexrl_platform.task_pipeline.errors import QueueOverloadedError, TopologyError
 from hexrl_platform.task_pipeline.publisher import TaskPublisher
@@ -19,9 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 class TaskUnavailableError(Exception):
-    def __init__(self, reason: str) -> None:
+    def __init__(self, reason: str, task_id: str | None = None) -> None:
         super().__init__(reason)
         self.reason = reason
+        self.task_id = task_id
 
 
 def retry_after(settings: Settings, pipeline: PipelineSettings) -> int:
@@ -49,14 +52,23 @@ async def submit_task(
     payload: HexState, session: AsyncSession, publisher: TaskPublisher, settings: Settings
 ) -> TaskMessage:
     message = TaskMessage(task_id=uuid4(), payload=payload)
+    with task_context(str(message.task_id)):
+        return await _submit(message, session, publisher, settings)
+
+
+async def _submit(
+    message: TaskMessage, session: AsyncSession, publisher: TaskPublisher, settings: Settings
+) -> TaskMessage:
     repository = TaskRepository(session)
     try:
         async with asyncio.timeout(settings.task_submission_timeout_s):
-            await repository.create_pending(message)
-            await session.commit()
+            with operation("db.create_task"):
+                await repository.create_pending(message)
+                await session.commit()
             await publisher.publish(message)
             await repository.mark_accepted(message.task_id)
             await session.commit()
+            logger.info("task_accepted")
     except asyncio.CancelledError:
         # ASGI отменяет через cancel scope: одного asyncio.shield недостаточно,
         # cleanup должен закончиться до закрытия request-scoped сессии.
@@ -64,13 +76,15 @@ async def submit_task(
             await _remove_pending(session, message, settings.task_cleanup_timeout_s)
         raise
     except TopologyError as error:
+        record_error(error)
         await _remove_pending(session, message, settings.task_cleanup_timeout_s)
         logger.error("task_topology_error", extra={"task_id": str(message.task_id)})
-        raise TaskUnavailableError("pipeline_unavailable") from error
+        raise TaskUnavailableError("pipeline_unavailable", str(message.task_id)) from error
     except (QueueOverloadedError, TimeoutError, SQLAlchemyError) as error:
+        record_error(error)
         await _remove_pending(session, message, settings.task_cleanup_timeout_s)
         logger.warning("task_not_accepted", extra={"task_id": str(message.task_id)})
-        raise TaskUnavailableError("queue_overloaded") from error
+        raise TaskUnavailableError("queue_overloaded", str(message.task_id)) from error
     return message
 
 

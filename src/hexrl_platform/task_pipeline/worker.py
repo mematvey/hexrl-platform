@@ -13,11 +13,13 @@ from faststream.asgi import AsgiFastStream, AsgiResponse, get, make_ping_asgi
 from faststream.asgi.types import Scope
 from faststream.rabbit import Channel, RabbitBroker
 from faststream.rabbit.annotations import RabbitMessage
+from opentelemetry import trace
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from hexrl_platform.core.config import get_settings
-from hexrl_platform.core.logging import configure_logging
+from hexrl_platform.core.logging import configure_logging, task_context
+from hexrl_platform.core.telemetry import Telemetry, operation, record_error
 from hexrl_platform.db.schema import create_schema
 from hexrl_platform.db.session import create_engine, create_session_factory
 from hexrl_platform.inference.config import InferenceSettings, get_inference_settings
@@ -51,6 +53,7 @@ class WorkerState:
     sessions: async_sessionmaker[AsyncSession]
     max_deliveries: int
     confirm_timeout_s: float
+    telemetry: Telemetry
 
 
 Worker = Annotated[WorkerState, Context(WORKER_KEY)]
@@ -61,6 +64,8 @@ EngineFactory = Callable[[], AsyncEngine]
 async def _dead_letter(
     state: WorkerState, message: RabbitMessage, reason: str, attempt: int
 ) -> None:
+    trace.get_current_span().add_event("task.dlq", {"reason": reason, "attempt": attempt})
+    trace.get_current_span().set_status(trace.StatusCode.ERROR)
     # reject отправил бы сообщение в DLX основной очереди, то есть в retry; нужен именно DLQ
     await publish_confirmed(
         state.broker,
@@ -97,6 +102,13 @@ async def _handle_failure(
             max_deliveries=state.max_deliveries,
             permanent=permanent,
         )
+        trace.get_current_span().set_attribute("messaging.delivery.attempt", attempt)
+        record_error(error)
+        logger.error(
+            "task_processing_failed",
+            extra={"attempt": attempt},
+            exc_info=(type(error), error, error.__traceback__),
+        )
         if decision.retry:
             await repository.record_attempt(task.task_id, decision.attempt, str(error))
         else:
@@ -129,27 +141,44 @@ async def _handle_failure(
 
 
 async def handle_task(message: RabbitMessage, state: Worker) -> None:
+    with state.telemetry.scope():
+        try:
+            task = TaskMessage.model_validate_json(bytes(message.body))
+        except ValidationError as error:
+            record_error(error)
+            logger.warning("task_validation_failed", extra={"attempt": 1})
+            await _guard_task(message, state, None)
+            return
+        with task_context(str(task.task_id), task.batch_id):
+            span = trace.get_current_span()
+            span.set_attribute(
+                "messaging.delivery.attempt",
+                attempt_number(message.headers, state.topology.tasks_queue.name),
+            )
+            span.set_attribute(
+                "messaging.message.redelivered", bool(message.raw_message.redelivered)
+            )
+            logger.info("task_processing_started")
+            await _guard_task(message, state, task)
+
+
+async def _guard_task(message: RabbitMessage, state: WorkerState, task: TaskMessage | None) -> None:
     try:
-        await _process_task(message, state)
-    except Exception as error:  # noqa: BLE001 - воркер не должен падать из-за одной задачи
+        if task is None:
+            await _dead_letter(state, message, "validation_error", attempt=1)
+        else:
+            await _process_task(message, state, task)
+    except Exception as error:
         # при ручном ack исключение само ничего не подтверждает: без nack сообщение
         # осталось бы неподтверждённым и заняло слот prefetch до рестарта воркера
-        logger.error(
-            "task_handler_crashed", extra={"error_type": type(error).__name__, "error": str(error)}
-        )
+        record_error(error)
+        logger.exception("task_handler_crashed")
         await asyncio.sleep(CRASH_PAUSE_S)
         if message.committed is None:
             await message.nack(requeue=True)
 
 
-async def _process_task(message: RabbitMessage, state: Worker) -> None:
-    try:
-        task = TaskMessage.model_validate_json(bytes(message.body))
-    except ValidationError:
-        # невалидное сообщение не станет валидным от повтора
-        await _dead_letter(state, message, "validation_error", attempt=1)
-        return
-
+async def _process_task(message: RabbitMessage, state: WorkerState, task: TaskMessage) -> None:
     async with state.sessions() as session:
         repository = TaskRepository(session)
         await repository.ensure_task(task)
@@ -158,6 +187,7 @@ async def _process_task(message: RabbitMessage, state: Worker) -> None:
             # оптимизация, а не защита: защита - уникальный ключ в inference_results
             await session.commit()
             await message.ack()
+            logger.info("task_duplicate_skipped", extra={"reason": "already_completed"})
             return
         if stored is not None and stored.status is TaskStatus.FAILED:
             # FAILED уже закоммичен, но прежняя отправка в DLQ могла не удаться.
@@ -177,15 +207,17 @@ async def _process_task(message: RabbitMessage, state: Worker) -> None:
         await _handle_failure(state, message, task, error, permanent=False)
         return
 
-    async with state.sessions() as session:
-        await TaskRepository(session).save_result(
-            task.task_id, prediction, state.model.version, model_name=state.model.name
-        )
-        await session.commit()
+    with operation("db.save_result"):
+        async with state.sessions() as session:
+            await TaskRepository(session).save_result(
+                task.task_id, prediction, state.model.version, model_name=state.model.name
+            )
+            await session.commit()
 
     # ack строго после commit: падение между ними даёт повторную доставку,
     # которую отобьёт уникальный ключ, а обратный порядок потерял бы задачу
     await message.ack()
+    logger.info("task_completed")
 
 
 def create_worker_app(
@@ -195,14 +227,19 @@ def create_worker_app(
     core = get_settings()
     pipeline = get_pipeline_settings()
     inference = get_inference_settings()
-    configure_logging(core.log_level)
+    configure_logging(core.log_level, "hexrl-worker")
+    telemetry = Telemetry.from_env("hexrl-worker")
 
     graceful_timeout = pipeline.prefetch_count * pipeline.inference_delay_s + GRACE_MARGIN_S
     # Топология объявляется до subscriber: FastStream кэширует очередь вместе с
     # каналом первого объявления. Поэтому QoS нужен уже у default_channel.
     channel = Channel(prefetch_count=pipeline.prefetch_count)
     broker = RabbitBroker(
-        pipeline.rabbitmq_url, graceful_timeout=graceful_timeout, default_channel=channel
+        pipeline.rabbitmq_url,
+        graceful_timeout=graceful_timeout,
+        default_channel=channel,
+        middlewares=[telemetry.middleware()],
+        logger=logging.getLogger("hexrl_platform.broker"),
     )
     topology = build_topology(
         pipeline.queue_prefix, pipeline.queue_max_length, pipeline.retry_delay_ms
@@ -222,6 +259,7 @@ def create_worker_app(
         # разборка идёт в обратном порядке: контекст -> потоки -> соединения с БД,
         # и срабатывает даже если модель не загрузилась
         async with AsyncExitStack() as stack:
+            stack.push_async_callback(asyncio.to_thread, telemetry.shutdown)
             # Lifespan вызывается раньше broker.start: для объявления очередей
             # соединение уже нужно, а принимать задачи до загрузки модели ещё нельзя.
             await stack.enter_async_context(broker)
@@ -236,13 +274,20 @@ def create_worker_app(
             loaded["model"] = model
             logger.info(
                 "model_loaded",
-                extra={"component": model.name, "component_version": model.version},
+                extra={
+                    "component": model.name,
+                    "model_alias": model.alias,
+                    "component_version": model.version,
+                    "model_version": model.version,
+                },
             )
 
             runner = InferenceRunner(
                 partial(predict_action, model.model),
                 pipeline.worker_concurrency,
                 pipeline.inference_delay_s,
+                model_alias=model.alias,
+                model_version=model.version,
             )
             stack.callback(runner.shutdown)
 
@@ -256,6 +301,7 @@ def create_worker_app(
                     sessions=create_session_factory(engine),
                     max_deliveries=pipeline.max_deliveries,
                     confirm_timeout_s=pipeline.publish_confirm_timeout_s,
+                    telemetry=telemetry,
                 ),
             )
             stack.callback(context.reset_global, WORKER_KEY)
@@ -284,6 +330,7 @@ def create_worker_app(
 
     return AsgiFastStream(
         broker,
+        on_shutdown=[lambda: logger.info("worker_stopping")],
         asgi_routes=[
             # отвечает во время inference: сам inference живёт в потоке, event loop свободен
             ("/healthz", make_ping_asgi(broker, timeout=5.0)),
@@ -300,4 +347,5 @@ def main() -> None:
         host=inference.inference_host,
         port=inference.inference_port,
         access_log=False,
+        log_config=None,
     )

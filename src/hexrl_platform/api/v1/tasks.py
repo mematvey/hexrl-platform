@@ -25,6 +25,7 @@ def get_publisher(request: Request) -> TaskPublisher:
 )
 async def create_task(
     payload: TaskRequest,
+    request: Request,
     session: Annotated[AsyncSession, Depends(get_session)],
     publisher: Annotated[TaskPublisher, Depends(get_publisher)],
     settings: Annotated[Settings, Depends(get_settings)],
@@ -33,6 +34,7 @@ async def create_task(
     try:
         message = await submit_task(payload, session, publisher, settings)
     except TaskUnavailableError as error:
+        request.state.task_id = error.task_id
         body = TaskError(error=error.reason, message="Task could not be accepted; retry later")
         return JSONResponse(
             status_code=503,
@@ -40,6 +42,7 @@ async def create_task(
             headers={"Retry-After": str(retry_after(settings, pipeline))},
         )
     location = f"/api/v1/tasks/{message.task_id}"
+    request.state.task_id = str(message.task_id)
     return TaskAccepted(task_id=message.task_id, status_url=location)
 
 

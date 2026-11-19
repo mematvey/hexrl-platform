@@ -214,6 +214,8 @@ services:
       dockerfile: Dockerfile.inference
     env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
+      # Служебные подсказки MLflow не должны нарушать единый JSON-формат.
+      MLFLOW_DISABLE_AGENT_HINT: "1"
       MLFLOW_TRACKING_URI: http://mlflow:5000
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"

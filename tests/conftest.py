@@ -1,3 +1,4 @@
+import logging
 import os
 
 os.environ.setdefault("POSTGRES_USER", "test")
@@ -12,10 +13,44 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from hexrl_platform import main as main_module
+from hexrl_platform.core.telemetry import Telemetry
 from hexrl_platform.db.session import get_session
 from hexrl_platform.main import create_app
+
+
+def pytest_sessionfinish(session, exitstatus):
+    # Captured stdout закрывается после сессии; atexit-логи PyTorch не должны
+    # обращаться к оставшемуся handler с уже закрытым потоком pytest.
+    root = logging.getLogger()
+    for handler in root.handlers[:]:
+        if handler.name == "hexrl-stdout":
+            root.removeHandler(handler)
+            handler.close()
+
+
+@pytest.fixture
+def traces(monkeypatch):
+    exporters = []
+    providers = []
+
+    def create(service):
+        provider = TracerProvider(resource=Resource({"service.name": service}))
+        exporter = InMemorySpanExporter()
+        provider.add_span_processor(SimpleSpanProcessor(exporter))
+        providers.append(provider)
+        exporters.append(exporter)
+        return Telemetry(provider)
+
+    monkeypatch.setattr(Telemetry, "from_env", staticmethod(create))
+    yield lambda: tuple(span for exporter in exporters for span in exporter.get_finished_spans())
+    for provider in providers:
+        provider.shutdown()
 
 
 class FakeResult:
@@ -45,7 +80,7 @@ def app(monkeypatch) -> FastAPI:
     monkeypatch.setattr(main_module, "create_schema", AsyncMock())
     monkeypatch.setattr(main_module, "cleanup_pending", AsyncMock(return_value=0))
     monkeypatch.setattr(main_module, "declare_topology", AsyncMock())
-    monkeypatch.setattr(main_module, "RabbitBroker", lambda _: AsyncMock())
+    monkeypatch.setattr(main_module, "RabbitBroker", lambda *a, **k: AsyncMock())
     return create_app()
 
 

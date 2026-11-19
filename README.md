@@ -117,6 +117,9 @@ tests/            тесты
 
 ## Разработка
 
+Первый этап наблюдаемости - контекст задач, JSON-логи и OpenTelemetry-трейсы:
+[настройка и проверки](docs/observability.md).
+
 Правила веток, коммитов и релизов в [CONTRIBUTING](docs/CONTRIBUTING.md)
 
 ```bash

@@ -8,7 +8,9 @@ dependencies = [
     "anyio>=4.15,<5",
     "asyncpg>=0.31.0",
     "fastapi>=0.141.1",
-    "faststream[rabbit]>=0.7.7",
+    "faststream[rabbit,otel]>=0.7.7",
+    "opentelemetry-exporter-otlp-proto-http>=1.45,<2",
+    "opentelemetry-sdk>=1.45,<2",
     "psutil>=7.2.2",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
@@ -24,6 +26,7 @@ hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"
 hexrl-experiment = "hexrl_platform.rl.experiment:main"
 hexrl-register = "hexrl_platform.rl.registry:main"
+hexrl-bootstrap = "hexrl_platform.rl.bootstrap:main"
 
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]

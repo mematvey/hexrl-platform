@@ -1,0 +1,744 @@
+{
+ "date": "2026-11-20",
+ "stand": "hexrl-obs",
+ "reports": {
+  "acceptance": {
+   "scenario": "acceptance",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:22:40.822055+00:00",
+    "commit": "1cf80fa",
+    "clean": false,
+    "ready_after_s": 84.2,
+    "model": {
+     "name": "hex-navigation-smoke",
+     "alias": "champion",
+     "version": "1",
+     "trained_now": false
+    },
+    "task_id": "6194b81d-8088-4d6a-9ec1-6fdbd832a322",
+    "trace_id": "4d41e9af606eaabdef2466fef8bdf56f"
+   },
+   "checks": [
+    {
+     "check": "bootstrap prepared the champion",
+     "ok": true
+    },
+    {
+     "check": "worker loaded the model before becoming healthy",
+     "ok": true
+    },
+    {
+     "check": "grafana is up",
+     "ok": true
+    },
+    {
+     "check": "datasource metrics is provisioned and healthy",
+     "ok": true,
+     "status": "OK"
+    },
+    {
+     "check": "datasource logs is provisioned and healthy",
+     "ok": true,
+     "status": "OK"
+    },
+    {
+     "check": "datasource traces is provisioned and healthy",
+     "ok": true,
+     "status": "OK"
+    },
+    {
+     "check": "pipeline dashboard is provisioned",
+     "ok": true,
+     "panels": 14
+    },
+    {
+     "check": "alert rules are provisioned",
+     "ok": true,
+     "rules": [
+      "dlq_not_empty",
+      "queue_near_limit"
+     ]
+    },
+    {
+     "check": "task accepted",
+     "ok": true,
+     "status": 202
+    },
+    {
+     "check": "task result is available",
+     "ok": true,
+     "result": {
+      "task_id": "6194b81d-8088-4d6a-9ec1-6fdbd832a322",
+      "batch_id": null,
+      "status": "COMPLETED",
+      "payload": {
+       "q": 0,
+       "r": 0,
+       "goal_q": 2,
+       "goal_r": -1,
+       "steps_remaining": 20
+      },
+      "attempts": 0,
+      "submitted_at": "2026-11-20T18:24:05.924244Z",
+      "created_at": "2026-11-20T18:24:05.926596Z",
+      "completed_at": "2026-11-20T18:24:06.454038Z",
+      "last_error": null,
+      "result": {
+       "action": 1,
+       "model_name": "hex-navigation-smoke",
+       "model_version": "1",
+       "inference_ms": 4.21960499988927,
+       "delay_ms": 500.08207800010496,
+       "completed_at": "2026-11-20T18:24:06.454038Z"
+      }
+     }
+    },
+    {
+     "check": "logs of both services are found by task_id",
+     "ok": true,
+     "events": [
+      "http_request_completed",
+      "task_accepted",
+      "task_completed",
+      "task_processing_started"
+     ]
+    },
+    {
+     "check": "all task logs share one trace_id",
+     "ok": true,
+     "trace_ids": [
+      "4d41e9af606eaabdef2466fef8bdf56f"
+     ]
+    },
+    {
+     "check": "trace links API, broker, inference and DB",
+     "ok": true,
+     "trace": {
+      "services": [
+       "hexrl-api",
+       "hexrl-worker"
+      ],
+      "instances": [
+       "5b8cb7818acf",
+       "7fdc37d635d5"
+      ],
+      "spans": [
+       "POST /api/v1/tasks",
+       "db.create_task",
+       "db.save_result",
+       "hexrl.inference.hexrl.obs.tasks create",
+       "hexrl.inference.hexrl.obs.tasks process",
+       "hexrl.inference.hexrl.obs.tasks publish",
+       "inference"
+      ],
+      "error_spans": []
+     }
+    },
+    {
+     "check": "trace_id leads back to the same logs",
+     "ok": true,
+     "lines": 4
+    },
+    {
+     "check": "metrics of app, worker and broker reach Prometheus",
+     "ok": true,
+     "values": {
+      "completed": 600.0,
+      "queue_limit": 20.0,
+      "ready": 0.0,
+      "workers": 1.0
+     }
+    }
+   ]
+  },
+  "load_defense": {
+   "scenario": "load-defense",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:28:42Z",
+    "dataset": "defense",
+    "rows": 6000,
+    "batch_id": "defense-2e30651f",
+    "duration_s": 828.4,
+    "queue_full_after_s": 15.0,
+    "alert_after_s": 85.9,
+    "second_worker_after_s": 86.6,
+    "statuses": {
+     "COMPLETED": 6000
+    },
+    "results": 6000,
+    "rates": {
+     "one_worker": {
+      "window_s": 71.6,
+      "completed_per_s": 3.8118431006796802,
+      "published_per_s": 3.81219486570789
+     },
+     "two_workers": {
+      "window_s": 701.2,
+      "completed_per_s": 7.721968347749455,
+      "published_per_s": 7.7265489829032665
+     }
+    },
+    "source_rejections": 7573.018292682926,
+    "source_wait_s": 796.0938945041589,
+    "memory_mib": {
+     "alloy": 67.5,
+     "app": 81.52,
+     "artifact-store": 174.9,
+     "batch-source": 49.16,
+     "db": 73.4,
+     "grafana": 82.52,
+     "loki": 110.3,
+     "mlflow": 2273.28,
+     "mlflow-db": 62.8,
+     "otel-collector": 102.8,
+     "prometheus": 49.43,
+     "rabbitmq": 191.9,
+     "tempo": 113.3,
+     "worker": 742.0
+    },
+    "worker_instances": {
+     "46570ed2517c": true,
+     "4666c149c2b5": true
+    },
+    "speedup": 2.03,
+    "slo": {
+     "threshold_s": 10,
+     "objective": 0.99,
+     "fast_successes": 6000.0,
+     "slow_successes": 0.0,
+     "terminal_errors": 0,
+     "good_fraction": 1.0,
+     "error_budget_tasks": 49.990000000000045,
+     "note": "пересчитано по сырым histogram текущих воркеров; первая версия суммы теряла ряды прошлых процессов"
+    },
+    "cardinality": {
+     "hexrl_series": 218,
+     "task_duration_now": 16,
+     "task_duration_with_task_id": 96000
+    }
+   },
+   "checks": [
+    {
+     "check": "every accepted line has a terminal task",
+     "ok": true
+    },
+    {
+     "check": "no task is lost or duplicated",
+     "ok": true
+    },
+    {
+     "check": "queue reached 90% of the limit",
+     "ok": true,
+     "limit": 20
+    },
+    {
+     "check": "source slowed down instead of flooding",
+     "ok": true
+    },
+    {
+     "check": "source.wait is visible in traces",
+     "ok": true,
+     "traces": 20
+    },
+    {
+     "check": "queue alert went Firing",
+     "ok": true
+    },
+    {
+     "check": "two worker instances appear in traces",
+     "ok": true
+    },
+    {
+     "check": "second worker raised throughput and source speed",
+     "ok": true
+    },
+    {
+     "check": "histogram covers every completed task",
+     "ok": true
+    }
+   ]
+  },
+  "load_smoke": {
+   "scenario": "load-smoke",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:44:06Z",
+    "dataset": "smoke",
+    "rows": 1000,
+    "batch_id": "smoke-26046bef",
+    "duration_s": 197.3,
+    "queue_full_after_s": 40.0,
+    "alert_after_s": 114.1,
+    "second_worker_after_s": 114.7,
+    "statuses": {
+     "COMPLETED": 1000
+    },
+    "results": 1000,
+    "rates": {
+     "one_worker": {
+      "window_s": 74.7,
+      "completed_per_s": 3.807757792916626,
+      "published_per_s": 3.847066991789723
+     },
+     "two_workers": {
+      "window_s": 41.9,
+      "completed_per_s": 7.599147251774982,
+      "published_per_s": 7.4879297459550465
+     }
+    },
+    "source_rejections": 1437.1621621621623,
+    "source_wait_s": 182.19519921588002,
+    "memory_mib": {
+     "alloy": 68.43,
+     "app": 84.39,
+     "artifact-store": 179.7,
+     "batch-source": 48.92,
+     "db": 75.52,
+     "grafana": 80.63,
+     "loki": 130.6,
+     "mlflow": 2279.424,
+     "mlflow-db": 62.8,
+     "otel-collector": 102.7,
+     "prometheus": 51.29,
+     "rabbitmq": 112.5,
+     "tempo": 123.0,
+     "worker": 740.9000000000001
+    },
+    "worker_instances": {
+     "88a725d9648d": true,
+     "87ecfb314fed": true
+    },
+    "speedup": 2.0,
+    "slo": {
+     "threshold_s": 10,
+     "objective": 0.99,
+     "fast_successes": 1000.0,
+     "slow_successes": 0.0,
+     "terminal_errors": 0,
+     "good_fraction": 1.0,
+     "error_budget_tasks": 10.000000000000009
+    },
+    "cardinality": {
+     "hexrl_series": 390,
+     "task_duration_now": 16,
+     "task_duration_with_task_id": 16000
+    }
+   },
+   "checks": [
+    {
+     "check": "every accepted line has a terminal task",
+     "ok": true
+    },
+    {
+     "check": "no task is lost or duplicated",
+     "ok": true
+    },
+    {
+     "check": "queue reached 90% of the limit",
+     "ok": true,
+     "limit": 20
+    },
+    {
+     "check": "source slowed down instead of flooding",
+     "ok": true
+    },
+    {
+     "check": "source.wait is visible in traces",
+     "ok": true,
+     "traces": 20
+    },
+    {
+     "check": "queue alert went Firing",
+     "ok": true
+    },
+    {
+     "check": "two worker instances appear in traces",
+     "ok": true
+    },
+    {
+     "check": "second worker raised throughput and source speed",
+     "ok": true
+    },
+    {
+     "check": "histogram covers every completed task",
+     "ok": true
+    }
+   ]
+  },
+  "errors": {
+   "scenario": "errors",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:05:20Z",
+    "transient_task_id": "2be83cdf-acf8-4f38-be50-9f270f4cfa14",
+    "transient_logs": [
+     {
+      "timestamp": "2026-11-20T18:05:40.163Z",
+      "service": "hexrl-worker",
+      "level": "ERROR",
+      "event": "task_processing_failed",
+      "attempt": 1,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:45.692Z",
+      "service": "hexrl-worker",
+      "level": "ERROR",
+      "event": "task_processing_failed",
+      "attempt": 2,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:51.215Z",
+      "service": "hexrl-worker",
+      "level": "ERROR",
+      "event": "task_processing_failed",
+      "attempt": 3,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:39.644Z",
+      "service": "hexrl-api",
+      "level": "INFO",
+      "event": "task_accepted",
+      "attempt": null,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:39.645Z",
+      "service": "hexrl-api",
+      "level": "INFO",
+      "event": "http_request_completed",
+      "attempt": null,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:39.642Z",
+      "service": "hexrl-worker",
+      "level": "INFO",
+      "event": "task_processing_started",
+      "attempt": null,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:45.179Z",
+      "service": "hexrl-worker",
+      "level": "INFO",
+      "event": "task_processing_started",
+      "attempt": null,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:50.701Z",
+      "service": "hexrl-worker",
+      "level": "INFO",
+      "event": "task_processing_started",
+      "attempt": null,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:40.177Z",
+      "service": "hexrl-worker",
+      "level": "WARNING",
+      "event": "task_retry_scheduled",
+      "attempt": 1,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:45.700Z",
+      "service": "hexrl-worker",
+      "level": "WARNING",
+      "event": "task_retry_scheduled",
+      "attempt": 2,
+      "reason": null
+     },
+     {
+      "timestamp": "2026-11-20T18:05:51.222Z",
+      "service": "hexrl-worker",
+      "level": "WARNING",
+      "event": "task_dead_lettered",
+      "attempt": 3,
+      "reason": "max_deliveries_reached"
+     }
+    ],
+    "transient_trace_id": "a35b8732390557d9287d40147bed05ef"
+   },
+   "checks": [
+    {
+     "check": "broken schema goes to DLQ at once",
+     "ok": true,
+     "headers": {
+      "x-dead-reason": "validation_error",
+      "x-attempt": 1
+     }
+    },
+    {
+     "check": "domain error goes to DLQ without retries",
+     "ok": true,
+     "task_id": "4d6bac01-9d6f-4a58-b04f-c149cd98affa",
+     "result": {
+      "task_id": "4d6bac01-9d6f-4a58-b04f-c149cd98affa",
+      "batch_id": null,
+      "status": "FAILED",
+      "payload": {
+       "q": 9,
+       "r": 9,
+       "goal_q": 0,
+       "goal_r": 0,
+       "steps_remaining": 5
+      },
+      "attempts": 1,
+      "submitted_at": "2026-11-20T18:05:30.125510Z",
+      "created_at": "2026-11-20T18:05:30.126778Z",
+      "completed_at": "2026-11-20T18:05:30.651645Z",
+      "last_error": "Position and goal must be walkable cells of the model map",
+      "result": null
+     }
+    },
+    {
+     "check": "transient error is retried and then dead-lettered",
+     "ok": true,
+     "result": {
+      "task_id": "2be83cdf-acf8-4f38-be50-9f270f4cfa14",
+      "batch_id": null,
+      "status": "FAILED",
+      "payload": {
+       "q": 0,
+       "r": 0,
+       "goal_q": 2,
+       "goal_r": -1,
+       "steps_remaining": 20
+      },
+      "attempts": 3,
+      "submitted_at": "2026-11-20T18:05:39.635512Z",
+      "created_at": "2026-11-20T18:05:39.636637Z",
+      "completed_at": "2026-11-20T18:05:51.217536Z",
+      "last_error": "benchmark_injected_transient_failure",
+      "result": null
+     }
+    },
+    {
+     "check": "every attempt is logged as ERROR with its number",
+     "ok": true
+    },
+    {
+     "check": "all attempts share one trace_id",
+     "ok": true,
+     "trace_ids": [
+      "a35b8732390557d9287d40147bed05ef"
+     ]
+    },
+    {
+     "check": "trace marks the failure as ERROR",
+     "ok": true,
+     "trace": {
+      "services": [
+       "hexrl-api",
+       "hexrl-worker"
+      ],
+      "instances": [
+       "05a54ead0087",
+       "58082ddd4356"
+      ],
+      "spans": [
+       "POST /api/v1/tasks",
+       "db.create_task",
+       "hexrl.inference.dlx.hexrl.obs.dlq create",
+       "hexrl.inference.dlx.hexrl.obs.dlq publish",
+       "hexrl.inference.dlx.hexrl.obs.retry create",
+       "hexrl.inference.dlx.hexrl.obs.retry publish",
+       "hexrl.inference.hexrl.obs.tasks create",
+       "hexrl.inference.hexrl.obs.tasks process",
+       "hexrl.inference.hexrl.obs.tasks publish",
+       "inference"
+      ],
+      "error_spans": [
+       "hexrl.inference.hexrl.obs.tasks process",
+       "inference"
+      ]
+     }
+    },
+    {
+     "check": "DLQ alert went Firing",
+     "ok": true
+    }
+   ]
+  },
+  "overload": {
+   "scenario": "overload",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:12:12Z",
+    "accepted": 20,
+    "rejected": 40,
+    "pending_left": 0,
+    "share_503": 0.667,
+    "rejected_trace": {
+     "trace_id": "6674a1439c09961b8ab798aedb3028ac",
+     "trace": {
+      "services": [
+       "hexrl-api"
+      ],
+      "instances": [
+       "d59e4a489b5c"
+      ],
+      "spans": [
+       "POST /api/v1/tasks",
+       "db.create_task",
+       "hexrl.inference.hexrl.obs.tasks create",
+       "hexrl.inference.hexrl.obs.tasks publish"
+      ],
+      "error_spans": [
+       "POST /api/v1/tasks",
+       "hexrl.inference.hexrl.obs.tasks publish"
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "check": "API answered 503 when the queue was full",
+     "ok": true
+    },
+    {
+     "check": "every 503 carries Retry-After",
+     "ok": true,
+     "retry_after": [
+      "1"
+     ]
+    },
+    {
+     "check": "no PENDING rows left after refusals",
+     "ok": true
+    },
+    {
+     "check": "accepted tasks still complete",
+     "ok": true
+    },
+    {
+     "check": "503 counter grew by every refusal",
+     "ok": true
+    },
+    {
+     "check": "503 log lines carry trace_id and task_id",
+     "ok": true,
+     "lines": 40
+    },
+    {
+     "check": "503 is an ERROR trace with the refusal reason",
+     "ok": true
+    }
+   ]
+  },
+  "lifecycle": {
+   "scenario": "lifecycle",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:12:55Z",
+    "sigterm": {
+     "in_flight_at_signal": 2,
+     "stop_s": 1.36,
+     "completed_after_signal": 6,
+     "exit_code": 0,
+     "unacked_after_stop": 0
+    },
+    "sigkill": {
+     "processing_left_by_kill": 2,
+     "statuses": {
+      "COMPLETED": 600
+     },
+     "results": 600,
+     "redeliveries_seen_by_new_process": 2.0,
+     "redeliveries_before_kill": 0
+    }
+   },
+   "checks": [
+    {
+     "check": "worker logged the start and end of shutdown",
+     "ok": true
+    },
+    {
+     "check": "tasks taken before SIGTERM were finished and saved",
+     "ok": true
+    },
+    {
+     "check": "messages were acked and the worker exited cleanly",
+     "ok": true
+    },
+    {
+     "check": "final telemetry export reported running=0",
+     "ok": true
+    },
+    {
+     "check": "unacked tasks returned after SIGKILL and finished once",
+     "ok": true
+    }
+   ]
+  },
+  "outage": {
+   "scenario": "outage",
+   "ok": true,
+   "facts": {
+    "started_at": "2026-11-20T18:16:41Z",
+    "otel-collector": {
+     "tasks": 40,
+     "completed": 40,
+     "max_submit_ms": 37.3,
+     "memory_growth_mib": {
+      "app": 0.7,
+      "worker": 3.5
+     },
+     "after_recovery": true,
+     "traces_during_outage": 0
+    },
+    "loki": {
+     "tasks": 40,
+     "completed": 40,
+     "max_submit_ms": 17.1,
+     "memory_growth_mib": {
+      "app": -0.1,
+      "worker": 0.0
+     },
+     "after_recovery": true,
+     "tasks_with_logs_from_outage": 40
+    }
+   },
+   "checks": [
+    {
+     "check": "tasks were accepted and completed without otel-collector",
+     "ok": true
+    },
+    {
+     "check": "app memory stayed bounded without otel-collector",
+     "ok": true,
+     "growth": {
+      "app": 0.7,
+      "worker": 3.5
+     }
+    },
+    {
+     "check": "new otel-collector data appears after recovery",
+     "ok": true
+    },
+    {
+     "check": "tasks were accepted and completed without loki",
+     "ok": true
+    },
+    {
+     "check": "app memory stayed bounded without loki",
+     "ok": true,
+     "growth": {
+      "app": -0.1,
+      "worker": 0.0
+     }
+    },
+    {
+     "check": "new loki data appears after recovery",
+     "ok": true
+    }
+   ]
+  }
+ }
+}

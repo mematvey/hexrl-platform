@@ -12,14 +12,18 @@ from faststream.rabbit import TestRabbitBroker
 from faststream.rabbit.annotations import RabbitMessage as IncomingMessage
 from faststream.rabbit.message import RabbitMessage
 from httpx import ASGITransport, AsyncClient
+from opentelemetry import trace
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+from hexrl_platform.core.telemetry import Telemetry, operation
 from hexrl_platform.db.models import InferenceResult, InferenceTask
 from hexrl_platform.inference.model_loader import LoadedModel
 from hexrl_platform.inference.predict import PredictModel
 from hexrl_platform.task_pipeline import worker as worker_module
 from hexrl_platform.task_pipeline.config import get_pipeline_settings
+from hexrl_platform.task_pipeline.publisher import TaskPublisher
 from hexrl_platform.task_pipeline.repository import TaskRepository
 from hexrl_platform.task_pipeline.retries import ATTEMPT_HEADER
 from hexrl_platform.task_pipeline.schemas import HexState, TaskMessage, TaskStatus
@@ -28,6 +32,204 @@ from hexrl_platform.task_pipeline.worker import DEAD_REASON_HEADER, create_worke
 
 MODEL_VERSION = "7"
 STATE = HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
+
+
+async def test_metrics_distinguish_completed_task_and_duplicate(database, metrics):
+    app, _ = build_app(database, FakeModel())
+    message = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, message)
+        await publish(app, message)
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.completed"][0].value == 1
+        assert data["hexrl.worker.task.duration"][0].count == 1
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["ok"] == counts["duplicate"] == 1
+        assert data["hexrl.worker.inflight"][0].value == 0
+        assert data["hexrl.worker.predict.duration"][0].count == 1
+        assert not any(name.startswith("messaging.") for name in data)
+
+
+async def test_worker_metrics_clear_inflight_on_cancellation(database, metrics):
+    entered = threading.Event()
+    release = threading.Event()
+
+    class Blocking(FakeModel):
+        def predict(self, data):
+            entered.set()
+            release.wait(timeout=5)
+            return super().predict(data)
+
+    app, _ = build_app(database, Blocking())
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        delivery = asyncio.create_task(publish(app, make_message()))
+        try:
+            assert await asyncio.to_thread(entered.wait, 5)
+            assert metrics("hexrl-worker")["hexrl.worker.inflight"][0].value == 1
+            delivery.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await delivery
+            data = metrics("hexrl-worker")
+            assert data["hexrl.worker.inflight"][0].value == 0
+            cancelled = next(
+                point
+                for point in data["hexrl.worker.attempts"]
+                if point.attributes["outcome"] == "cancelled"
+            )
+            assert cancelled.value == 1
+            assert data["hexrl.worker.completed"][0].value == 0
+        finally:
+            release.set()
+
+
+async def test_worker_metrics_count_confirmed_retry_and_dlq(database, metrics):
+    app, _ = build_app(database, FakeModel(error=RuntimeError("test error")))
+    topology = topology_for()
+    retries = []
+    attach_dlq(app)
+
+    @app.broker.subscriber(topology.retry_queue, topology.dlx)
+    async def collect(message: IncomingMessage):
+        retries.append(dict(message.headers))
+
+    task = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        await publish(app, task)
+        for _ in range(2):
+            await publish(app, task, headers=retries.pop(0))
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.retries"][0].value == 2
+        assert data["hexrl.worker.dlq.publications"][0].value == 1
+        assert data["hexrl.worker.completed"][0].value == 0
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["error"] == 2
+        assert counts["dlq"] == 1
+        assert data["hexrl.worker.inflight"][0].value == 0
+
+
+async def test_concurrent_duplicate_inference_counts_only_inserted_result(database, metrics):
+    both_started = threading.Event()
+    release = threading.Event()
+    lock = threading.Lock()
+    calls = 0
+
+    class Model(FakeModel):
+        def predict(self, data):
+            nonlocal calls
+            with lock:
+                calls += 1
+                if calls == 2:
+                    both_started.set()
+            release.wait(timeout=5)
+            return super().predict(data)
+
+    app, _ = build_app(database, Model())
+    task = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        deliveries = asyncio.gather(publish(app, task), publish(app, task))
+        try:
+            assert await asyncio.to_thread(both_started.wait, 5)
+        finally:
+            release.set()
+            await deliveries
+        data = metrics("hexrl-worker")
+        assert data["hexrl.worker.completed"][0].value == 1
+        assert data["hexrl.worker.task.duration"][0].count == 1
+        assert data["hexrl.worker.predict.duration"][0].count == 2
+        counts = {
+            point.attributes["outcome"]: point.value for point in data["hexrl.worker.attempts"]
+        }
+        assert counts["ok"] == counts["duplicate"] == 1
+
+
+async def test_api_publish_process_thread_and_database_share_trace(database, traces):
+    from hexrl_platform.api.v1.tasks import get_publisher
+    from hexrl_platform.db.session import get_session
+    from hexrl_platform.main import create_app
+
+    worker, _ = build_app(database, FakeModel())
+    api = create_app()
+    engine = create_async_engine(database)
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def session():
+        async with sessions() as value:
+            yield value
+
+    api.dependency_overrides[get_session] = session
+    api.dependency_overrides[get_publisher] = lambda: TaskPublisher(
+        worker.broker, topology_for(), 1
+    )
+    try:
+        async with TestRabbitBroker(worker.broker), TestApp(worker):
+            async with AsyncClient(
+                transport=ASGITransport(app=api), base_url="http://api"
+            ) as client:
+                response = await client.post("/api/v1/tasks", json=STATE.model_dump())
+                assert response.status_code == 202
+                result = await client.get(response.json()["status_url"])
+                assert result.json()["status"] == "COMPLETED"
+            spans = traces()
+            request = next(span for span in spans if span.name == "POST /api/v1/tasks")
+            related = [span for span in spans if span.context.trace_id == request.context.trace_id]
+            assert {"inference", "db.save_result", "db.create_task"} <= {
+                span.name for span in related
+            }
+            assert any(span.name.endswith(" process") for span in related)
+            assert any(span.name.endswith(" publish") for span in related)
+            inference = next(span for span in related if span.name == "inference")
+            process = next(span for span in related if span.name.endswith(" process"))
+            assert inference.parent.span_id == process.context.span_id
+            assert process.attributes["task_id"] == response.json()["task_id"]
+            assert {span.resource.attributes["service.name"] for span in related} == {
+                "hexrl-api",
+                "hexrl-worker",
+            }
+    finally:
+        await engine.dispose()
+        api.state.telemetry.shutdown()
+
+
+async def test_retry_and_dlq_keep_original_trace_and_attempts(database, traces):
+    app, _ = build_app(database, FakeModel(error=RuntimeError("transient")))
+    attach_dlq(app)
+    topology = topology_for()
+    retried = []
+
+    @app.broker.subscriber(topology.retry_queue, topology.dlx)
+    async def collect(message: IncomingMessage):
+        retried.append(dict(message.headers))
+
+    telemetry = Telemetry.from_env("source")
+    task = make_message()
+    async with TestRabbitBroker(app.broker), TestApp(app):
+        with telemetry.scope(), operation("source.task") as root:
+            await TaskPublisher(app.broker, topology, 1).publish(task)
+            trace_id = root.get_span_context().trace_id
+        for _ in range(2):
+            headers = retried.pop(0)
+            assert headers["task_id"] == str(task.task_id)
+            assert headers["traceparent"].split("-")[1] == f"{trace_id:032x}"
+            # В реальном RabbitMQ TTL переносит заголовки без участия producer middleware.
+            # В TestRabbitBroker имитируем эту границу контекстом повторной доставки.
+            remote = trace.get_current_span(TraceContextTextMapPropagator().extract(headers))
+            with trace.use_span(remote):
+                await publish(app, task, headers=headers)
+        processes = [
+            span
+            for span in traces()
+            if span.name.endswith(" process")
+            and span.attributes.get("task_id") == str(task.task_id)
+        ]
+        assert len(processes) == 3
+        assert {span.context.trace_id for span in processes} == {trace_id}
+        assert {span.attributes["messaging.delivery.attempt"] for span in processes} == {1, 2, 3}
+        assert all(span.status.status_code is trace.StatusCode.ERROR for span in processes)
+        assert any(event.name == "task.dlq" for span in processes for event in span.events)
 
 
 class FakeModel(PredictModel):

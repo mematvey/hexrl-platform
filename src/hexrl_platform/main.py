@@ -12,6 +12,7 @@ from hexrl_platform.api.v1 import health, tasks, version
 from hexrl_platform.core.config import APP_VERSION, get_settings
 from hexrl_platform.core.logging import configure_logging
 from hexrl_platform.core.middleware import add_request_logging
+from hexrl_platform.core.telemetry import Telemetry
 from hexrl_platform.db.schema import create_schema
 from hexrl_platform.db.session import create_engine, create_session_factory
 from hexrl_platform.service.tasks import cleanup_pending, pending_cleanup_loop
@@ -27,14 +28,24 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     pipeline = get_pipeline_settings()
     async with AsyncExitStack() as stack:
+        stack.push_async_callback(asyncio.to_thread, app.state.telemetry.shutdown)
         engine = create_engine(settings.db_dsn)
         stack.push_async_callback(engine.dispose)
         await create_schema(engine)
         sessions = create_session_factory(engine)
         await cleanup_pending(sessions, settings.pending_task_ttl_s)
-        broker = await stack.enter_async_context(RabbitBroker(pipeline.rabbitmq_url))
+        broker = await stack.enter_async_context(
+            RabbitBroker(
+                pipeline.rabbitmq_url,
+                middlewares=[app.state.telemetry.middleware()],
+                logger=logging.getLogger("hexrl_platform.broker"),
+            )
+        )
         topology = build_topology(
             pipeline.queue_prefix, pipeline.queue_max_length, pipeline.retry_delay_ms
+        )
+        app.state.telemetry.metrics.set_queue_limit(
+            pipeline.queue_max_length, f"{pipeline.queue_prefix}.tasks"
         )
         await declare_topology(broker, topology)
         app.state.engine = engine
@@ -47,6 +58,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         try:
             yield
         finally:
+            logger.info("application_stopping")
             cleaner.cancel()
             await asyncio.gather(cleaner, return_exceptions=True)
     logger.info("application_stopped")
@@ -54,9 +66,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    configure_logging(settings.log_level)
+    configure_logging(settings.log_level, "hexrl-api")
 
     app = FastAPI(title=settings.app_name, version=APP_VERSION, lifespan=lifespan)
+    app.state.telemetry = Telemetry.from_env("hexrl-api")
     add_request_logging(app)
 
     app.include_router(healthz.router)
@@ -74,4 +87,5 @@ def main() -> None:
         host=settings.app_host,
         port=settings.app_port,
         access_log=False,
+        log_config=None,
     )

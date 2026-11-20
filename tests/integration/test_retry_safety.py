@@ -7,10 +7,13 @@ import pandas as pd
 import pytest
 from faststream import TestApp
 from faststream.rabbit import RabbitBroker
+from httpx import ASGITransport, AsyncClient
+from opentelemetry import trace
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from testcontainers.community.rabbitmq import RabbitMqContainer
 
+from hexrl_platform.core.telemetry import Telemetry, operation
 from hexrl_platform.db.models import InferenceTask
 from hexrl_platform.inference.model_loader import LoadedModel
 from hexrl_platform.inference.predict import PredictModel
@@ -78,7 +81,7 @@ async def test_expired_retry_survives_a_full_tasks_queue(rabbitmq_url):
 
 @pytest.mark.parametrize("retry_publish_fails", [False, True])
 async def test_worker_retries_three_times_then_confirms_the_dlq(
-    rabbitmq_url, tmp_path, monkeypatch, retry_publish_fails
+    rabbitmq_url, tmp_path, monkeypatch, retry_publish_fails, traces
 ):
     class FailingModel(PredictModel):
         def __init__(self):
@@ -124,7 +127,10 @@ async def test_worker_retries_three_times_then_confirms_the_dlq(
     )
     try:
         async with TestApp(app):
-            await TaskPublisher(broker, topology, 1.0).publish(task)
+            source = Telemetry.from_env("hexrl-source")
+            with source.scope(), operation("source.task") as root:
+                await TaskPublisher(broker, topology, 1.0).publish(task)
+                trace_id = root.get_span_context().trace_id
 
             async def wait_for_failure():
                 sessions = async_sessionmaker(engine, expire_on_commit=False)
@@ -143,7 +149,168 @@ async def test_worker_retries_three_times_then_confirms_the_dlq(
                 assert dead.headers[ATTEMPT_HEADER] == 3
                 assert dead.headers[DEAD_REASON_HEADER] == EXHAUSTED_REASON
                 assert model.calls == 3
+                assert dead.headers["task_id"] == str(task.task_id)
+                assert str(dead.headers["traceparent"]).split("-")[1] == f"{trace_id:032x}"
                 await dead.ack()
+        processes = [
+            span
+            for span in traces()
+            if span.name.endswith(" process")
+            and span.attributes.get("task_id") == str(task.task_id)
+        ]
+        assert len(processes) >= 3
+        assert {span.context.trace_id for span in processes} == {trace_id}
+        assert {span.attributes["messaging.delivery.attempt"] for span in processes} == {1, 2, 3}
+        assert all(span.status.status_code is trace.StatusCode.ERROR for span in processes)
+    finally:
+        await engine.dispose()
+        get_pipeline_settings.cache_clear()
+
+
+async def test_http_trace_crosses_real_rabbitmq_and_inference_thread(
+    rabbitmq_url, tmp_path, monkeypatch, traces
+):
+    from hexrl_platform.api.v1.tasks import get_publisher
+    from hexrl_platform.db.session import get_session
+    from hexrl_platform.main import create_app
+
+    class Model(PredictModel):
+        def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+            return pd.DataFrame({"action": [2]})
+
+    address = urlsplit(rabbitmq_url)
+    prefix = f"trace-test.{uuid4().hex}"
+    for key, value in {
+        "RABBITMQ_USER": "retry-test",
+        "RABBITMQ_PASSWORD": "retry-test",
+        "RABBITMQ_HOST": address.hostname,
+        "RABBITMQ_PORT": str(address.port),
+        "QUEUE_PREFIX": prefix,
+        "INFERENCE_DELAY_S": "0",
+    }.items():
+        monkeypatch.setenv(key, value)
+    get_pipeline_settings.cache_clear()
+    engine = create_async_engine(f"sqlite+aiosqlite:///{(tmp_path / 'http-trace.db').as_posix()}")
+    loaded = LoadedModel(Model(), "test-policy", "champion", "3", "run", 20)
+    worker = create_worker_app(loader=lambda _: loaded, engine_factory=lambda: engine)
+    api = create_app()
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def session():
+        async with sessions() as value:
+            yield value
+
+    api.dependency_overrides[get_session] = session
+    topology = build_topology(prefix, 20, 5000)
+    try:
+        async with (
+            TestApp(worker),
+            RabbitBroker(rabbitmq_url, middlewares=[api.state.telemetry.middleware()]) as producer,
+        ):
+            api.dependency_overrides[get_publisher] = lambda: TaskPublisher(producer, topology, 1)
+            async with AsyncClient(
+                transport=ASGITransport(app=api), base_url="http://api"
+            ) as client:
+                response = await client.post(
+                    "/api/v1/tasks",
+                    json={"q": 0, "r": 0, "goal_q": 2, "goal_r": -1, "steps_remaining": 20},
+                )
+                assert response.status_code == 202
+                async with asyncio.timeout(10):
+                    while True:
+                        result = await client.get(response.json()["status_url"])
+                        if result.json()["status"] == "COMPLETED":
+                            break
+                        await asyncio.sleep(0.05)
+        spans = traces()
+        request = next(span for span in spans if span.name == "POST /api/v1/tasks")
+        related = [span for span in spans if span.context.trace_id == request.context.trace_id]
+        inference = next(span for span in related if span.name == "inference")
+        process = next(span for span in related if span.name.endswith(" process"))
+        assert inference.parent.span_id == process.context.span_id
+        assert process.attributes["task_id"] == response.json()["task_id"]
+        assert inference.attributes["model.version"] == "3"
+        assert any(span.name == "db.save_result" for span in related)
+        assert {span.resource.attributes["service.name"] for span in related} == {
+            "hexrl-api",
+            "hexrl-worker",
+        }
+    finally:
+        api.state.telemetry.shutdown()
+        await engine.dispose()
+        get_pipeline_settings.cache_clear()
+
+
+@pytest.mark.parametrize("retry_publish_fails", [False, True])
+async def test_metrics_follow_real_retry_deliveries_and_confirmed_dlq(
+    rabbitmq_url, tmp_path, monkeypatch, metrics, retry_publish_fails
+):
+    class Model(PredictModel):
+        def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+            raise RuntimeError("temporary test failure")
+
+    address = urlsplit(rabbitmq_url)
+    prefix = f"metrics-retry.{uuid4().hex}"
+    for key, value in {
+        "RABBITMQ_USER": "retry-test",
+        "RABBITMQ_PASSWORD": "retry-test",
+        "RABBITMQ_HOST": address.hostname,
+        "RABBITMQ_PORT": str(address.port),
+        "QUEUE_PREFIX": prefix,
+        "INFERENCE_DELAY_S": "0",
+        "RETRY_DELAY_MS": "100",
+        "MAX_DELIVERIES": "3",
+    }.items():
+        monkeypatch.setenv(key, value)
+    get_pipeline_settings.cache_clear()
+    engine = create_async_engine(f"sqlite+aiosqlite:///{(tmp_path / 'metrics.db').as_posix()}")
+    model = LoadedModel(Model(), "test-policy", "champion", "1", "run", 20)
+    app = create_worker_app(loader=lambda _: model, engine_factory=lambda: engine)
+    broker = app.broker
+    assert isinstance(broker, RabbitBroker)
+    topology = build_topology(prefix, 20, 100)
+    if retry_publish_fails:
+        original = worker_module.publish_confirmed
+        failed = False
+
+        async def publish(*args, **kwargs):
+            nonlocal failed
+            if kwargs["routing_key"] == topology.retry_routing_key and not failed:
+                failed = True
+                raise QueueOverloadedError("retry publication failed")
+            await original(*args, **kwargs)
+
+        monkeypatch.setattr(worker_module, "publish_confirmed", publish)
+        monkeypatch.setattr(worker_module, "CRASH_PAUSE_S", 0.01)
+    task = TaskMessage(
+        task_id=uuid4(), payload=HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
+    )
+    try:
+        async with TestApp(app):
+            await TaskPublisher(broker, topology, 1).publish(task)
+            queue = await broker.declare_queue(topology.dlq)
+            async with queue.iterator() as messages:
+                dead = await asyncio.wait_for(anext(messages), 10)
+                await dead.ack()
+            async with asyncio.timeout(5):
+                while True:
+                    data = metrics("hexrl-worker")
+                    counts = {
+                        point.attributes["outcome"]: point.value
+                        for point in data["hexrl.worker.attempts"]
+                    }
+                    if counts["dlq"] == 1:
+                        break
+                    await asyncio.sleep(0.01)
+            assert counts["error"] == 2
+            assert data["hexrl.worker.retries"][0].value == (1 if retry_publish_fails else 2)
+            assert data["hexrl.worker.dlq.publications"][0].value == 1
+            assert data["hexrl.worker.completed"][0].value == 0
+            assert data["hexrl.worker.inflight"][0].value == 0
+            # TTL заново публикует сообщение, это не AMQP redelivered.
+            redeliveries = data["hexrl.worker.redeliveries"][0].value
+            assert redeliveries >= 1 if retry_publish_fails else redeliveries == 0
+            assert sum(point.count for point in data["hexrl.worker.predict.duration"]) == 3
     finally:
         await engine.dispose()
         get_pipeline_settings.cache_clear()

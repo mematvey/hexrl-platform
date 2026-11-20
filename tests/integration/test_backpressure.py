@@ -7,11 +7,12 @@ import httpx
 import pytest
 from asgi_lifespan import LifespanManager
 from faststream.rabbit import RabbitBroker
+from opentelemetry import trace
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import create_async_engine
 from testcontainers.community.rabbitmq import RabbitMqContainer
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.wait_strategies import LogMessageWaitStrategy
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 
 from hexrl_platform.core.config import get_settings
 from hexrl_platform.db.models import InferenceTask
@@ -167,7 +168,8 @@ def postgres():
         .with_env("POSTGRES_DB", "api_test")
         .with_exposed_ports(5432)
         .waiting_for(
-            LogMessageWaitStrategy("database system is ready to accept connections", times=2)
+            # Временный сервер initdb тоже пишет ready, но принимает только Unix socket.
+            ExecWaitStrategy(["pg_isready", "-h", "127.0.0.1", "-U", "api_test", "-d", "api_test"])
         )
     )
     with container:
@@ -185,7 +187,9 @@ async def test_postgres_schema_initialization_is_safe_for_concurrent_replicas(po
         await engine.dispose()
 
 
-async def test_api_lifespan_real_postgres_and_rabbit_overload(rabbit, postgres, monkeypatch):
+async def test_api_lifespan_real_postgres_and_rabbit_overload(
+    rabbit, postgres, monkeypatch, traces
+):
     for key, value in {
         "POSTGRES_USER": "api_test",
         "POSTGRES_PASSWORD": "api_test",
@@ -231,6 +235,15 @@ async def test_api_lifespan_real_postgres_and_rabbit_overload(rabbit, postgres, 
                     assert await session.scalar(pending) == 0
                 for url in accepted:
                     assert (await client.get(url)).json()["status"] == "ACCEPTED"
+        rejected = [
+            span
+            for span in traces()
+            if span.name == "POST /api/v1/tasks"
+            and span.attributes.get("http.response.status_code") == 503
+        ]
+        assert len(rejected) == 3
+        assert all(span.status.status_code is trace.StatusCode.ERROR for span in rejected)
+        assert all(any(event.name == "exception" for event in span.events) for span in rejected)
     finally:
         get_settings.cache_clear()
         get_pipeline_settings.cache_clear()

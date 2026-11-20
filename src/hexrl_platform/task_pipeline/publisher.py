@@ -4,8 +4,10 @@ from typing import Any
 from aiormq.abc import DeliveredMessage
 from aiormq.exceptions import AMQPError, DeliveryError, PublishError
 from faststream.rabbit import RabbitBroker, RabbitExchange
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 from pydantic import BaseModel
 
+from hexrl_platform.core.logging import task_context_var
 from hexrl_platform.task_pipeline.errors import QueueOverloadedError, TopologyError
 from hexrl_platform.task_pipeline.schemas import TaskMessage
 from hexrl_platform.task_pipeline.topology import Topology
@@ -23,6 +25,13 @@ async def publish_confirmed(
     headers: dict[str, Any] | None = None,
     message_id: str | None = None,
 ) -> None:
+    headers = dict(headers or {})
+    headers.update(task_context_var.get())
+    if isinstance(body, TaskMessage):
+        headers["task_id"] = str(body.task_id)
+        if body.batch_id is not None:
+            headers["batch_id"] = body.batch_id
+    TraceContextTextMapPropagator().inject(headers)
     try:
         result = await broker.publish(
             body,
@@ -34,17 +43,21 @@ async def publish_confirmed(
             timeout=timeout_s,
             headers=headers,
             message_id=message_id,
+            correlation_id=headers.get("task_id"),
         )
     except PublishError as exc:
         raise TopologyError(f"no route for key {routing_key}") from exc
     except DeliveryError as exc:
+        logger.warning("publish_rejected", extra={"queue": routing_key})
         raise QueueOverloadedError(f"broker rejected publish to {routing_key}") from exc
     except TimeoutError as exc:
         logger.warning("publish_confirm_timeout", extra={"reason": routing_key})
-        raise QueueOverloadedError(f"no confirm for {routing_key}") from exc
+        raise QueueOverloadedError(f"no confirm for {routing_key}", reason="timeout") from exc
     except (AMQPError, ConnectionError, OSError) as exc:
         logger.warning("publish_broker_unavailable", extra={"reason": routing_key})
-        raise QueueOverloadedError(f"broker unavailable for {routing_key}") from exc
+        raise QueueOverloadedError(
+            f"broker unavailable for {routing_key}", reason="unavailable"
+        ) from exc
 
     # aio-pika не бросает исключение на возврат mandatory-сообщения, а отдаёт его как результат
     if isinstance(result, DeliveredMessage):

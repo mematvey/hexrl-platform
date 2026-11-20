@@ -1,3 +1,7 @@
+include:
+  - path: observability/compose.yaml
+    project_directory: .
+
 services:
   db:
     image: postgres:16-alpine
@@ -164,6 +168,7 @@ services:
         -rabbit dead_letter_worker_publisher_confirm_timeout ${RETRY_FORWARD_CONFIRM_TIMEOUT_MS:-1000}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+      - ./observability/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     ports:
       - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
       - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
@@ -185,17 +190,18 @@ services:
     build: .
     profiles: [ batch ]
     env_file: ${HEXRL_ENV_FILE:-.env}
+    entrypoint: ["/bin/sh", "-c"]
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: "5672"
     command:
-      - hexrl-batch-source
-      - --file
-      - /data/tasks.jsonl
-      - --batch-id
-      - ${BATCH_ID:-compose}
-      - --metrics-csv
-      - /metrics/source.csv
+      - >-
+        sleep ${BATCH_SOURCE_LOG_GRACE_S:-3};
+        hexrl-batch-source --file /data/${BATCH_FILE:-tasks.jsonl} --batch-id ${BATCH_ID:-compose}
+        --metrics-csv /metrics/source.csv;
+        status=$?;
+        sleep ${BATCH_SOURCE_LOG_GRACE_S:-3};
+        exit "$$status"
     volumes:
       - ./data/tasks:/data:ro
       - ./metrics:/metrics
@@ -208,12 +214,42 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
+  model-bootstrap:
+    build:
+      context: .
+      dockerfile: Dockerfile.bootstrap
+    # Без env_file: секреты БД и брокера процессу обучения не нужны
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_NAME: ${MODEL_NAME:-hex-navigation-default}
+      MODEL_ALIAS: ${MODEL_ALIAS:-champion}
+      BOOTSTRAP_CONFIG: ${BOOTSTRAP_CONFIG:-configs/navigation-dqn-smoke.toml}
+    volumes:
+      - ./data/tasks:/data/tasks
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      artifact-store:
+        condition: service_healthy
+    networks: [ backend ]
+    # Одноразовый: при существующем champion только проверяет его и выходит
+    restart: "no"
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 2G }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
   worker:
     build:
       context: .
       dockerfile: Dockerfile.inference
     env_file: ${HEXRL_ENV_FILE:-.env}
     environment:
+      # Служебные подсказки MLflow не должны нарушать единый JSON-формат.
+      MLFLOW_DISABLE_AGENT_HINT: "1"
       MLFLOW_TRACKING_URI: http://mlflow:5000
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
@@ -229,6 +265,9 @@ services:
         condition: service_healthy
       artifact-store:
         condition: service_healthy
+      # Воркер стартует только после проверенной модели, иначе он перезапускался бы впустую
+      model-bootstrap:
+        condition: service_completed_successfully
     networks: [ backend ]
     # The app exits when the champion cannot be loaded; retry until it is registered
     restart: on-failure

@@ -24,18 +24,18 @@ def events(stream):
 
 
 async def test_request_log_contains_response_details(client, log_output):
-    response = await client.get("/healthz", headers={"X-Request-ID": "request-123"})
+    response = await client.get("/api/v1/version", headers={"X-Request-ID": "request-123"})
 
     assert response.headers["X-Request-ID"] == "request-123"
     (event,) = events(log_output)
     assert event["event"] == "http_request_completed"
     assert event["request_id"] == "request-123"
     assert event["method"] == "GET"
-    assert event["path"] == "/healthz"
+    assert event["path"] == "/api/v1/version"
     assert event["status_code"] == 200
     assert event["duration_ms"] >= 0
     assert event["timestamp"].endswith("Z")
-    assert event["service"] == "hexrl-platform"
+    assert event["service"] == "hexrl-api"
 
 
 async def test_component_failure_uses_same_request_id(client, session, log_output):
@@ -76,6 +76,7 @@ async def test_lifecycle_logs(app, log_output):
 
     assert [event["event"] for event in events(log_output)] == [
         "application_started",
+        "application_stopping",
         "application_stopped",
     ]
 
@@ -93,6 +94,36 @@ def test_formatter_ignores_unapproved_fields(log_output):
 def test_invalid_log_level():
     with pytest.raises(ValueError, match="Unknown log level"):
         configure_logging("not-a-level")
+
+
+async def test_successful_health_check_does_not_log_at_info(client, log_output):
+    response = await client.get("/healthz")
+    assert response.status_code == 200
+    assert events(log_output) == []
+
+
+def test_library_handler_is_replaced_by_json_stdout(capsys):
+    library = logging.getLogger("test.foreign_library")
+    library.addHandler(logging.StreamHandler())
+    library.propagate = False
+    configure_logging("WARNING")
+    library.info("ignored")
+    library.warning("library_event")
+    captured = capsys.readouterr()
+    row = json.loads(captured.out)
+    assert row["event"] == "library_event"
+    assert row["logger"] == "test.foreign_library"
+    assert captured.err == ""
+
+
+def test_sql_parameters_and_access_lines_stay_out_of_info_logs(capsys):
+    configure_logging("INFO")
+    engine = logging.getLogger("sqlalchemy.engine.Engine")
+    engine.info("INSERT INTO inference_tasks ... %r", {"payload": "secret-state"})
+    engine.warning("sqlalchemy_warning")
+    logging.getLogger("uvicorn.access").info('127.0.0.1 - "GET /healthz HTTP/1.1" 200')
+    rows = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert [row["event"] for row in rows] == ["sqlalchemy_warning"]
 
 
 def test_formatter_keeps_task_fields():

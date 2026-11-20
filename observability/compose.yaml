@@ -1,0 +1,175 @@
+services:
+  loki:
+    image: grafana/loki:3.4.2
+    profiles: [logs, observability]
+    command: ["-config.file=/etc/loki/config.yaml", "-config.expand-env=true"]
+    environment:
+      LOKI_RETENTION: ${LOKI_RETENTION:-24h}
+    volumes:
+      - ./observability/loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "/busybox/wget", "-q", "-O", "/dev/null", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  alloy:
+    image: grafana/alloy:v1.7.5
+    profiles: [logs, observability]
+    command: ["run", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    environment:
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      ALLOY_DISCOVERY_INTERVAL: ${ALLOY_DISCOVERY_INTERVAL:-2s}
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy-data:/var/lib/alloy/data
+    networks: [backend]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  otel-collector-traces:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    profiles: [traces]
+    command: ["--config=/etc/otel/otel-collector.yaml"]
+    volumes:
+      - ./observability:/etc/otel:ro
+    networks:
+      backend:
+        aliases: [otel-collector-traces]
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  otel-collector-metrics:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    profiles: [metrics]
+    command: ["--config=/etc/otel/otel-collector-metrics.yaml"]
+    volumes:
+      - ./observability:/etc/otel:ro
+    networks:
+      backend:
+        aliases: [otel-collector-metrics]
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    profiles: [observability]
+    command: ["--config=/etc/otel/otel-collector-full.yaml"]
+    volumes:
+      - ./observability:/etc/otel:ro
+    networks:
+      backend:
+        aliases: [otel-collector, otel-collector-traces, otel-collector-metrics]
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  tempo:
+    image: hexrl-tempo:2.7.2
+    build:
+      context: .
+      dockerfile: observability/tempo/Dockerfile
+    profiles: [traces, observability]
+    command: ["-config.file=/etc/tempo/${TEMPO_CONFIG_FILE:-config.yaml}", "-config.expand-env=true"]
+    environment:
+      TEMPO_RETENTION: ${TEMPO_RETENTION:-24h}
+      TEMPO_TRACE_IDLE_PERIOD: ${TEMPO_TRACE_IDLE_PERIOD:-10s}
+      GOMEMLIMIT: ${TEMPO_GOMEMLIMIT:-160MiB}
+    volumes:
+      - ./observability/tempo/config.yaml:/etc/tempo/config.yaml:ro
+      - ./observability/tempo/service-graph.yaml:/etc/tempo/service-graph.yaml:ro
+      - tempo-data:/var/tempo
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "/busybox", "wget", "-q", "-O", "/dev/null", "http://localhost:3200/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    profiles: [observability]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./observability/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks: [backend]
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    profiles: [metrics, observability]
+    # Prometheus не подставляет переменные окружения в конфиг: префикс очередей
+    # вписывается при старте, иначе relabel оставлял бы пустой набор очередей
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        sed "s/[$$]{QUEUE_PREFIX}/$$QUEUE_PREFIX/" /etc/prometheus/config.yaml > /tmp/prometheus.yaml &&
+        exec /bin/prometheus
+        --config.file=/tmp/prometheus.yaml
+        --storage.tsdb.path=/prometheus
+        --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-24h}
+        --web.enable-remote-write-receiver
+        --web.enable-otlp-receiver
+    environment:
+      QUEUE_PREFIX: ${QUEUE_PREFIX:-hexrl.inference}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - ./observability/prometheus/config.yaml:/etc/prometheus/config.yaml:ro
+      - prometheus-data:/prometheus
+    networks: [backend]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  tempo-data:
+  grafana-data:
+  prometheus-data:
+  loki-data:
+  alloy-data:
+
+networks:
+  backend:

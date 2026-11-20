@@ -1,0 +1,619 @@
+{
+  "uid": "pipeline",
+  "title": "Конвейер",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "metrics"},
+        "query": {"query": "label_values(hexrl_process_memory_bytes, job)", "refId": "PrometheusVariableQueryEditor-VariableQuery"},
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": {"selected": true, "text": "All", "value": "$__all"}
+      },
+      {
+        "name": "worker",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "metrics"},
+        "query": {"query": "label_values(hexrl_worker_completed_total, instance)", "refId": "PrometheusVariableQueryEditor-VariableQuery"},
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": {"selected": true, "text": "All", "value": "$__all"}
+      },
+      {
+        "name": "queue",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "metrics"
+        },
+        "query": {
+          "query": "label_values(hexrl_queue_limit_ratio, queue)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Очередь и лимит",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rabbitmq_detailed_queue_messages_ready{queue=~\"$queue\"}",
+          "legendFormat": "ready {{queue}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "rabbitmq_detailed_queue_messages_unacked{queue=~\"$queue\"}",
+          "legendFormat": "unacked {{queue}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "max(hexrl_queue_limit_ratio{queue=~\"$queue\"})",
+          "legendFormat": "лимит",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Скорость источника и воркеров",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(hexrl_source_published_total[5m]))",
+          "legendFormat": "источник",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(hexrl_worker_completed_total[5m]))",
+          "legendFormat": "воркеры",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Обработка по воркерам",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (instance) (rate(hexrl_worker_completed_total{instance=~\"$worker\"}[5m]))",
+          "legendFormat": "{{instance}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "API",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(hexrl_api_duration_seconds_bucket[5m])))",
+          "legendFormat": "p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(hexrl_api_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(hexrl_api_duration_seconds_bucket[5m])))",
+          "legendFormat": "p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Predict",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(hexrl_worker_predict_duration_seconds_bucket[5m])))",
+          "legendFormat": "p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(hexrl_worker_predict_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(hexrl_worker_predict_duration_seconds_bucket[5m])))",
+          "legendFormat": "p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Обработка",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(hexrl_worker_processing_duration_seconds_bucket[5m])))",
+          "legendFormat": "p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(hexrl_worker_processing_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(hexrl_worker_processing_duration_seconds_bucket[5m])))",
+          "legendFormat": "p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Полная задержка успешных задач",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(hexrl_worker_task_duration_seconds_bucket[5m])))",
+          "legendFormat": "p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(hexrl_worker_task_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(hexrl_worker_task_duration_seconds_bucket[5m])))",
+          "legendFormat": "p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "RSS активных процессов",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hexrl_process_memory_bytes{job=~\"$service\"} * on(job, instance) (hexrl_process_running_ratio{job=~\"$service\"} == 1) and on(job, instance) (time() - timestamp(hexrl_process_memory_bytes) < 30)",
+          "legendFormat": "{{job}} {{instance}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Доля HTTP 503",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(hexrl_api_requests_total{status_code=\"503\"}[5m])) or vector(0)) / sum(rate(hexrl_api_requests_total[5m]))",
+          "legendFormat": "503",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Отказы брокера источнику",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (reason) (rate(hexrl_source_rejections_total[5m]))",
+          "legendFormat": "отказы {{reason}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Сообщения DLQ",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rabbitmq_detailed_queue_messages{queue=~\".*\\\\.dlq\"}",
+          "legendFormat": "{{queue}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Прирост DLQ за 5 минут",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "delta(rabbitmq_detailed_queue_messages{queue=~\".*\\\\.dlq\"}[5m])",
+          "legendFormat": "{{queue}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Последние ошибки",
+      "type": "logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "logs"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{level=\"ERROR\"} | json",
+          "legendFormat": "ошибки",
+          "datasource": {
+            "type": "loki",
+            "uid": "logs"
+          }
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Время ожидания источника",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "metrics"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(hexrl_source_wait_seconds_total[5m]))",
+          "legendFormat": "за 5 минут",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "metrics"
+          }
+        }
+      ]
+    }
+  ]
+}

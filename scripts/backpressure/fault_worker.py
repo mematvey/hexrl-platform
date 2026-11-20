@@ -40,4 +40,5 @@ if __name__ == "__main__":
         host=settings.inference_host,
         port=settings.inference_port,
         access_log=False,
+        log_config=None,
     )

@@ -253,8 +253,10 @@ def test_runtime_gauges_and_unbounded_queue_limit(metrics):
     assert data["hexrl.process.memory"][0].value > 0
     assert data["hexrl.process.running"][0].value == 1
     assert "hexrl.queue.limit" not in data
-    telemetry.metrics.set_queue_limit(20)
-    assert metrics("hexrl-source")["hexrl.queue.limit"][0].value == 20
+    telemetry.metrics.set_queue_limit(20, "test.tasks")
+    limit = metrics("hexrl-source")["hexrl.queue.limit"][0]
+    assert limit.value == 20
+    assert limit.attributes == {"queue": "test.tasks"}
     telemetry.metrics.set_queue_limit(None)
     assert "hexrl.queue.limit" not in metrics("hexrl-source")
     telemetry.metrics.stop()

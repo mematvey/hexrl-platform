@@ -1,0 +1,64 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: pipeline
+    folder: Observability
+    interval: 10s
+    rules:
+      - uid: queue_near_limit
+        title: Queue near limit
+        condition: B
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: Рабочая очередь заполнена более чем на 90 процентов
+        data:
+          - refId: A
+            datasourceUid: metrics
+            relativeTimeRange: {from: 600, to: 0}
+            model:
+              refId: A
+              instant: true
+              expr: 'max(rabbitmq_detailed_queue_messages_ready{queue=~".*[.]tasks"} / on(queue) max by (queue) (hexrl_queue_limit_ratio))'
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange: {from: 600, to: 0}
+            model:
+              refId: B
+              type: classic_conditions
+              conditions:
+                - evaluator: {type: gt, params: [0.9]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last, params: []}
+                  type: query
+      - uid: dlq_not_empty
+        title: DLQ contains messages
+        condition: B
+        noDataState: NoData
+        execErrState: Error
+        for: 10s
+        annotations:
+          summary: В DLQ есть сообщения, требующие разбора
+        data:
+          - refId: A
+            datasourceUid: metrics
+            relativeTimeRange: {from: 600, to: 0}
+            model:
+              refId: A
+              instant: true
+              expr: 'sum(rabbitmq_detailed_queue_messages{queue=~".*[.]dlq"})'
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange: {from: 600, to: 0}
+            model:
+              refId: B
+              type: classic_conditions
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last, params: []}
+                  type: query

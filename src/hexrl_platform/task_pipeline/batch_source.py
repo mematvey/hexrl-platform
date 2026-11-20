@@ -211,7 +211,7 @@ async def amain(args: argparse.Namespace) -> SourceStats:
     stats = SourceStats()
     backoff = Backoff(settings.backoff_base_s, settings.backoff_cap_s, random.Random())
     telemetry = Telemetry.from_env("hexrl-source")
-    telemetry.metrics.set_queue_limit(max_length)
+    telemetry.metrics.set_queue_limit(max_length, f"{prefix}.tasks")
     broker = RabbitBroker(
         settings.rabbitmq_url,
         default_channel=Channel(publisher_confirms=not args.no_backpressure),

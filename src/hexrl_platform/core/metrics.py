@@ -43,7 +43,11 @@ def histogram_views(delay_s: float) -> list[View]:
     }
     return [
         View(meter_name="hexrl_platform", instrument_type=Counter, attribute_keys=LABELS),
-        View(meter_name="hexrl_platform", instrument_type=ObservableGauge, attribute_keys=set()),
+        View(
+            meter_name="hexrl_platform",
+            instrument_type=ObservableGauge,
+            attribute_keys={"queue"},
+        ),
         # У middleware остаются трейсы. Метрики приложения имеют собственный
         # контракт без routing key и без второго набора стандартных гистограмм.
         View(meter_name="faststream.opentelemetry.middleware", aggregation=DropAggregation()),
@@ -83,6 +87,7 @@ class PipelineMetrics:
         self._inflight = 0
         self._running = True
         self._queue_limit: int | None = None
+        self._queue_name: str | None = None
         if runtime:
             process = psutil.Process()
 
@@ -129,11 +134,12 @@ class PipelineMetrics:
             yield Observation(self._inflight)
 
     def _observe_limit(self, _options: object) -> Iterable[Observation]:
-        if self._queue_limit is not None:
-            yield Observation(self._queue_limit)
+        if self._queue_limit is not None and self._queue_name is not None:
+            yield Observation(self._queue_limit, {"queue": self._queue_name})
 
-    def set_queue_limit(self, limit: int | None) -> None:
+    def set_queue_limit(self, limit: int | None, queue_name: str | None = None) -> None:
         self._queue_limit = limit
+        self._queue_name = queue_name if limit is not None else None
 
     def stop(self) -> None:
         with self._lock:

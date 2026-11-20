@@ -1,9 +1,129 @@
 # Наблюдаемость конвейера
 
-API, batch source и worker поддерживают структурированные логи, сквозные трейсы
-и метрики. Трейсы и метрики экспортируются по OTLP HTTP/protobuf. Для их хранения
-и просмотра нужны внешние приёмники телеметрии.
+## Состав и профили Compose
 
+`docker-compose.yaml` подключает `observability/compose.yaml` через `include`.
+Обычный `docker compose up -d` запускает приложение без Grafana, хранилищ и
+Collector. Профили включают стек по частям:
+
+| Профиль | Компоненты |
+| --- | --- |
+| `logs` | Alloy и Loki |
+| `traces` | Collector для трейсов и Tempo |
+| `metrics` | Collector для метрик и Prometheus |
+| `observability` | Все компоненты, единый Collector, Grafana |
+
+```powershell
+docker compose up -d
+docker compose --profile logs up -d
+docker compose --profile traces up -d
+docker compose --profile metrics up -d
+docker compose --profile traces --profile metrics up -d
+docker compose --profile observability up -d
+```
+
+Trace-only и metrics-only профили используют отдельные конфигурации Collector,
+чтобы не отправлять сигнал в отсутствующее хранилище. Профиль `observability`
+использует конфигурацию с обоими pipeline. Профили `traces` и `metrics` можно
+запускать вместе: сигналы отправляются по отдельным
+OTLP endpoints. В профиле `observability` эти endpoints ведут к одному Collector.
+Приложения не зависят через `depends_on` от стека наблюдаемости.
+
+Для экспорта приложение должно получить `OTEL_SDK_DISABLED=false`; по умолчанию
+SDK отключён, поэтому обычный запуск не зависит от Collector. Для профиля
+`traces` оставить `OTEL_METRICS_EXPORTER=none`, а для `metrics` —
+`OTEL_TRACES_EXPORTER=none`. В полном профиле включить оба экспортёра. Переменные
+читаются процессом при старте, поэтому после изменения окружения пересоздать
+приложения. В Compose traces отправляются на `otel-collector-traces:4318`, а
+metrics — на `otel-collector-metrics:4318`. В полном профиле оба имени указывают
+на combined Collector.
+
+## Логи: Alloy → Loki
+
+Alloy через Docker API читает stdout контейнеров текущего проекта, отобранных по
+`com.docker.compose.project`; затем оставляет `app`, `worker` и `batch-source`.
+В Loki индексируются только `service`, `level` и `env`. Идентификаторы задач и
+трейсов остаются в JSON-строке, чтобы число потоков логов не росло с каждой
+задачей. Сохраняются исходная запись приложения и её время. Позиция чтения Alloy
+и данные Loki хранятся в именованных томах. Ротация Docker JSON-логов задана в
+Compose.
+
+Для короткоживущего `batch-source` Compose-команда оставляет контейнер работающим
+на `BATCH_SOURCE_LOG_GRACE_S` до обработки и после неё. Паузы увеличивают окно
+обнаружения и чтения, но не дают абсолютной гарантии доставки и требуют проверки
+на живом стенде. Не запускать этот сервис с `--rm`: Docker должен сохранить
+контейнер и его stdout для агента.
+
+Пример запроса в Grafana Explore:
+
+```logql
+{service="hexrl-api"} | json | event="http_request_completed"
+```
+
+Поиск по задаче: добавить `| json | task_id="..."`. `docker.sock:ro` задаёт
+read-only mount, но не ограничивает операции, разрешённые Docker API.
+
+## Трейсы: OpenTelemetry → Collector → Tempo
+
+SDK отправляет OTLP HTTP/protobuf на Collector. Он применяет `memory_limiter`
+перед `batch`, ограничивает очередь и повторы экспорта, затем направляет спаны в
+Tempo. У API, source и worker отдельные `service.name`; hostname контейнера
+различает экземпляры воркера. Полный сбор трейсов выбран для учебной нагрузки.
+
+Обычный Tempo config работает без Prometheus. Service Graph — дополнительный
+режим из предыдущего этапа: он включается `TEMPO_CONFIG_FILE=service-graph.yaml`
+только с профилем `observability`, где доступен Prometheus. Для standalone
+`traces` оставить `TEMPO_CONFIG_FILE=config.yaml`.
+
+## Метрики: OTLP и Prometheus
+
+Приложения экспортируют метрики по OTLP через Collector в Prometheus OTLP
+receiver. Для короткоживущего source push выбран, чтобы метрики успевали попасть
+в хранилище даже без pull-опроса самого процесса. Глубину очереди и число
+unacked сообщений Prometheus получает scrape-ом встроенного RabbitMQ
+Prometheus-плагина на порту 15692. `QUEUE_PREFIX` ограничивает scrape очередями
+текущего конвейера (`tasks`, `retry`, `dlq`), чтобы старые экспериментальные
+префиксы не разрастались в Prometheus.
+
+При OTLP-приёме Prometheus использует ограниченный набор resource attributes:
+`service.name`, `service.instance.id`, `service.version` и
+`deployment.environment.name`; произвольные resource attributes не продвигаются
+в labels. Метрика лимита помечена именем очереди. Для неограниченной очереди
+точка не экспортируется, поэтому линия лимита и алерт заполнения отсутствуют.
+
+Оценка кардинальности, контракт метрик и причины выбора границ histogram
+описаны ниже в разделе «Метрики»; это оценки, не измерение runtime-серий.
+
+## Grafana provisioning и сигналы
+
+Datasource UID заданы в provisioning: `metrics`, `logs`, `traces`. Dashboard,
+правила алертов и источники находятся в репозитории и загружаются при старте
+Grafana. Dashboard содержит выбор сервиса, экземпляра worker и очереди; очередь
+для выбора берётся из метрики настроенного лимита. Перцентили вычисляются из
+объединённых histogram buckets, счётчики отображаются через `rate` или
+`increase`, панели задают единицы.
+
+В Loki настроено derived field из JSON `trace_id` в Tempo. В Tempo настроен
+запрос к Loki по тому же trace ID с временным запасом. Очередной алерт вычисляет
+`ready / configured_limit` отдельно для каждой ограниченной очереди и срабатывает
+при значении выше 0.9 в течение минуты. DLQ alert срабатывает, пока в DLQ есть
+сообщения, с выдержкой 10 секунд. NoData и ошибки запроса не считаются здоровым
+состоянием. Наличие правила в provisioning само по себе не подтверждает его
+срабатывание; для этого нужен сценарий на живом стенде.
+
+## Ресурсы и известные ограничения проверки
+
+Заданные Compose memory limits: Loki 256 MiB, Tempo 256 MiB, Prometheus 256 MiB,
+Collector 192 MiB, Grafana 192 MiB, Alloy 128 MiB. Суммарный лимит — 1280 MiB.
+Это верхняя конфигурационная сумма, а не измеренное потребление. Для подтверждения
+бюджета нужен `docker stats` под нагрузкой.
+
+Версии образов закреплены, retention хранилищ по умолчанию 24 часа, данные и
+позиции чтения находятся в именованных томах. Отсутствие Collector или хранилища
+не является зависимостью приложения; SDK отключён по умолчанию. При включённом
+экспорте краткий экспортный таймаут и ограниченные очереди уменьшают влияние
+сбоев телеметрии, но при длительной недоступности backend часть телеметрии может
+быть потеряна.
 ## Настройка
 
 По умолчанию `OTEL_SDK_DISABLED=true`: экспортёры и их фоновые потоки не создаются.
@@ -28,7 +148,7 @@ LOG_LEVEL=INFO
 Этот этап использует OTLP HTTP/protobuf. Адрес Collector должен разрешаться из
 процесса отправителя: для запуска Python на хосте обычно нужен `localhost`,
 для контейнера — сетевое имя Collector. Хранилища приложению неизвестны.
-Если имя `otel-collector` ещё не настроено, оставить SDK отключённым.
+При запущенном профиле наблюдаемости имя `otel-collector` разрешается Compose-сетью.
 `OTEL_TRACES_EXPORTER=none` или `OTEL_METRICS_EXPORTER=none` отключают отдельный
 сигнал. `OTEL_EXPORTER_OTLP_TIMEOUT` — сетевой таймаут в секундах;
 `OTEL_METRIC_EXPORT_INTERVAL` и `OTEL_METRIC_EXPORT_TIMEOUT` — миллисекунды.
@@ -133,7 +253,7 @@ Tail sampling не используется.
 | `hexrl.worker.invalid.timestamps` | counter, 1 | нет | Отрицательная задержка или submitted_at без часового пояса |
 | `hexrl.process.memory` | gauge, By | нет | RSS текущего процесса из psutil |
 | `hexrl.process.running` | gauge, 1 | нет | 1 при работе, 0 в финальном экспорте перед остановкой SDK |
-| `hexrl.queue.limit` | gauge, 1 | нет | Настроенный лимит у API/источника; для unbounded точка отсутствует |
+| `hexrl.queue.limit` | gauge, 1 | queue | Настроенный лимит у API/источника; для unbounded точка отсутствует |
 
 Одна доставка может завершиться ошибкой и назначить retry: это увеличит attempts
 с outcome=error и retries, но не completed. TTL-пересылка создаёт новую публикацию

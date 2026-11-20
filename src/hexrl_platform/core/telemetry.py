@@ -13,7 +13,7 @@ from opentelemetry.metrics import MeterProvider as MeterProviderAPI
 from opentelemetry.metrics import NoOpMeterProvider
 from opentelemetry.sdk.metrics import Counter, Histogram, MeterProvider
 from opentelemetry.sdk.metrics.export import AggregationTemporality, PeriodicExportingMetricReader
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.resources import OTELResourceDetector, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import Span, Tracer
@@ -87,8 +87,10 @@ class Telemetry:
                 "service.instance.id": socket.gethostname(),
             }
         )
-        # OTEL_RESOURCE_ATTRIBUTES имеет приоритет над значениями по умолчанию.
-        resource = resource.merge(Resource.create())
+        # OTEL_RESOURCE_ATTRIBUTES имеет приоритет над значениями по умолчанию. Только
+        # детектор окружения: Resource.create() добавил бы случайный service.instance.id
+        # поверх hostname, и каждый рестарт порождал бы новый экземпляр и новые ряды.
+        resource = resource.merge(OTELResourceDetector().detect())
         if str(resource.attributes.get("service.name", "")).startswith("unknown_service"):
             resource = resource.merge(Resource({"service.name": service}))
         timeout = float(os.getenv("OTEL_EXPORTER_OTLP_TIMEOUT", "0.5"))

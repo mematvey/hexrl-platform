@@ -197,7 +197,7 @@ services:
     command:
       - >-
         sleep ${BATCH_SOURCE_LOG_GRACE_S:-3};
-        hexrl-batch-source --file /data/tasks.jsonl --batch-id ${BATCH_ID:-compose}
+        hexrl-batch-source --file /data/${BATCH_FILE:-tasks.jsonl} --batch-id ${BATCH_ID:-compose}
         --metrics-csv /metrics/source.csv;
         status=$?;
         sleep ${BATCH_SOURCE_LOG_GRACE_S:-3};
@@ -210,6 +210,34 @@ services:
         condition: service_healthy
     networks: [ backend ]
     restart: "no"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  model-bootstrap:
+    build:
+      context: .
+      dockerfile: Dockerfile.bootstrap
+    # Без env_file: секреты БД и брокера процессу обучения не нужны
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_NAME: ${MODEL_NAME:-hex-navigation-default}
+      MODEL_ALIAS: ${MODEL_ALIAS:-champion}
+      BOOTSTRAP_CONFIG: ${BOOTSTRAP_CONFIG:-configs/navigation-dqn-smoke.toml}
+    volumes:
+      - ./data/tasks:/data/tasks
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      artifact-store:
+        condition: service_healthy
+    networks: [ backend ]
+    # Одноразовый: при существующем champion только проверяет его и выходит
+    restart: "no"
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 2G }
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
@@ -237,6 +265,9 @@ services:
         condition: service_healthy
       artifact-store:
         condition: service_healthy
+      # Воркер стартует только после проверенной модели, иначе он перезапускался бы впустую
+      model-bootstrap:
+        condition: service_completed_successfully
     networks: [ backend ]
     # The app exits when the champion cannot be loaded; retry until it is registered
     restart: on-failure

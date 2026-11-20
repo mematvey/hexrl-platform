@@ -143,3 +143,8 @@ def configure_logging(level: str, service: str = DIST_NAME) -> None:
                 logger.removeHandler(old_handler)
             logger.setLevel(logging.NOTSET)
             logger.propagate = True
+    # Сброс выше делает эти логгеры наследниками INFO. SQLAlchemy писал бы каждый запрос
+    # с параметрами, то есть с payload задачи; uvicorn.access оживал бы вопреки
+    # access_log=False и дублировал http_request_completed без trace_id. Ошибки видны.
+    for name in ("sqlalchemy", "uvicorn.access"):
+        logging.getLogger(name).setLevel(max(level_number, logging.WARNING))

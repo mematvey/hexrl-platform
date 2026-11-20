@@ -113,6 +113,13 @@ class PipelineMetrics:
             self.source_invalid.add(0)
             for reason in ("nack", "timeout", "unavailable"):
                 self.source_rejections.add(0, {"reason": reason})
+        if role == "api":
+            # Серия, появившаяся сразу со значением 40, не даёт прироста в rate/increase:
+            # без нулевой точки первая волна 503 не видна на панели и в доле отказов
+            for status in (202, 422, 503):
+                self.api_requests.add(
+                    0, {"method": "POST", "route": "/api/v1/tasks", "status_code": status}
+                )
         if role == "worker":
             for outcome in ("ok", "error", "dlq", "duplicate", "cancelled"):
                 self.worker_attempts.add(0, {"outcome": outcome})

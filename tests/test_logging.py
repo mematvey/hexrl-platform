@@ -116,6 +116,16 @@ def test_library_handler_is_replaced_by_json_stdout(capsys):
     assert captured.err == ""
 
 
+def test_sql_parameters_and_access_lines_stay_out_of_info_logs(capsys):
+    configure_logging("INFO")
+    engine = logging.getLogger("sqlalchemy.engine.Engine")
+    engine.info("INSERT INTO inference_tasks ... %r", {"payload": "secret-state"})
+    engine.warning("sqlalchemy_warning")
+    logging.getLogger("uvicorn.access").info('127.0.0.1 - "GET /healthz HTTP/1.1" 200')
+    rows = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert [row["event"] for row in rows] == ["sqlalchemy_warning"]
+
+
 def test_formatter_keeps_task_fields():
     record = logging.LogRecord(
         "hexrl_platform.worker", logging.INFO, __file__, 1, "retry", None, None

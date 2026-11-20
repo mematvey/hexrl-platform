@@ -26,6 +26,7 @@ hexrl-generate-replays = "hexrl_platform.rl.replay:main"
 hexrl-eda = "hexrl_platform.rl.eda:main"
 hexrl-experiment = "hexrl_platform.rl.experiment:main"
 hexrl-register = "hexrl_platform.rl.registry:main"
+hexrl-bootstrap = "hexrl_platform.rl.bootstrap:main"
 
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]

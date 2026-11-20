@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import random
+import socket
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -9,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import pytest
 from opentelemetry import trace
 from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import ExportTraceServiceRequest
+from opentelemetry.sdk.trace import TracerProvider
 
 from hexrl_platform.core.logging import JsonFormatter, task_context, task_context_var
 from hexrl_platform.core.telemetry import Telemetry, operation, record_error
@@ -192,6 +194,24 @@ def test_otlp_exports_protobuf_with_configured_resource_and_error(monkeypatch):
     assert span.status.code == 2
     assert span.events[0].name == "exception"
     assert b"private" not in request.SerializeToString()
+
+
+def test_instance_id_defaults_to_hostname_and_survives_restarts(monkeypatch):
+    monkeypatch.setenv("OTEL_SDK_DISABLED", "false")
+    monkeypatch.setenv("OTEL_METRICS_EXPORTER", "none")
+    monkeypatch.delenv("OTEL_RESOURCE_ATTRIBUTES", raising=False)
+    monkeypatch.delenv("OTEL_SERVICE_NAME", raising=False)
+    first, second = Telemetry.from_env("hexrl-worker"), Telemetry.from_env("hexrl-worker")
+    try:
+        resources = []
+        for telemetry in (first, second):
+            assert isinstance(telemetry.provider, TracerProvider)
+            resources.append(telemetry.provider.resource.attributes)
+        assert {item["service.instance.id"] for item in resources} == {socket.gethostname()}
+        assert resources[0]["service.name"] == "hexrl-worker"
+    finally:
+        first.shutdown()
+        second.shutdown()
 
 
 def test_missing_collector_does_not_block_work_or_shutdown(monkeypatch):

@@ -27,6 +27,16 @@ from hexrl_platform.task_pipeline.schemas import HexState
 STATE = HexState(q=0, r=0, goal_q=2, goal_r=-1, steps_remaining=20)
 
 
+def test_api_exports_zero_refusals_before_the_first_503(metrics):
+    Telemetry.from_env("hexrl-api")
+    requests = {
+        point.attributes["status_code"]: point.value
+        for point in metrics("hexrl-api")["hexrl.api.requests"]
+        if point.attributes["route"] == "/api/v1/tasks"
+    }
+    assert requests == {202: 0, 422: 0, 503: 0}
+
+
 async def test_api_metrics_use_resolved_routes_and_include_errors(metrics):
     app = FastAPI()
     app.state.telemetry = Telemetry.from_env("hexrl-api")

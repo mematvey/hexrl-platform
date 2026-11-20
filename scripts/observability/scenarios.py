@@ -733,7 +733,7 @@ async def run(args: argparse.Namespace) -> Report:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Defense scenarios on the observability stand")
     parser.add_argument("scenario", choices=sorted(SCENARIOS))
-    parser.add_argument("--env-file", type=Path, default=Path(".env.obs"))
+    parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--project", default=DEFAULT_PROJECT)
     parser.add_argument("--output", type=Path, default=Path("metrics/observability"))
     parser.add_argument("--dataset", choices=("smoke", "defense"), default="smoke")

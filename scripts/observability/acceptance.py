@@ -173,12 +173,14 @@ async def accept(args: argparse.Namespace) -> Report:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Clean start and acceptance of the stand")
-    parser.add_argument("--env-file", type=Path, default=Path(".env.obs"))
+    parser = argparse.ArgumentParser(description="Prepare and accept the observability project")
+    parser.add_argument("--env-file", type=Path, default=Path(".env"))
     parser.add_argument("--project", default=DEFAULT_PROJECT)
     parser.add_argument("--output", type=Path, default=Path("metrics/observability"))
     parser.add_argument(
-        "--clean", action="store_true", help="remove volumes of this project before start"
+        "--clean",
+        action="store_true",
+        help="remove volumes of the default project first (deletes PostgreSQL and MLflow data)",
     )
     parser.add_argument("--timeout", type=float, default=1200, help="seconds to become ready")
     args = parser.parse_args()

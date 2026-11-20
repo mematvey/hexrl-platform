@@ -6,7 +6,8 @@ import mlflow
 import pytest
 from mlflow.tracking import MlflowClient
 
-from hexrl_platform.rl.bootstrap import BootstrapError, bootstrap, ensure_champion
+from hexrl_platform.rl.bootstrap import bootstrap, ensure_champion
+from hexrl_platform.rl.errors import BootstrapError
 from hexrl_platform.rl.inputs import InputSpec, ensure_inputs
 from hexrl_platform.rl.observation import ObservationEncoder
 from hexrl_platform.rl.registry import RegistryConfig

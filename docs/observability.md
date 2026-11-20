@@ -350,31 +350,33 @@ target_info, RabbitMQ и собственные метрики хранилищ 
 
 ## Стенд защиты
 
-Демонстрация идёт на отдельном Compose-проекте `hexrl-obs` со своим env-файлом и
-портами. Он не пересекается с обычным стендом и с нагрузочным `hexrl-hw4`, а
-очистка с `--clean` удаляет тома только этого проекта: скрипт отказывается
-выполнять `down -v` для имени, которое не начинается с `hexrl-obs`.
+Демонстрация использует обычный Compose-проект и `.env` из корня репозитория,
+как и остальные сценарии приложения. Перед запуском убедиться, что переменные
+окружения заполнены; отдельный `.env` и дублирующий стенд не нужны.
 
 ```powershell
-Copy-Item observability/stand.env.example .env.obs  # заменить change-me
 uv sync --frozen --group dev --group experiments --group rl-cpu --group inference
 uv run python -m scripts.observability.acceptance --clean
 ```
 
-Ручные команды используют тот же проект и файл. `HEXRL_ENV_FILE=.env.obs` задан
-внутри файла: без него `app` и `worker` прочитали бы обычный `.env`.
+Acceptance и сценарии по умолчанию читают этот же `.env` и работают с проектом,
+названным по корневой папке репозитория. Флаг `--clean` выполняет `down -v` перед
+запуском, чтобы проверить provisioning с нуля. Он удаляет тома всего проекта,
+включая PostgreSQL и MLflow registry. Без флага существующие данные сохраняются.
 
 ```powershell
-docker compose -p hexrl-obs --env-file .env.obs --profile observability up -d
-docker compose -p hexrl-obs --env-file .env.obs --profile observability ps
+docker compose --profile observability ps
 ```
 
-| Адрес | Что открыть |
+Адреса Grafana, API, RabbitMQ Management и MLflow задаются переменными портов
+в `.env` (по умолчанию 3000, 8000, 15672 и 5000).
+
+| Переменная | Что открыть |
 | --- | --- |
-| `http://127.0.0.1:28300` | Grafana, dashboard `pipeline` |
-| `http://127.0.0.1:28000/docs` | API |
-| `http://127.0.0.1:28673` | RabbitMQ Management |
-| `http://127.0.0.1:28500` | MLflow |
+| `GRAFANA_PORT` | Grafana, dashboard `pipeline` |
+| `APP_PORT` | API `/docs` |
+| `RABBITMQ_MANAGEMENT_PORT` | RabbitMQ Management |
+| `MLFLOW_PORT` | MLflow |
 
 ### Подготовка модели
 
@@ -485,7 +487,7 @@ TraceQL в Tempo:
 
 ## Маршрут демонстрации
 
-1. Стенд уже поднят `acceptance --clean`. Показать отчёт: модель обучена при
+1. Compose-проект уже поднят и пройден acceptance. Показать отчёт: модель обучена при
    bootstrap, datasource, dashboard и правила подняты provisioning без ручной
    настройки.
 2. Открыть dashboard `pipeline` и запустить
@@ -506,7 +508,7 @@ TraceQL в Tempo:
 
 ## Результаты на живом стенде
 
-Измерено 2026-11-20 на `hexrl-obs`: лимит очереди 20, `INFERENCE_DELAY_S=0.5`,
+Измерено 2026-11-20: лимит очереди 20, `INFERENCE_DELAY_S=0.5`,
 concurrency и prefetch по 2, retry 5 с, 3 попытки. Сводка и график лежат в
 `docs/observability/results/2026-11-20`.
 

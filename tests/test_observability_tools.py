@@ -11,6 +11,7 @@ from scripts.observability.analysis import (
     label_cardinality,
 )
 from scripts.observability.stand import (
+    DEFAULT_PROJECT,
     Report,
     Stand,
     mebibytes,
@@ -57,16 +58,18 @@ def test_stand_is_ready_only_after_bootstrap_and_healthchecks():
     assert "model-bootstrap has not finished" in readiness(starting)[1]
 
 
-def test_clean_up_is_refused_outside_the_isolated_stand(tmp_path):
-    stand = Stand(tmp_path / ".env", project="hexrl-platform")
-    with pytest.raises(ValueError, match="refusing"):
+def test_clean_up_requires_the_default_compose_project(tmp_path):
+    stand = Stand(tmp_path / ".env", project="other-project")
+    with pytest.raises(ValueError, match="non-default project"):
         import asyncio
 
         asyncio.run(stand.remove_volumes())
 
+    assert Stand(Path(".env")).project == DEFAULT_PROJECT
+
 
 def test_up_starts_batch_source_only_when_named():
-    stand = Stand(Path(".env.obs"))
+    stand = Stand(Path(".env"))
     assert "batch" not in stand.command("up", "-d")
     assert "batch" in stand.command("up", "-d", "batch-source")
     assert "batch" in stand.command("down", "--volumes")

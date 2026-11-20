@@ -9,6 +9,7 @@ from mlflow import MlflowClient
 from mlflow.exceptions import MlflowException
 
 from hexrl_platform.core.logging import configure_logging
+from hexrl_platform.rl.errors import BootstrapError
 from hexrl_platform.rl.experiment import run_study
 from hexrl_platform.rl.inputs import ensure_inputs
 from hexrl_platform.rl.observation import ObservationEncoder
@@ -24,10 +25,6 @@ from hexrl_platform.rl.study import StudyConfig, load_study_config
 logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = Path("configs/navigation-dqn-smoke.toml")
-
-
-class BootstrapError(Exception):
-    """Модель для стенда нельзя ни найти, ни честно подготовить."""
 
 
 @dataclass(frozen=True, slots=True)

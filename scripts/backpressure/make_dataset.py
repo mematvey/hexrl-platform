@@ -1,13 +1,32 @@
 import argparse
 import json
 from pathlib import Path
+from typing import Any
 
 import mlflow
 
-from hexrl_platform.rl.inputs import make_dataset
+from hexrl_platform.rl import inputs
 from hexrl_platform.rl.observation import ObservationEncoder
 
-__all__ = ["make_dataset"]
+
+def make_dataset(
+    encoder: ObservationEncoder,
+    output: Path,
+    *,
+    size: int,
+    seed: int,
+    invalid_fraction: float = 0.0,
+    model_uri: str,
+) -> dict[str, Any]:
+    """Сохраняет прежний API скрипта и передаёт генерацию общему RL-модулю."""
+    return inputs.make_dataset(
+        encoder,
+        output,
+        size=size,
+        seed=seed,
+        invalid_fraction=invalid_fraction,
+        model_uri=model_uri,
+    )
 
 
 def main() -> None:

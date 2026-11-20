@@ -11,7 +11,7 @@ import httpx
 from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_PROJECT = "hexrl-obs"
+DEFAULT_PROJECT = ROOT.name
 # Без этих сервисов демонстрация неполна; одноразовые проверяются по коду выхода
 REQUIRED_HEALTHY = (
     "db",
@@ -77,7 +77,7 @@ async def eventually[T](
 
 @dataclass
 class Stand:
-    env_file: Path
+    env_file: Path = Path(".env")
     project: str = DEFAULT_PROJECT
     # benchmark-override подменяет воркер на fault_worker с искусственными сбоями
     faults: bool = False
@@ -136,9 +136,8 @@ class Stand:
         return stdout.decode(errors="replace").strip()
 
     async def remove_volumes(self) -> None:
-        # Очистка разрешена только изолированному стенду: тома MLflow других проектов не трогаем
-        if not self.project.startswith(DEFAULT_PROJECT):
-            raise ValueError(f"refusing to delete volumes of project {self.project!r}")
+        if self.project != DEFAULT_PROJECT:
+            raise ValueError(f"refusing to remove volumes for non-default project {self.project!r}")
         await self.run("down", "--volumes", "--remove-orphans")
 
     async def containers(self) -> list[dict[str, Any]]:
